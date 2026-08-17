@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: user-manage
+
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: deferred
+
+  jpa:
+    database: mysql
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc.time_zone: UTC
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+
+  flyway:
+    enabled: true
+
+  main:
+    allow-circular-references: true
+
+  output.ansi.enabled: ALWAYS
+
+server:
+  port: 8085

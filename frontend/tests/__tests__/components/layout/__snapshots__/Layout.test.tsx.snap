@@ -1,0 +1,76 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Layout Component Snapshots renders Footer unchanged 1`] = `
+<div>
+  <footer
+    class="footer"
+  >
+    <div
+      class="content-main"
+    >
+      <p>
+        Copyright © 2026 ルビナソフトウエア株式会社. All rights reserved.
+      </p>
+    </div>
+  </footer>
+</div>
+`;
+
+exports[`Layout Component Snapshots renders Header unchanged 1`] = `
+<div>
+  <nav
+    class="nav-bar"
+  >
+    <div
+      class="content-main"
+    >
+      <div
+        class="d-flex"
+      >
+        <a
+          class="navbar-brand"
+        >
+          <img
+            alt="logo"
+            data-nimg="1"
+            decoding="async"
+            height="50"
+            loading="lazy"
+            src="/assets/images/Logo-Luvina.svg"
+            style="color: transparent;"
+            title="Logo"
+            width="100"
+          />
+        </a>
+        <h5
+          class="title-brand mr-auto"
+        >
+          Luvina Software
+        </h5>
+        <ul
+          class="navbar-nav flex-row d-flex"
+        >
+          <li
+            class="nav-item"
+          >
+            <a
+              href="/employees/list"
+            >
+              トップ
+            </a>
+          </li>
+          <li
+            class="nav-item"
+          >
+            <a
+              href="/logout"
+            >
+              ログアウト
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</div>
+`;
