@@ -9,9 +9,9 @@ logging:
 spring:
   datasource:
     # jdbc properties to connect to database
-    jdbcUrl: jdbc:mysql://localhost:3307/user-manage?createDatabaseIfNotExist=true
+    jdbcUrl: jdbc:mysql://localhost:3306/user-manage?createDatabaseIfNotExist=true
     username: root
-    password: mysql
+    password: LA.luvina1234
     isAutoCommit: false
     connectionTimeout: 10000
     maximumPoolSize: 20
