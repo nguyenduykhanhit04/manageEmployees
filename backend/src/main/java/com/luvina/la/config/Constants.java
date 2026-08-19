@@ -16,7 +16,8 @@ public class Constants {
     public static final String[] ENDPOINTS_PUBLIC = new String[] {
             "/",
             "/login/**",
-            "/error/**"
+            "/error/**",
+            "/department/**"
     };
 
     // config endpoints for USER role
