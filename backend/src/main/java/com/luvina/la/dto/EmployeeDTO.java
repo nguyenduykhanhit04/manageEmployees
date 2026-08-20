@@ -3,7 +3,7 @@ package com.luvina.la.dto;
 /**
  * Copyright(C) 2026 Luvina Software Company
  * <p>
- * EmployeeDTO.java, 4/10/2026 nathu303
+ * EmployeeDTO.java, 8/20/2026 nguyenduykhanh2
  */
 
 import java.io.Serializable;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
  * Lớp này được sử dụng để truyền dữ liệu nhân viên từ service đến controller
  * và trả về cho frontend. Nó chứa thông tin cơ bản của nhân viên và chứng chỉ.
  *
- * @author nathu303
+ * @author nguyenduykhanh2
  * @since 1.0
  */
 @Data

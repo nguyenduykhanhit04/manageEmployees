@@ -3,7 +3,7 @@ package com.luvina.la.config.jwt;
 /**
  * Copyright(C) 2026 Luvina Software Company
  * <p>
- * UserDetailsServiceImpl.java, 4/10/2026 nathu303
+ * UserDetailsServiceImpl.java, 21/8/2026 nguyenduykhanh2
  */
 
 import com.luvina.la.entity.Employee;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
  * User Details Service implementation tải thông tin người dùng từ database.
  * Lớp này được sử dụng bởi Spring Security để tải user details cho authentication.
  *
- * @author nathu303
+ * @author nguyenduykhanh2
  * @since 1.0
  */
 @Service
