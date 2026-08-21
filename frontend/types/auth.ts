@@ -11,6 +11,5 @@ export interface LoginResponse {
 
 export interface TokenPayload {
   exp: number;
-  // Other claims as needed
 }
 

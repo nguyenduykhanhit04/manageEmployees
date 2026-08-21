@@ -1,3 +1,8 @@
+/**
+ * Copyright(C) 2026 Luvina Software Company
+ *
+ * Department.java, 21/8/2026 nguyenduykhanh2
+ */
 package com.luvina.la.entity;
 
 import lombok.Getter;
@@ -5,6 +10,11 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 
+/**
+ * Entity lưu trữ thông tin phòng ban.
+ *
+ * @author nguyenduykhanh2
+ */
 @Entity
 @Table(name = "departments")
 @Getter

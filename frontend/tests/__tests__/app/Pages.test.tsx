@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import EmployeeListPage from '@/app/(protected)/employees/list/page';
+import EmployeeListPage from '@/app/(protected)/employees/adm002/page';
 import EmployeeEditPage from '@/app/(protected)/employees/edit/page';
 import EmployeeDetailPage from '@/app/(protected)/employees/detail/page';
 import EmployeeConfirmPage from '@/app/(protected)/employees/confirm/page';

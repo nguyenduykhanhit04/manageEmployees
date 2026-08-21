@@ -14,15 +14,14 @@ const useAuth = () => {
 };
 
 const useGuest = () => {
-    const router = useRouter();
-  
-    useEffect(() => {
-      const token = getToken();
-      if (token && !isTokenExpired(token?.accessToken)) {
-        router.push('/employees/list');
-      }
-    }, [router]);
-}
+  const router = useRouter();
 
+  useEffect(() => {
+    const token = getToken();
+    if (token && !isTokenExpired(token?.accessToken)) {
+      router.push('/employees/adm002');
+    }
+  }, [router]);
+};
 
 export { useAuth, useGuest };

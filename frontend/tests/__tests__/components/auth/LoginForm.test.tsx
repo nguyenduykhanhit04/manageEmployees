@@ -56,7 +56,7 @@ describe('LoginForm', () => {
         password: 'password123',
       });
       expect(mockedStoreToken).toHaveBeenCalledWith('fake-token', 'Bearer');
-      expect(mockPush).toHaveBeenCalledWith('/employees/list');
+      expect(mockPush).toHaveBeenCalledWith('/employees/adm002');
     });
   });
 

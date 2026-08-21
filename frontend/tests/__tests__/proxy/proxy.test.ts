@@ -21,7 +21,7 @@ describe('Proxy Function', () => {
   });
 
   it('should return NextResponse.next() for protected routes', () => {
-    const request = new NextRequest('http://localhost/employees/list');
+    const request = new NextRequest('http://localhost/employees/adm002');
     const response = proxy(request);
     expect(response).toEqual(NextResponse.next());
   });

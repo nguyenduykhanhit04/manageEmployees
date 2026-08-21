@@ -1,10 +1,9 @@
-package com.luvina.la.dto;
-
 /**
  * Copyright(C) 2026 Luvina Software Company
- * <p>
- * EmployeeDTO.java, 8/20/2026 nguyenduykhanh2
+ *
+ * EmployeeDTO.java, 21/8/2026 nguyenduykhanh2
  */
+package com.luvina.la.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -13,12 +12,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Data Transfer Object (DTO) cho thông tin nhân viên hiển thị.
- * Lớp này được sử dụng để truyền dữ liệu nhân viên từ service đến controller
- * và trả về cho frontend. Nó chứa thông tin cơ bản của nhân viên và chứng chỉ.
+ * DTO chứa thông tin nhân viên.
  *
  * @author nguyenduykhanh2
- * @since 1.0
  */
 @Data
 @NoArgsConstructor
@@ -36,6 +32,19 @@ public class EmployeeDTO implements Serializable {
     private LocalDate endDate;
     private BigDecimal score;
 
+    /**
+     * Khởi tạo EmployeeDTO với các thông tin của nhân viên.
+     *
+     * @param employeeId mã nhân viên
+     * @param employeeName tên nhân viên
+     * @param employeeBirthDate ngày sinh của nhân viên
+     * @param departmentName tên phòng ban
+     * @param employeeEmail địa chỉ email của nhân viên
+     * @param employeeTelephone số điện thoại của nhân viên
+     * @param certificationName tên chứng chỉ
+     * @param endDate ngày hết hạn chứng chỉ
+     * @param score điểm chứng chỉ
+     */
     public EmployeeDTO(Long employeeId,
                        String employeeName,
                        LocalDate employeeBirthDate,

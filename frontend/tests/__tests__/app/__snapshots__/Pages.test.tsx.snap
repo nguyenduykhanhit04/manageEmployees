@@ -933,7 +933,9 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
             class="col-sm"
           >
             <input
+              maxlength="125"
               type="text"
+              value=""
             />
           </div>
         </li>
@@ -949,14 +951,10 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
             class="col-sm"
           >
             <select>
-              <option>
+              <option
+                value=""
+              >
                 全て
-              </option>
-              <option>
-                Nhóm 1
-              </option>
-              <option>
-                Nhóm 2
               </option>
             </select>
           </div>
@@ -969,7 +967,7 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
           >
             <button
               class="btn btn-primary btn-sm"
-              type="button"
+              type="submit"
             >
               検索
             </button>
@@ -1000,7 +998,7 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
           氏名 ▲▽
         </div>
         <div>
-          生年月日 ▲▽
+          生年月日
         </div>
         <div>
           グループ
@@ -1012,7 +1010,7 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
           電話番号
         </div>
         <div>
-          日本語能力
+          日本語能力 ▲▽
         </div>
         <div>
           失効日 ▼△
@@ -1025,169 +1023,9 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
         class="css-grid-table-body"
       >
         <div
-          class="bor-l-none text-center"
+          style="grid-column: 1 / -1; text-align: center; padding: 20px;"
         >
-          <a
-            href="/employees/detail"
-          >
-            1
-          </a>
-        </div>
-        <div>
-          Nguyễn Thị Mai Hương
-        </div>
-        <div>
-          1983/07/08
-        </div>
-        <div>
-          Phòng QAT
-        </div>
-        <div>
-          ntmhuong@luvina.net
-        </div>
-        <div>
-          0914326386
-        </div>
-        <div>
-          Trình độ tiếng nhật cấp 4
-        </div>
-        <div>
-          2011/07/08
-        </div>
-        <div>
-          290
-        </div>
-        <div
-          class="bor-l-none text-center"
-        >
-          <a
-            href="/employees/detail"
-          >
-            2
-          </a>
-        </div>
-        <div>
-          Lê Thị Xoa
-        </div>
-        <div>
-          1983/07/08
-        </div>
-        <div>
-          Phòng DEV1
-        </div>
-        <div>
-          xoalt@luvina.net
-        </div>
-        <div>
-          1234567894
-        </div>
-        <div>
-          Trình độ tiếng nhật cấp 4
-        </div>
-        <div>
-          2011/07/08
-        </div>
-        <div>
-          290
-        </div>
-        <div
-          class="bor-l-none text-center"
-        >
-          <a
-            href="/employees/detail"
-          >
-            3
-          </a>
-        </div>
-        <div>
-          Đặng Thị Hân
-        </div>
-        <div>
-          1983/07/08
-        </div>
-        <div>
-          Phòng QAT
-        </div>
-        <div>
-          handt@luvina.net
-        </div>
-        <div>
-          0914326386
-        </div>
-        <div>
-          Trình độ tiếng nhật cấp 4
-        </div>
-        <div>
-          2011/07/08
-        </div>
-        <div>
-          290
-        </div>
-        <div
-          class="bor-l-none text-center"
-        >
-          <a
-            href="/employees/detail"
-          >
-            4
-          </a>
-        </div>
-        <div>
-          Lê Nghiêm Thủy
-        </div>
-        <div>
-          1983/07/08
-        </div>
-        <div>
-          Phòng DEV1
-        </div>
-        <div>
-          thuyln@luvina.net
-        </div>
-        <div>
-          1234567894
-        </div>
-        <div>
-          Trình độ tiếng nhật cấp 4
-        </div>
-        <div>
-          2011/07/08
-        </div>
-        <div>
-          290
-        </div>
-        <div
-          class="bor-l-none text-center"
-        >
-          <a
-            href="/employees/detail"
-          >
-            5
-          </a>
-        </div>
-        <div>
-          Lê Phương Anh
-        </div>
-        <div>
-          1983/07/08
-        </div>
-        <div>
-          Phòng DEV1
-        </div>
-        <div>
-          anhlp@luvina.net
-        </div>
-        <div>
-          1234567894
-        </div>
-        <div>
-          Trình độ tiếng nhật cấp 4
-        </div>
-        <div>
-          2011/07/08
-        </div>
-        <div>
-          290
+          Đang tải dữ liệu ...
         </div>
       </div>
       <div
@@ -1387,18 +1225,18 @@ exports[`Page Snapshots renders RootLayout unchanged 1`] = `
                 class="nav-item"
               >
                 <a
-                  href="/employees/list"
+                  href="/logout"
                 >
-                  トップ
+                  ログアウト
                 </a>
               </li>
               <li
                 class="nav-item"
               >
                 <a
-                  href="/logout"
+                  href="/employees/adm002"
                 >
-                  ログアウト
+                  トップ
                 </a>
               </li>
             </ul>
@@ -1423,7 +1261,7 @@ exports[`Page Snapshots renders RootLayout unchanged 1`] = `
           class="content-main"
         >
           <p>
-            Copyright © 2026 ルビナソフトウエア株式会社. All rights reserved.
+            Copyright ©　2010　ルビナソフトウエア株式会社. All rights reserved.
           </p>
         </div>
       </footer>

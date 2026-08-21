@@ -12,10 +12,10 @@ const Header = () => {
           <h5 className="title-brand mr-auto">Luvina Software</h5>
           <ul className="navbar-nav flex-row d-flex">
             <li className="nav-item">
-              <Link href="/employees/list">トップ</Link>
+              <Link href="/logout">ログアウト</Link>
             </li>
             <li className="nav-item">
-              <Link href="/logout">ログアウト</Link>
+              <Link href="/employees/adm002">トップ</Link>
             </li>
           </ul>
         </div>

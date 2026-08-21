@@ -9,7 +9,7 @@ exports[`Layout Component Snapshots renders Footer unchanged 1`] = `
       class="content-main"
     >
       <p>
-        Copyright © 2026 ルビナソフトウエア株式会社. All rights reserved.
+        Copyright ©　2010　ルビナソフトウエア株式会社. All rights reserved.
       </p>
     </div>
   </footer>
@@ -54,18 +54,18 @@ exports[`Layout Component Snapshots renders Header unchanged 1`] = `
             class="nav-item"
           >
             <a
-              href="/employees/list"
+              href="/logout"
             >
-              トップ
+              ログアウト
             </a>
           </li>
           <li
             class="nav-item"
           >
             <a
-              href="/logout"
+              href="/employees/adm002"
             >
-              ログアウト
+              トップ
             </a>
           </li>
         </ul>
