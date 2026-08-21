@@ -1,9 +1,8 @@
 package com.luvina.la.service;
 
-import com.luvina.la.payload.DepartmentResponse;
+import com.luvina.la.payload.DepartmentListResponse;
 
 public interface DepartmentService {
 
-    DepartmentResponse getAllDepartments();
+    DepartmentListResponse getAllDepartments();
 }
-

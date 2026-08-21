@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { getEmployees, getDepartments } from '@/lib/api/employee';
-import { EmployeeItem, DepartmentItem } from '@/types/employee';
+import { getEmployees } from '@/lib/api/employee';
+import { getDepartments } from '@/lib/api/department';
+import { EmployeeItem } from '@/types/employee';
+import { DepartmentItem } from '@/types/department';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -15,7 +17,6 @@ export default function EmployeeListPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
-  // 1. Tải danh sách phòng ban từ Backend khi load trang
   useEffect(() => {
     getDepartments()
       .then((res) => {
@@ -28,7 +29,6 @@ export default function EmployeeListPage() {
       });
   }, []);
 
-  // 2. Hàm tải dữ liệu danh sách nhân viên từ Backend
   const fetchEmployeeList = async () => {
     setLoading(true);
     setErrorMessage('');
@@ -47,7 +47,6 @@ export default function EmployeeListPage() {
     }
   };
 
-  // Tự động gọi hàm fetch khi trang được load lần đầu
   useEffect(() => {
     fetchEmployeeList();
   }, []);
@@ -84,11 +83,6 @@ export default function EmployeeListPage() {
           </ul>
         </form>
       </div>
-
-      {/* Hiển thị thông báo lỗi nếu có */}
-      {errorMessage && (
-        <div style={{ color: 'red', marginBottom: '10px' }}>{errorMessage}</div>
-      )}
 
       <div className="row row-table">
         <div className="css-grid-table box-shadow">

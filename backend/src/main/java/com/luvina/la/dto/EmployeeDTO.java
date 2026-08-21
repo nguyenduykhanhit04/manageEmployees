@@ -1,25 +1,11 @@
 package com.luvina.la.dto;
 
-/**
- * Copyright(C) 2026 Luvina Software Company
- * <p>
- * EmployeeDTO.java, 8/20/2026 nguyenduykhanh2
- */
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Data Transfer Object (DTO) cho thông tin nhân viên hiển thị.
- * Lớp này được sử dụng để truyền dữ liệu nhân viên từ service đến controller
- * và trả về cho frontend. Nó chứa thông tin cơ bản của nhân viên và chứng chỉ.
- *
- * @author nguyenduykhanh2
- * @since 1.0
- */
 @Data
 @NoArgsConstructor
 public class EmployeeDTO implements Serializable {

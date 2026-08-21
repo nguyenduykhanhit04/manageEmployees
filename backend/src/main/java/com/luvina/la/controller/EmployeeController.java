@@ -19,10 +19,6 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-    /**
-     * [ADM002] GET /employee
-     * Ví dụ: GET /employee?employee_name=A&department_id=1&offset=0&limit=20&ord_employee_name=ASC
-     */
     @GetMapping("/employee")
     public ResponseEntity<EmployeeListResponse> getEmployees(
             @RequestParam(name = "employee_name", required = false) String employeeName,

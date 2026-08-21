@@ -13,12 +13,14 @@ public class EmployeeListResponse {
     private long totalRecords;
     private List<EmployeeDTO> employees = new ArrayList<>();
     private ApiErrorMessage message;
+
     // Response thành công
     public EmployeeListResponse(int code, long totalRecords, List<EmployeeDTO> employees) {
         this.code = code;
         this.totalRecords = totalRecords;
         this.employees = employees;
     }
+
     // Response lỗi (Validation)
     public EmployeeListResponse(int code, ApiErrorMessage message) {
         this.code = code;
