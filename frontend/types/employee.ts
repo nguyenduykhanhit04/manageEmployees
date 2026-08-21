@@ -20,6 +20,17 @@ export interface EmployeeListApiResponse {
   employees: EmployeeItem[];
 }
 
+// 3. Department Item & Response của GET /department
+export interface DepartmentItem {
+  departmentId: number;
+  departmentName: string;
+}
+
+export interface DepartmentListApiResponse {
+  code: number;
+  departments: DepartmentItem[];
+}
+
 // 3. Search parameters
 export interface EmployeeSearchParams {
   name?: string;

@@ -1,4 +1,4 @@
-import { EmployeeListApiResponse } from "@/types/employee";
+import { EmployeeListApiResponse, DepartmentListApiResponse } from "@/types/employee";
 import { apiClient } from "@/lib/api/client";
 
 export const getEmployees = async (params: {
@@ -24,7 +24,7 @@ export const getEmployees = async (params: {
   return response.data;
 };
 
-// export const getDepartments = async (): Promise<DepartmentListApiResponse> => {
-//   const response = await apiClient.get<DepartmentListApiResponse>('/department');
-//   return response.data;
-// };
+export const getDepartments = async (): Promise<DepartmentListApiResponse> => {
+  const response = await apiClient.get<DepartmentListApiResponse>('/department');
+  return response.data;
+};

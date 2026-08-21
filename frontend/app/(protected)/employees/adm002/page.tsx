@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { getEmployees } from '@/lib/api/employee';
-import { EmployeeItem } from '@/types/employee';
+import { getEmployees, getDepartments } from '@/lib/api/employee';
+import { EmployeeItem, DepartmentItem } from '@/types/employee';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -11,24 +11,37 @@ export default function EmployeeListPage() {
   useAuth();
   const router = useRouter();
   const [employees, setEmployees] = useState<EmployeeItem[]>([]);
+  const [departments, setDepartments] = useState<DepartmentItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
-  // Hàm tải dữ liệu từ Backend
+  // 1. Tải danh sách phòng ban từ Backend khi load trang
+  useEffect(() => {
+    getDepartments()
+      .then((res) => {
+        if (res && res.code === 200) {
+          setDepartments(res.departments || []);
+        }
+      })
+      .catch((err) => {
+        console.error('Error fetching departments:', err);
+      });
+  }, []);
+
+  // 2. Hàm tải dữ liệu danh sách nhân viên từ Backend
   const fetchEmployeeList = async () => {
     setLoading(true);
     setErrorMessage('');
     try {
       const res = await getEmployees({ offset: 0, limit: 20 });
-      if (res && res.code == 200) {
+      if (res && res.code === 200) {
         setEmployees(res.employees || []);
       } else {
-        setErrorMessage("Không thể tải danh sách nhân viên.");
+        setErrorMessage('Không thể tải danh sách nhân viên.');
       }
-
     } catch (error) {
       console.error(error);
-      setErrorMessage('Đã xảy ra lỗi khi kết nối máy chủ')
+      setErrorMessage('Đã xảy ra lỗi khi kết nối máy chủ');
     } finally {
       setLoading(false);
     }
@@ -53,9 +66,12 @@ export default function EmployeeListPage() {
               <label className="col-form-label">グループ:</label>
               <div className="col-sm">
                 <select>
-                  <option>全て</option>
-                  <option>Nhóm 1</option>
-                  <option>Nhóm 2</option>
+                  <option value="">全て</option>
+                  {departments.map((dept) => (
+                    <option key={dept.departmentId} value={dept.departmentId}>
+                      {dept.departmentName}
+                    </option>
+                  ))}
                 </select>
               </div>
             </li>
@@ -68,6 +84,12 @@ export default function EmployeeListPage() {
           </ul>
         </form>
       </div>
+
+      {/* Hiển thị thông báo lỗi nếu có */}
+      {errorMessage && (
+        <div style={{ color: 'red', marginBottom: '10px' }}>{errorMessage}</div>
+      )}
+
       <div className="row row-table">
         <div className="css-grid-table box-shadow">
           <div className="css-grid-table-header">
@@ -77,7 +99,7 @@ export default function EmployeeListPage() {
             <div>グループ</div>
             <div>メールアドレス</div>
             <div>電話番号</div>
-            <div>日本語能力▲▽</div>
+            <div>日本語能力 ▲▽</div>
             <div>失効日 ▼△</div>
             <div>点数</div>
           </div>
@@ -93,39 +115,23 @@ export default function EmployeeListPage() {
             ) : (
               employees.map((emp) => (
                 <React.Fragment key={emp.employeeId}>
-                  <div className='bor-l-none text-center'>
+                  <div className="bor-l-none text-center">
                     <Link href={`/employees/detail?id=${emp.employeeId}`}>
                       {emp.employeeId}
                     </Link>
                   </div>
 
-                  {/* Cột 2: 氏名 (Họ tên) */}
                   <div>{emp.employeeName}</div>
-
-                  {/* Cột 3: 生年月日 (Ngày sinh) */}
-                  <div>{emp.employeeBirthDate || ''}</div>
-
-                  {/* Cột 4: グループ (Phòng ban) */}
+                  <div>{emp.employeeBirthDate ? emp.employeeBirthDate.replaceAll('-', '/') : ''}</div>
                   <div>{emp.departmentName || ''}</div>
-
-                  {/* Cột 5: メールアドレス (Email) */}
                   <div>{emp.employeeEmail || ''}</div>
-
-                  {/* Cột 6: 電話番号 (SĐT) */}
                   <div>{emp.employeeTelephone || ''}</div>
-
-                  {/* Cột 7: 日本語能力 (Trình độ tiếng Nhật) */}
                   <div>{emp.certificationName || ''}</div>
-
-                  {/* Cột 8: 失効日 (Ngày hết hạn chứng chỉ) */}
-                  <div>{emp.endDate || ''}</div>
-
-                  {/* Cột 9: 点数 (Điểm số) */}
+                  <div>{emp.endDate ? emp.endDate.replaceAll('-', '/') : ''}</div>
                   <div>{emp.score !== null && emp.score !== undefined ? emp.score : ''}</div>
                 </React.Fragment>
               ))
             )}
-
           </div>
           <div className="pagin">
             <Link className="btn btn-sm btn-pre btn-falcon-default btn-disabled" href="#">
@@ -146,4 +152,3 @@ export default function EmployeeListPage() {
     </>
   );
 }
-

@@ -949,14 +949,10 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
             class="col-sm"
           >
             <select>
-              <option>
+              <option
+                value=""
+              >
                 全て
-              </option>
-              <option>
-                Nhóm 1
-              </option>
-              <option>
-                Nhóm 2
               </option>
             </select>
           </div>
@@ -1012,7 +1008,7 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
           電話番号
         </div>
         <div>
-          日本語能力▲▽
+          日本語能力 ▲▽
         </div>
         <div>
           失効日 ▼△
