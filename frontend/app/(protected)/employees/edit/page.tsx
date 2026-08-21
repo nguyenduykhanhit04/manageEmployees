@@ -22,7 +22,7 @@ export default function EmployeeEditPage() {
   };
 
   const handleBack = () => {
-    router.push('/employees/list');
+    router.push('/employees/adm002');
   };
   return (
     <div className="row">

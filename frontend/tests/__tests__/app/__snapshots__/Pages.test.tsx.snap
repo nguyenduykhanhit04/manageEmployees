@@ -1000,7 +1000,7 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
           氏名 ▲▽
         </div>
         <div>
-          生年月日 ▲▽
+          生年月日
         </div>
         <div>
           グループ
@@ -1012,7 +1012,7 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
           電話番号
         </div>
         <div>
-          日本語能力
+          日本語能力▲▽
         </div>
         <div>
           失効日 ▼△
@@ -1227,18 +1227,18 @@ exports[`Page Snapshots renders RootLayout unchanged 1`] = `
                 class="nav-item"
               >
                 <a
-                  href="/employees/list"
+                  href="/logout"
                 >
-                  トップ
+                  ログアウト
                 </a>
               </li>
               <li
                 class="nav-item"
               >
                 <a
-                  href="/logout"
+                  href="/employees/adm002"
                 >
-                  ログアウト
+                  トップ
                 </a>
               </li>
             </ul>
@@ -1263,7 +1263,7 @@ exports[`Page Snapshots renders RootLayout unchanged 1`] = `
           class="content-main"
         >
           <p>
-            Copyright © 2026 ルビナソフトウエア株式会社. All rights reserved.
+            Copyright ©　2010　ルビナソフトウエア株式会社. All rights reserved.
           </p>
         </div>
       </footer>

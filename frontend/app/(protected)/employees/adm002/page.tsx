@@ -73,11 +73,11 @@ export default function EmployeeListPage() {
           <div className="css-grid-table-header">
             <div>ID</div>
             <div>氏名 ▲▽</div>
-            <div>生年月日 ▲▽</div>
+            <div>生年月日</div>
             <div>グループ</div>
             <div>メールアドレス</div>
             <div>電話番号</div>
-            <div>日本語能力</div>
+            <div>日本語能力▲▽</div>
             <div>失効日 ▼△</div>
             <div>点数</div>
           </div>

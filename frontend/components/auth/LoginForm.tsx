@@ -17,7 +17,7 @@ export default function LoginForm() {
     try {
       const response = await apiClient.post<{ accessToken: string; tokenType: string }>('/login', data);
       storeToken(response.data.accessToken, response.data.tokenType);
-      router.push('/employees/list');
+      router.push('/employees/adm002');
     } catch (error) {
       console.error('Login failed:', error);
       setError('root', {
