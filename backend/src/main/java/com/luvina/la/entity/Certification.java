@@ -1,3 +1,8 @@
+/**
+ * Copyright(C) 2026 Luvina Software Company
+ *
+ * Certification.java, 21/8/2026 nguyenduykhanh2
+ */
 package com.luvina.la.entity;
 
 import java.io.Serializable;
@@ -5,6 +10,11 @@ import lombok.Getter;
 import lombok.Setter;
 import javax.persistence.*;
 
+/**
+ * Entity lưu trữ thông tin chứng chỉ.
+ *
+ * @author nguyenduykhanh2
+ */
 @Entity
 @Table(name = "certifications")
 @Getter

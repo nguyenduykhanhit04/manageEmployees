@@ -1,3 +1,4 @@
+// types/department.ts
 export interface DepartmentItem {
   departmentId: number;
   departmentName: string;

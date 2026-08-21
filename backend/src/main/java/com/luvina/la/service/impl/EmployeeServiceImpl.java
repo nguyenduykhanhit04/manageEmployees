@@ -1,6 +1,11 @@
+/**
+ * Copyright(C) 2026 Luvina Software Company
+ *
+ * EmployeeServiceImpl.java, 21/8/2026 nguyenduykhanh2
+ */
 package com.luvina.la.service.impl;
 
-import com.luvina.la.config.EmployeeConstants;
+import com.luvina.la.config.Constants;
 import com.luvina.la.dto.EmployeeDTO;
 import com.luvina.la.dto.EmployeeDisplayDTO;
 import com.luvina.la.payload.ApiErrorMessage;
@@ -13,79 +18,148 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Implementation service xử lý các nghiệp vụ liên quan đến nhân viên.
+ *
+ * @author nguyenduykhanh2
+ */
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
 
+    /**
+     * Khởi tạo EmployeeServiceImpl với EmployeeRepository.
+     *
+     * @param employeeRepository repository thao tác với dữ liệu nhân viên
+     */
     public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
     }
 
+    /**
+     * Lấy danh sách nhân viên theo điều kiện tìm kiếm, sắp xếp và phân trang.
+     *
+     * @param employeeName tên nhân viên cần tìm kiếm
+     * @param departmentId mã phòng ban cần tìm kiếm
+     * @param orderParams các tham số sắp xếp
+     * @param offset vị trí bắt đầu lấy dữ liệu
+     * @param limit số lượng bản ghi tối đa được lấy
+     * @return thông tin phản hồi chứa mã response và danh sách nhân viên
+     */
     @Override
     @Transactional(readOnly = true)
-    public EmployeeListResponse getEmployees(String employeeName, Long departmentId, Map<String, String> orderParams, int offset, int limit) {
+    public EmployeeListResponse getEmployees(
+            String employeeName,
+            Long departmentId,
+            Map<String, String> orderParams,
+            int offset,
+            int limit) {
 
-        // 1. Validate Phân trang (ER018)
+        // Kiểm tra điều kiện phân trang.
         if (offset < 0 || limit <= 0) {
-            return new EmployeeListResponse(EmployeeConstants.CODE_ERROR, new ApiErrorMessage(EmployeeConstants.ERROR_CODE_INVALID_PAGING, List.of("offset/limit")));
+            return new EmployeeListResponse(
+                    Constants.CODE_ERROR,
+                    new ApiErrorMessage(
+                            Constants.ERROR_CODE_INVALID_PAGING,
+                            List.of("offset/limit")));
         }
 
-        // 2. Validate Độ dài tên (ER006)
-        if (employeeName != null && employeeName.length() >= EmployeeConstants.MAX_EMPLOYEE_NAME_LENGTH) {
-            return new EmployeeListResponse(EmployeeConstants.CODE_ERROR, new ApiErrorMessage(EmployeeConstants.ERROR_CODE_INVALID_EMPLOYEE_NAME, List.of("氏名", String.valueOf(EmployeeConstants.MAX_EMPLOYEE_NAME_LENGTH))));
+        // Kiểm tra độ dài tên nhân viên.
+        if (employeeName != null
+                && employeeName.length() >= Constants.MAX_EMPLOYEE_NAME_LENGTH) {
+            return new EmployeeListResponse(
+                    Constants.CODE_ERROR,
+                    new ApiErrorMessage(
+                            Constants.ERROR_CODE_INVALID_EMPLOYEE_NAME,
+                            List.of(
+                                    "氏名",
+                                    String.valueOf(Constants.MAX_EMPLOYEE_NAME_LENGTH))));
         }
 
-        // 3. Validate Sort params (ER021)
+        // Kiểm tra giá trị các tham số sắp xếp.
         for (Map.Entry<String, String> entry : orderParams.entrySet()) {
-            String val = entry.getValue();
-            if (!EmployeeConstants.SORT_ASC.equalsIgnoreCase(val) && !EmployeeConstants.SORT_DESC.equalsIgnoreCase(val)) {
-                return new EmployeeListResponse(EmployeeConstants.CODE_ERROR, new ApiErrorMessage(EmployeeConstants.ERROR_CODE_INVALID_SORT, List.of(entry.getKey())));
+            String value = entry.getValue();
+
+            if (!Constants.SORT_ASC.equalsIgnoreCase(value)
+                    && !Constants.SORT_DESC.equalsIgnoreCase(value)) {
+                return new EmployeeListResponse(
+                        Constants.CODE_ERROR,
+                        new ApiErrorMessage(
+                                Constants.ERROR_CODE_INVALID_SORT,
+                                List.of(entry.getKey())));
             }
         }
 
-        // 4. Escape ký tự đặc biệt cho LIKE
+        // Escape các ký tự đặc biệt cho điều kiện LIKE.
         String escapedName = escapeLikePattern(employeeName);
 
-        // 5. Trích xuất thứ tự sort (mặc định ASC)
-        String ordName = orderParams.getOrDefault(EmployeeConstants.ORDER_KEY_EMPLOYEE_NAME, EmployeeConstants.SORT_ASC);
-        String ordCert = orderParams.getOrDefault(EmployeeConstants.ORDER_KEY_CERTIFICATION_LEVEL, EmployeeConstants.SORT_ASC);
-        String ordEndDate = orderParams.getOrDefault(EmployeeConstants.ORDER_KEY_END_DATE, EmployeeConstants.SORT_ASC);
+        // Lấy thứ tự sắp xếp, mặc định là ASC.
+        String ordName = orderParams.getOrDefault(
+                Constants.ORDER_KEY_EMPLOYEE_NAME,
+                Constants.SORT_ASC);
+        String ordCert = orderParams.getOrDefault(
+                Constants.ORDER_KEY_CERTIFICATION_LEVEL,
+                Constants.SORT_ASC);
+        String ordEndDate = orderParams.getOrDefault(
+                Constants.ORDER_KEY_END_DATE,
+                Constants.SORT_ASC);
 
-        // 6. Đếm tổng số bản ghi
-        long totalRecords = employeeRepository.countDisplayEmployees(escapedName, departmentId);
+        // Đếm tổng số bản ghi.
+        long totalRecords = employeeRepository.countDisplayEmployees(
+                escapedName,
+                departmentId);
+
         if (totalRecords <= 0) {
-            return new EmployeeListResponse(EmployeeConstants.CODE_SUCCESS, 0L, new ArrayList<>());
+            return new EmployeeListResponse(
+                    Constants.CODE_SUCCESS,
+                    0L,
+                    new ArrayList<>());
         }
 
-        // 7. Lấy danh sách Projection từ Repository
+        // Lấy danh sách projection từ repository.
         List<EmployeeDisplayDTO> projections = employeeRepository.findDisplayEmployees(
-                escapedName, departmentId,
-                ordName, ordCert, ordEndDate,
-                offset, limit
-        );
+                escapedName,
+                departmentId,
+                ordName,
+                ordCert,
+                ordEndDate,
+                offset,
+                limit);
 
-        // 8. Map sang DTO
+        // Chuyển đổi projection sang DTO.
         List<EmployeeDTO> employees = new ArrayList<>();
-        for (EmployeeDisplayDTO p : projections) {
+
+        for (EmployeeDisplayDTO projection : projections) {
             employees.add(new EmployeeDTO(
-                    p.getEmployeeId(),
-                    p.getEmployeeName(),
-                    p.getEmployeeBirthDate(),
-                    p.getDepartmentName(),
-                    p.getEmployeeEmail(),
-                    p.getEmployeeTelephone(),
-                    p.getCertificationName(),
-                    p.getEndDate(),
-                    p.getScore()
-            ));
+                    projection.getEmployeeId(),
+                    projection.getEmployeeName(),
+                    projection.getEmployeeBirthDate(),
+                    projection.getDepartmentName(),
+                    projection.getEmployeeEmail(),
+                    projection.getEmployeeTelephone(),
+                    projection.getCertificationName(),
+                    projection.getEndDate(),
+                    projection.getScore()));
         }
 
-        return new EmployeeListResponse(EmployeeConstants.CODE_SUCCESS, totalRecords, employees);
+        return new EmployeeListResponse(
+                Constants.CODE_SUCCESS,
+                totalRecords,
+                employees);
     }
 
+    /**
+     * Escape các ký tự đặc biệt trong từ khóa tìm kiếm cho điều kiện LIKE.
+     *
+     * @param keyword từ khóa tìm kiếm
+     * @return từ khóa đã được escape
+     */
     private String escapeLikePattern(String keyword) {
-        if (keyword == null || keyword.isEmpty()) return keyword;
+        if (keyword == null || keyword.isEmpty()) {
+            return keyword;
+        }
+
         return keyword.replace("\\", "\\\\")
                 .replace("%", "\\%")
                 .replace("_", "\\_");

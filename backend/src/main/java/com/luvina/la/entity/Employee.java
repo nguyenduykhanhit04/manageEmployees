@@ -1,3 +1,8 @@
+/**
+ * Copyright(C) 2026 Luvina Software Company
+ *
+ * Employee.java, 21/8/2026 nguyenduykhanh2
+ */
 package com.luvina.la.entity;
 
 import java.io.Serializable;
@@ -6,6 +11,11 @@ import javax.persistence.*;
 
 import lombok.Data;
 
+/**
+ * Entity lưu trữ thông tin nhân viên.
+ *
+ * @author nguyenduykhanh2
+ */
 @Entity
 @Table(name = "employees")
 @Data
