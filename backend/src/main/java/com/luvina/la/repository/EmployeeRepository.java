@@ -95,11 +95,12 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
                 order by
                 case when upper(p.ordName) = 'ASC' then e.employee_name collate utf8mb4_vietnamese_ci end asc,
                 case when upper(p.ordName) = 'DESC' then e.employee_name collate utf8mb4_vietnamese_ci end desc,
+                case when upper(p.ordCertificationLevel) is not null and c.certification_level is null then 1 else 0 end asc,
                 case when upper(p.ordCertificationLevel) = 'ASC' then -c.certification_level end asc,
                 case when upper(p.ordCertificationLevel) = 'DESC' then -c.certification_level end desc,
-                case when c.certification_level is null then 1 else 0 end asc,
                 case when upper(p.ordEndDate) = 'ASC' then ec.end_date end asc,
-                case when upper(p.ordEndDate) = 'DESC' then ec.end_date end desc
+                case when upper(p.ordEndDate) = 'DESC' then ec.end_date end desc,
+                e.employee_id asc
                 limit :limit offset :offset
                 """, nativeQuery = true)
         List<EmployeeDisplayDTO> findDisplayEmployees(

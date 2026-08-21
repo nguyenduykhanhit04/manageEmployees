@@ -94,16 +94,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         // Escape các ký tự đặc biệt cho điều kiện LIKE.
         String escapedName = escapeLikePattern(employeeName);
 
-        // Lấy thứ tự sắp xếp, mặc định là ASC.
-        String ordName = orderParams.getOrDefault(
-                Constants.ORDER_KEY_EMPLOYEE_NAME,
-                Constants.SORT_ASC);
-        String ordCert = orderParams.getOrDefault(
-                Constants.ORDER_KEY_CERTIFICATION_LEVEL,
-                Constants.SORT_ASC);
-        String ordEndDate = orderParams.getOrDefault(
-                Constants.ORDER_KEY_END_DATE,
-                Constants.SORT_ASC);
+        // Lấy thứ tự sắp xếp theo tham số truyền vào.
+        String ordName = orderParams.get(Constants.ORDER_KEY_EMPLOYEE_NAME);
+        String ordCert = orderParams.get(Constants.ORDER_KEY_CERTIFICATION_LEVEL);
+        if (ordCert == null) {
+            ordCert = orderParams.get("ord_certification_name");
+        }
+        String ordEndDate = orderParams.get(Constants.ORDER_KEY_END_DATE);
 
         // Đếm tổng số bản ghi.
         long totalRecords = employeeRepository.countDisplayEmployees(
