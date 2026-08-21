@@ -1,12 +1,43 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { getEmployees } from '@/lib/api/employee';
+import { EmployeeItem } from '@/types/employee';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function EmployeeListPage() {
   useAuth();
   const router = useRouter();
+  const [employees, setEmployees] = useState<EmployeeItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
+  // Hàm tải dữ liệu từ Backend
+  const fetchEmployeeList = async () => {
+    setLoading(true);
+    setErrorMessage('');
+    try {
+      const res = await getEmployees({ offset: 0, limit: 20 });
+      if (res && res.code == 200) {
+        setEmployees(res.employees || []);
+      } else {
+        setErrorMessage("Không thể tải danh sách nhân viên.");
+      }
+
+    } catch (error) {
+      console.error(error);
+      setErrorMessage('Đã xảy ra lỗi khi kết nối máy chủ')
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Tự động gọi hàm fetch khi trang được load lần đầu
+  useEffect(() => {
+    fetchEmployeeList();
+  }, []);
 
   return (
     <>
@@ -51,66 +82,50 @@ export default function EmployeeListPage() {
             <div>点数</div>
           </div>
           <div className="css-grid-table-body">
-            {/* Sample Data */}
-            <div className="bor-l-none text-center">
-              <Link href="/employees/detail">1</Link>
-            </div>
-            <div>Nguyễn Thị Mai Hương</div>
-            <div>1983/07/08</div>
-            <div>Phòng QAT</div>
-            <div>ntmhuong@luvina.net</div>
-            <div>0914326386</div>
-            <div>Trình độ tiếng nhật cấp 4</div>
-            <div>2011/07/08</div>
-            <div>290</div>
+            {loading ? (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '20px' }}>
+                Đang tải dữ liệu ...
+              </div>
+            ) : employees.length === 0 ? (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '20px' }}>
+                検索条件に該当するユーザが見つかりません。
+              </div>
+            ) : (
+              employees.map((emp) => (
+                <React.Fragment key={emp.employeeId}>
+                  <div className='bor-l-none text-center'>
+                    <Link href={`/employees/detail?id=${emp.employeeId}`}>
+                      {emp.employeeId}
+                    </Link>
+                  </div>
 
-            <div className="bor-l-none text-center">
-              <Link href="/employees/detail">2</Link>
-            </div>
-            <div>Lê Thị Xoa</div>
-            <div>1983/07/08</div>
-            <div>Phòng DEV1</div>
-            <div>xoalt@luvina.net</div>
-            <div>1234567894</div>
-            <div>Trình độ tiếng nhật cấp 4</div>
-            <div>2011/07/08</div>
-            <div>290</div>
+                  {/* Cột 2: 氏名 (Họ tên) */}
+                  <div>{emp.employeeName}</div>
 
-            <div className="bor-l-none text-center">
-              <Link href="/employees/detail">3</Link>
-            </div>
-            <div>Đặng Thị Hân</div>
-            <div>1983/07/08</div>
-            <div>Phòng QAT</div>
-            <div>handt@luvina.net</div>
-            <div>0914326386</div>
-            <div>Trình độ tiếng nhật cấp 4</div>
-            <div>2011/07/08</div>
-            <div>290</div>
+                  {/* Cột 3: 生年月日 (Ngày sinh) */}
+                  <div>{emp.employeeBirthDate || ''}</div>
 
-            <div className="bor-l-none text-center">
-              <Link href="/employees/detail">4</Link>
-            </div>
-            <div>Lê Nghiêm Thủy</div>
-            <div>1983/07/08</div>
-            <div>Phòng DEV1</div>
-            <div>thuyln@luvina.net</div>
-            <div>1234567894</div>
-            <div>Trình độ tiếng nhật cấp 4</div>
-            <div>2011/07/08</div>
-            <div>290</div>
+                  {/* Cột 4: グループ (Phòng ban) */}
+                  <div>{emp.departmentName || ''}</div>
 
-            <div className="bor-l-none text-center">
-              <Link href="/employees/detail">5</Link>
-            </div>
-            <div>Lê Phương Anh</div>
-            <div>1983/07/08</div>
-            <div>Phòng DEV1</div>
-            <div>anhlp@luvina.net</div>
-            <div>1234567894</div>
-            <div>Trình độ tiếng nhật cấp 4</div>
-            <div>2011/07/08</div>
-            <div>290</div>
+                  {/* Cột 5: メールアドレス (Email) */}
+                  <div>{emp.employeeEmail || ''}</div>
+
+                  {/* Cột 6: 電話番号 (SĐT) */}
+                  <div>{emp.employeeTelephone || ''}</div>
+
+                  {/* Cột 7: 日本語能力 (Trình độ tiếng Nhật) */}
+                  <div>{emp.certificationName || ''}</div>
+
+                  {/* Cột 8: 失効日 (Ngày hết hạn chứng chỉ) */}
+                  <div>{emp.endDate || ''}</div>
+
+                  {/* Cột 9: 点数 (Điểm số) */}
+                  <div>{emp.score !== null && emp.score !== undefined ? emp.score : ''}</div>
+                </React.Fragment>
+              ))
+            )}
+
           </div>
           <div className="pagin">
             <Link className="btn btn-sm btn-pre btn-falcon-default btn-disabled" href="#">

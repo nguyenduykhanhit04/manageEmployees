@@ -52,8 +52,8 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
               and (p.employeeName is null or p.employeeName = '' or e.employee_name like concat('%', p.employeeName, '%') escape '\\\\')
               and (p.departmentId is null or e.department_id = p.departmentId)
             order by
-              case when upper(p.ordName) = 'ASC' then e.employee_name collate utf8_vietnamese_ci end asc,
-              case when upper(p.ordName) = 'DESC' then e.employee_name collate utf8_vietnamese_ci end desc,
+              case when upper(p.ordName) = 'ASC' then e.employee_name collate utf8mb4_vietnamese_ci end asc,
+              case when upper(p.ordName) = 'DESC' then e.employee_name collate utf8mb4_vietnamese_ci end desc,
               case when upper(p.ordCertificationLevel) = 'ASC' then -c.certification_level end asc,
               case when upper(p.ordCertificationLevel) = 'DESC' then -c.certification_level end desc,
               case when c.certification_level is null then 1 else 0 end asc,
