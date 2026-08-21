@@ -933,7 +933,9 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
             class="col-sm"
           >
             <input
+              maxlength="125"
               type="text"
+              value=""
             />
           </div>
         </li>
@@ -965,7 +967,7 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
           >
             <button
               class="btn btn-primary btn-sm"
-              type="button"
+              type="submit"
             >
               検索
             </button>

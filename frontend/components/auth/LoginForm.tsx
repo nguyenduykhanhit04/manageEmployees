@@ -15,9 +15,15 @@ export default function LoginForm() {
 
   const onSubmit = async (data: LoginFormType) => {
     try {
-      const response = await apiClient.post<{ accessToken: string; tokenType: string }>('/login', data);
-      storeToken(response.data.accessToken, response.data.tokenType);
-      router.push('/employees/adm002');
+      const response = await apiClient.post<{ accessToken?: string; tokenType?: string; errors?: Record<string, string> }>('/login', data);
+      if (response.data && response.data.accessToken) {
+        storeToken(response.data.accessToken, response.data.tokenType || 'Bearer');
+        router.push('/employees/adm002');
+      } else {
+        setError('root', {
+          message: 'ログインに失敗しました。アカウント名またはパスワードを確認してください。',
+        });
+      }
     } catch (error) {
       console.error('Login failed:', error);
       setError('root', {

@@ -17,6 +17,11 @@ export default function EmployeeListPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
+  // State tìm kiếm
+  const [employeeName, setEmployeeName] = useState<string>('');
+  const [departmentId, setDepartmentId] = useState<string>('');
+
+  // Tải danh sách phòng ban khi mở trang
   useEffect(() => {
     getDepartments()
       .then((res) => {
@@ -29,11 +34,18 @@ export default function EmployeeListPage() {
       });
   }, []);
 
-  const fetchEmployeeList = async () => {
+  // Hàm tải dữ liệu danh sách nhân viên từ Backend theo điều kiện tìm kiếm
+  const fetchEmployeeList = async (name: string = employeeName, deptId: string = departmentId) => {
     setLoading(true);
     setErrorMessage('');
     try {
-      const res = await getEmployees({ offset: 0, limit: 20 });
+      const res = await getEmployees({
+        employee_name: name.trim() || undefined,
+        department_id: deptId ? Number(deptId) : undefined,
+        offset: 0,
+        limit: 20,
+      });
+
       if (res && res.code === 200) {
         setEmployees(res.employees || []);
       } else {
@@ -47,24 +59,41 @@ export default function EmployeeListPage() {
     }
   };
 
+  // Tải danh sách mặc định khi vào trang lần đầu
   useEffect(() => {
-    fetchEmployeeList();
+    fetchEmployeeList('', '');
   }, []);
+
+  // Xử lý khi nhấn nút Tìm kiếm
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    fetchEmployeeList(employeeName, departmentId);
+  };
 
   return (
     <>
       <div className="search-memb">
         <h1 className="title">会員名称で会員を検索します。検索条件無しの場合は全て表示されます。</h1>
-        <form className="c-form">
+        <form className="c-form" onSubmit={handleSearch}>
           <ul className="d-flex">
             <li className="form-group row">
               <label className="col-form-label">氏名:</label>
-              <div className="col-sm"><input type="text" /></div>
+              <div className="col-sm">
+                <input
+                  type="text"
+                  maxLength={125}
+                  value={employeeName}
+                  onChange={(e) => setEmployeeName(e.target.value)}
+                />
+              </div>
             </li>
             <li className="form-group row">
               <label className="col-form-label">グループ:</label>
               <div className="col-sm">
-                <select>
+                <select
+                  value={departmentId}
+                  onChange={(e) => setDepartmentId(e.target.value)}
+                >
                   <option value="">全て</option>
                   {departments.map((dept) => (
                     <option key={dept.departmentId} value={dept.departmentId}>
@@ -76,7 +105,7 @@ export default function EmployeeListPage() {
             </li>
             <li className="form-group row">
               <div className="btn-group">
-                <button type="button" className="btn btn-primary btn-sm">検索</button>
+                <button type="submit" className="btn btn-primary btn-sm">検索</button>
                 <button type="button" onClick={() => router.push('/employees/edit')} className="btn btn-secondary btn-sm">新規追加</button>
               </div>
             </li>
