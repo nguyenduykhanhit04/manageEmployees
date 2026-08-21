@@ -17,7 +17,9 @@ public class Constants {
             "/",
             "/login/**",
             "/error/**",
-            "/department/**"
+            "/department/**",
+            "/employee",
+            "/employee/**"
     };
 
     // config endpoints for USER role

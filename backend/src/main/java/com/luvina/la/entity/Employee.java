@@ -20,7 +20,7 @@ public class Employee implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
-    private String departmentId;
+    private Department department;
 
     @Column(name = "employee_name", nullable = false, length = 255)
     private String employeeName;
