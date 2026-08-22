@@ -994,8 +994,12 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
         <div>
           ID
         </div>
-        <div>
-          氏名 ▲▽
+        <div
+          style="cursor: pointer; user-select: none;"
+          title="氏名で並び替え"
+        >
+          氏名 
+          ▲▽
         </div>
         <div>
           生年月日
@@ -1009,11 +1013,19 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
         <div>
           電話番号
         </div>
-        <div>
-          日本語能力 ▲▽
+        <div
+          style="cursor: pointer; user-select: none;"
+          title="日本語能力で並び替え"
+        >
+          日本語能力 
+          ▲▽
         </div>
-        <div>
-          失効日 ▼△
+        <div
+          style="cursor: pointer; user-select: none;"
+          title="失効日で並び替え"
+        >
+          失効日 
+          ▲▽
         </div>
         <div>
           点数
@@ -1031,9 +1043,10 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
       <div
         class="pagin"
       >
-        <a
+        <button
           class="btn btn-sm btn-pre btn-falcon-default btn-disabled"
-          href="#"
+          disabled=""
+          type="button"
         >
           <svg
             aria-hidden="true"
@@ -1051,49 +1064,18 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
               fill="currentColor"
             />
           </svg>
-        </a>
-        <a
-          class="btn btn-sm text-primary btn-falcon-default"
-          href="#"
+        </button>
+        <button
+          class="btn btn-sm text-primary font-weight-bold"
+          style="font-weight: bold; text-decoration: underline;"
+          type="button"
         >
           1
-        </a>
-        <a
-          class="btn btn-sm text-primary btn-falcon-default"
-          href="#"
-        >
-          2
-        </a>
-        <a
-          class="btn btn-sm text-primary btn-falcon-default"
-          href="#"
-        >
-          <svg
-            aria-hidden="true"
-            class="svg-inline--fa fa-ellipsis-h fa-w-16"
-            data-fa-i2svg=""
-            data-icon="ellipsis-h"
-            data-prefix="fas"
-            focusable="false"
-            role="img"
-            viewBox="0 0 512 512"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"
-              fill="currentColor"
-            />
-          </svg>
-        </a>
-        <a
-          class="btn btn-sm text-primary btn-falcon-default"
-          href="#"
-        >
-          15
-        </a>
-        <a
-          class="btn btn-sm btn-next btn-falcon-default"
-          href="#"
+        </button>
+        <button
+          class="btn btn-sm btn-next btn-falcon-default btn-disabled"
+          disabled=""
+          type="button"
         >
           <svg
             aria-hidden="true"
@@ -1111,7 +1093,7 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
               fill="currentColor"
             />
           </svg>
-        </a>
+        </button>
       </div>
     </div>
   </div>
