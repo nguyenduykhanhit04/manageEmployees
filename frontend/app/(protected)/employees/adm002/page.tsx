@@ -260,8 +260,12 @@ export default function EmployeeListPage() {
                 <button
                   key={pageNum}
                   type="button"
-                  className={`btn btn-sm ${pageNum === currentPage ? 'text-primary font-weight-bold' : 'btn-falcon-default'}`}
-                  style={pageNum === currentPage ? { fontWeight: 'bold', textDecoration: 'underline' } : {}}
+                  className="btn btn-sm btn-falcon-default"
+                  style={
+                    pageNum === currentPage
+                      ? { textDecoration: 'underline', fontWeight: 'bold' }
+                      : {}
+                  }
                   onClick={() => handlePageChange(pageNum)}
                 >
                   {pageNum}

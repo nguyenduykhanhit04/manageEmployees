@@ -76,9 +76,19 @@ INSERT INTO `employees` (
     (16, 12, 'Nguyễn Thị Hà',       'グエン ティ ハー',         '1994-10-22', 'hant@luvina.net',       '0901234510', 1, 'hant',        '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
     (17, 3, 'Trần Văn Bình',        'チャン ヴァン ビン',       '1986-05-17', 'binhtv@luvina.net',     '0901234511', 1, 'binhtv',      '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
     (18, 4, 'Phan Thị Thảo',        'ファン ティ タオ',         '1997-03-08', 'thaopt@luvina.net',     '0901234512', 1, 'thaopt',      '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
-    (19, 5, 'Đặng Minh Tâm',        'ダン ミン タム',           '1990-07-27', 'tamdm@luvina.net',      '0901234513', 1, 'tamdm',       '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (19, 5, 'Đặng Minh Tâm',        'ダン ミン タム',           '1990-07-27', 'tamdm@luvina.net',       '0901234513', 1, 'tamdm',       '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
     (20, 6, 'Nguyễn Đức Long',      'グエン ドゥック ロン',     '1992-11-03', 'longnd@luvina.net',     '0901234514', 1, 'longnd',      '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
-    (21, 7, 'Trịnh Thị Yến',        'チン ティ イエン',         '1995-09-19', 'yentt@luvina.net',      '0901234515', 1, 'yentt',       '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq');
+    (21, 7, 'Trịnh Thị Yến',        'チン ティ イエン',         '1995-09-19', 'yentt@luvina.net',      '0901234515', 1, 'yentt',       '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (22, 8, 'Trần Quốc Bảo',        'チャン クオック バオ',     '1993-08-14', 'baotq@luvina.net',      '0901234516', 1, 'baotq',       '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (23, 9, 'Ngô Thu Trang',        'ンゴ トゥ トラン',         '1995-12-02', 'trangnt@luvina.net',    '0901234517', 1, 'trangnt',     '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (24, 10, 'Dương Văn Hải',       'ズオン ヴァン ハイ',       '1989-05-21', 'haidv@luvina.net',      '0901234518', 1, 'haidv',       '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (25, 11, 'Lý Thị Quỳnh',        'リー ティ クイン',         '1996-09-09', 'quynhlt@luvina.net',    '0901234519', 1, 'quynhlt',     '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (26, 12, 'Mai Văn Tùng',        'マイ ヴァン トゥン',       '1991-03-18', 'tungmv@luvina.net',     '0901234520', 1, 'tungmv',      '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (27, 3, 'Tạ Thị Kiều',          'タ ティ キエウ',           '1994-07-25', 'kieutt@luvina.net',     '0901234521', 1, 'kieutt',      '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (28, 4, 'Đoàn Minh Tuấn',       'ドアン ミン トゥアン',     '1988-10-30', 'tuandm@luvina.net',     '0901234522', 1, 'tuandm',      '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (29, 5, 'Lâm Thị Nhung',        'ラム ティ ニュン',         '1997-01-15', 'nhunglt@luvina.net',    '0901234523', 1, 'nhunglt',     '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (30, 6, 'Cao Văn Đạt',          'カオ ヴァン ダット',       '1992-04-12', 'datcv@luvina.net',      '0901234524', 1, 'datcv',       '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (31, 7, 'Hồ Thị Thùy',          'ホー ティ トゥイ',         '1995-11-28', 'thuyht@luvina.net',     '0901234525', 1, 'thuyht',      '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq');
 
 -- 5. Nạp dữ liệu chứng chỉ cho nhân viên mẫu --
 INSERT INTO `employees_certifications` (`employee_certification_id`, `employee_id`, `certification_id`, `start_date`, `end_date`, `score`) VALUES
@@ -96,4 +106,10 @@ INSERT INTO `employees_certifications` (`employee_certification_id`, `employee_i
     (12, 15, 2, '2016-07-01', '2017-07-01', 330.00),
     (13, 17, 5, '2022-02-15', '2023-02-15', 250.00),
     (14, 18, 3, '2019-10-01', '2020-10-01', 305.00),
-    (15, 20, 4, '2020-08-01', '2021-08-01', 290.00);
+    (15, 20, 4, '2020-08-01', '2021-08-01', 290.00),
+    (16, 22, 1, '2020-03-01', '2021-03-01', 360.00),
+    (17, 23, 2, '2019-07-15', '2020-07-15', 340.00),
+    (18, 25, 3, '2021-09-01', '2022-09-01', 315.00),
+    (19, 28, 4, '2018-05-10', '2019-05-10', 295.00),
+    (20, 30, 2, '2020-11-20', '2021-11-20', 335.00);
+
