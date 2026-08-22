@@ -1,152 +1,57 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { getEmployees } from '@/lib/api/employee';
-import { getDepartments } from '@/lib/api/department';
-import { EmployeeItem } from '@/types/employee';
-import { DepartmentItem } from '@/types/department';
+import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
+import { useEmployees } from '@/hooks/useEmployees';
 
+/**
+ * Component màn hình danh sách nhân viên (ADM002).
+ * Thực hiện hiển thị danh sách, tìm kiếm theo tên/phòng ban,
+ * sắp xếp nhiều cột và phân trang dữ liệu.
+ *
+ * @author nguyenduykhanh2
+ * @return Giao diện màn hình ADM002
+ */
 export default function EmployeeListPage() {
+  // Xác thực quyền đăng nhập của người dùng
   useAuth();
   const router = useRouter();
-  const [employees, setEmployees] = useState<EmployeeItem[]>([]);
-  const [departments, setDepartments] = useState<DepartmentItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [errorMessage, setErrorMessage] = useState<string>('');
 
-  // State tìm kiếm
-  const [employeeName, setEmployeeName] = useState<string>('');
-  const [departmentId, setDepartmentId] = useState<string>('');
-
-  // Cột đang được active sort và chiều sắp xếp của từng cột
-  const [sortOrders, setSortOrders] = useState<{
-    ord_employee_name: 'ASC' | 'DESC';
-    ord_certification_name: 'ASC' | 'DESC';
-    ord_end_date: 'ASC' | 'DESC';
-  }>({
-    ord_employee_name: 'ASC',
-    ord_certification_name: 'ASC',
-    ord_end_date: 'ASC',
-  });
-
-  const [activeSortField, setActiveSortField] = useState<'ord_employee_name' | 'ord_certification_name' | 'ord_end_date'>('ord_employee_name');
-
-  // State phân trang
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalRecords, setTotalRecords] = useState<number>(0);
-  const limit = 20;
-
-  // Tải danh sách phòng ban khi mở trang
-  useEffect(() => {
-    getDepartments()
-      .then((res) => {
-        if (res && res.code === 200) {
-          setDepartments(res.departments || []);
-        } else {
-          setErrorMessage('部門を取得できません');
-        }
-      })
-      .catch((err) => {
-        console.error('Error fetching departments:', err);
-        setErrorMessage('部門を取得できません');
-      });
-  }, []);
-
-  // Hàm tải dữ liệu danh sách nhân viên từ Backend theo điều kiện tìm kiếm và sắp xếp
-  const fetchEmployeeList = async (
-    name: string = employeeName,
-    deptId: string = departmentId,
-    field: 'ord_employee_name' | 'ord_certification_name' | 'ord_end_date' = activeSortField,
-    orders = sortOrders,
-    offsetVal: number = 0
-  ) => {
-    setLoading(true);
-    setErrorMessage('');
-    try {
-      // Chỉ gửi tham số sort của cột đang được chọn để SQL sort chính xác theo cột đó
-      const sortPayload: {
-        ord_employee_name?: string;
-        ord_certification_name?: string;
-        ord_end_date?: string;
-      } = {};
-
-      sortPayload[field] = orders[field];
-
-      const res = await getEmployees({
-        employee_name: name.trim() || undefined,
-        department_id: deptId ? Number(deptId) : undefined,
-        ...sortPayload,
-        offset: offsetVal,
-        limit: limit,
-      });
-
-      if (res && res.code === 200) {
-        setEmployees(res.employees || []);
-        setTotalRecords(res.totalRecords || 0);
-      } else {
-        setErrorMessage('従業員を取得できません');
-      }
-    } catch (error) {
-      console.error(error);
-      setErrorMessage('従業員を取得できません');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Tải danh sách mặc định khi vào trang lần đầu với ASC
-  useEffect(() => {
-    fetchEmployeeList('', '', 'ord_employee_name', {
-      ord_employee_name: 'ASC',
-      ord_certification_name: 'ASC',
-      ord_end_date: 'ASC',
-    }, 0);
-  }, []);
-
-  // Xử lý khi nhấn nút Tìm kiếm
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setCurrentPage(1);
-    fetchEmployeeList(employeeName, departmentId, activeSortField, sortOrders, 0);
-  };
-
-  // Xử lý khi click vào cột sắp xếp (toggle ASC <-> DESC)
-  const handleSort = (field: 'ord_employee_name' | 'ord_certification_name' | 'ord_end_date') => {
-    const nextOrder = sortOrders[field] === 'ASC' ? 'DESC' : 'ASC';
-    const updatedOrders = {
-      ...sortOrders,
-      [field]: nextOrder,
-    };
-    setSortOrders(updatedOrders);
-    setActiveSortField(field);
-    setCurrentPage(1);
-    fetchEmployeeList(employeeName, departmentId, field, updatedOrders, 0);
-  };
-
-  // Xử lý chuyển trang
-  const totalPages = Math.ceil(totalRecords / limit) || 1;
-  const handlePageChange = (page: number) => {
-    if (page < 1 || page > totalPages || page === currentPage) return;
-    setCurrentPage(page);
-    fetchEmployeeList(employeeName, departmentId, activeSortField, sortOrders, (page - 1) * limit);
-  };
+  // Lấy dữ liệu và các hàm xử lý từ Custom Hook
+  const {
+    employees,
+    departments,
+    loading,
+    errorMessage,
+    employeeName,
+    setEmployeeName,
+    departmentId,
+    setDepartmentId,
+    sortOrders,
+    currentPage,
+    totalPages,
+    handleSearch,
+    handleSort,
+    handlePageChange,
+  } = useEmployees();
 
   return (
     <>
-      {/* Hiển thị lỗi chung nếu có */}
+      {/* Hiển thị khung thông báo lỗi nếu có lỗi xảy ra */}
       {errorMessage && (
         <div className="box-err" style={{ marginBottom: '16px' }}>
           <div className="box-err-content">{errorMessage}</div>
         </div>
       )}
 
+      {/* Form tìm kiếm thông tin nhân viên */}
       <div className="search-memb">
         <h1 className="title">会員名称で会員を検索します。検索条件無しの場合は全て表示されます。</h1>
         <form className="c-form" onSubmit={handleSearch}>
           <ul className="d-flex">
+            {/* Trường tìm kiếm: Tên nhân viên */}
             <li className="form-group row">
               <label className="col-form-label">氏名:</label>
               <div className="col-sm">
@@ -158,6 +63,8 @@ export default function EmployeeListPage() {
                 />
               </div>
             </li>
+
+            {/* Trường tìm kiếm: Phòng ban */}
             <li className="form-group row">
               <label className="col-form-label">グループ:</label>
               <div className="col-sm">
@@ -174,6 +81,8 @@ export default function EmployeeListPage() {
                 </select>
               </div>
             </li>
+
+            {/* Nhóm nút bấm: Tìm kiếm và Thêm mới */}
             <li className="form-group row">
               <div className="btn-group">
                 <button type="submit" className="btn btn-primary btn-sm">検索</button>
@@ -184,8 +93,10 @@ export default function EmployeeListPage() {
         </form>
       </div>
 
+      {/* Bảng dữ liệu danh sách nhân viên */}
       <div className="row row-table">
         <div className="css-grid-table box-shadow">
+          {/* Header bảng dữ liệu hỗ trợ click sắp xếp */}
           <div className="css-grid-table-header">
             <div>ID</div>
             <div
@@ -215,38 +126,46 @@ export default function EmployeeListPage() {
             </div>
             <div>点数</div>
           </div>
+
+          {/* Body bảng dữ liệu */}
           <div className="css-grid-table-body">
+            {/* Trường hợp đang tải dữ liệu */}
             {loading ? (
               <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '20px' }}>
                 Đang tải dữ liệu ...
               </div>
-            ) : employees.length === 0 ? (
-              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '20px' }}>
-                検索条件に該当するユーザが見つかりません。
-              </div>
-            ) : (
-              employees.map((emp) => (
-                <React.Fragment key={emp.employeeId}>
-                  <div className="bor-l-none text-center">
-                    <Link href={`/employees/detail?id=${emp.employeeId}`}>
-                      {emp.employeeId}
-                    </Link>
-                  </div>
+            ) : /* Trường hợp không tìm thấy bản ghi nào */
+              employees.length === 0 ? (
+                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '20px' }}>
+                  検索条件に該当するユーザが見つかりません。
+                </div>
+              ) : (
+                /* Render danh sách từng nhân viên */
+                employees.map((emp) => (
+                  <React.Fragment key={emp.employeeId}>
+                    <div className="bor-l-none text-center">
+                      <Link href={`/employees/detail?id=${emp.employeeId}`}>
+                        {emp.employeeId}
+                      </Link>
+                    </div>
 
-                  <div>{emp.employeeName}</div>
-                  <div>{emp.employeeBirthDate ? emp.employeeBirthDate.replaceAll('-', '/') : ''}</div>
-                  <div>{emp.departmentName || ''}</div>
-                  <div>{emp.employeeEmail || ''}</div>
-                  <div>{emp.employeeTelephone || ''}</div>
-                  <div>{emp.certificationName || ''}</div>
-                  <div>{emp.endDate ? emp.endDate.replaceAll('-', '/') : ''}</div>
-                  <div>{emp.score !== null && emp.score !== undefined ? emp.score : ''}</div>
-                </React.Fragment>
-              ))
-            )}
+                    <div>{emp.employeeName}</div>
+                    <div>{emp.employeeBirthDate ? emp.employeeBirthDate.replaceAll('-', '/') : ''}</div>
+                    <div>{emp.departmentName || ''}</div>
+                    <div>{emp.employeeEmail || ''}</div>
+                    <div>{emp.employeeTelephone || ''}</div>
+                    <div>{emp.certificationName || ''}</div>
+                    <div>{emp.endDate ? emp.endDate.replaceAll('-', '/') : ''}</div>
+                    <div>{emp.score !== null && emp.score !== undefined ? emp.score : ''}</div>
+                  </React.Fragment>
+                ))
+              )}
           </div>
+
+          {/* Thanh phân trang: Chỉ hiển thị khi số lượng trang lớn hơn 1 */}
           {totalPages > 1 && (
             <div className="pagin">
+              {/* Nút lùi về trang trước */}
               <button
                 type="button"
                 className={`btn btn-sm btn-pre btn-falcon-default ${currentPage <= 1 ? 'btn-disabled' : ''}`}
@@ -256,6 +175,7 @@ export default function EmployeeListPage() {
                 <svg className="svg-inline--fa fa-chevron-left fa-w-10" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="chevron-left" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg=""><path fill="currentColor" d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z"></path></svg>
               </button>
 
+              {/* Danh sách các nút số trang */}
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
                 <button
                   key={pageNum}
@@ -272,6 +192,7 @@ export default function EmployeeListPage() {
                 </button>
               ))}
 
+              {/* Nút tiến sang trang sau */}
               <button
                 type="button"
                 className={`btn btn-sm btn-next btn-falcon-default ${currentPage >= totalPages ? 'btn-disabled' : ''}`}
@@ -287,4 +208,3 @@ export default function EmployeeListPage() {
     </>
   );
 }
-
