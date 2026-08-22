@@ -21,12 +21,18 @@ export default function EmployeeListPage() {
   const [employeeName, setEmployeeName] = useState<string>('');
   const [departmentId, setDepartmentId] = useState<string>('');
 
-  // State sắp xếp: Mặc định ban đầu ASC cho cả 3 trường
-  const [sortParams, setSortParams] = useState({
+  // Cột đang được active sort và chiều sắp xếp của từng cột
+  const [sortOrders, setSortOrders] = useState<{
+    ord_employee_name: 'ASC' | 'DESC';
+    ord_certification_name: 'ASC' | 'DESC';
+    ord_end_date: 'ASC' | 'DESC';
+  }>({
     ord_employee_name: 'ASC',
     ord_certification_name: 'ASC',
     ord_end_date: 'ASC',
   });
+
+  const [activeSortField, setActiveSortField] = useState<'ord_employee_name' | 'ord_certification_name' | 'ord_end_date'>('ord_employee_name');
 
   // State phân trang
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -53,18 +59,26 @@ export default function EmployeeListPage() {
   const fetchEmployeeList = async (
     name: string = employeeName,
     deptId: string = departmentId,
-    sort = sortParams,
+    field: 'ord_employee_name' | 'ord_certification_name' | 'ord_end_date' = activeSortField,
+    orders = sortOrders,
     offsetVal: number = 0
   ) => {
     setLoading(true);
     setErrorMessage('');
     try {
+      // Chỉ gửi tham số sort của cột đang được chọn để SQL sort chính xác theo cột đó
+      const sortPayload: {
+        ord_employee_name?: string;
+        ord_certification_name?: string;
+        ord_end_date?: string;
+      } = {};
+
+      sortPayload[field] = orders[field];
+
       const res = await getEmployees({
         employee_name: name.trim() || undefined,
         department_id: deptId ? Number(deptId) : undefined,
-        ord_employee_name: sort.ord_employee_name,
-        ord_certification_name: sort.ord_certification_name,
-        ord_end_date: sort.ord_end_date,
+        ...sortPayload,
         offset: offsetVal,
         limit: limit,
       });
@@ -83,9 +97,9 @@ export default function EmployeeListPage() {
     }
   };
 
-  // Tải danh sách mặc định khi vào trang lần đầu với ASC cho 3 trường
+  // Tải danh sách mặc định khi vào trang lần đầu với ASC
   useEffect(() => {
-    fetchEmployeeList('', '', {
+    fetchEmployeeList('', '', 'ord_employee_name', {
       ord_employee_name: 'ASC',
       ord_certification_name: 'ASC',
       ord_end_date: 'ASC',
@@ -96,19 +110,20 @@ export default function EmployeeListPage() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(1);
-    fetchEmployeeList(employeeName, departmentId, sortParams, 0);
+    fetchEmployeeList(employeeName, departmentId, activeSortField, sortOrders, 0);
   };
 
   // Xử lý khi click vào cột sắp xếp (toggle ASC <-> DESC)
   const handleSort = (field: 'ord_employee_name' | 'ord_certification_name' | 'ord_end_date') => {
-    const nextOrder = sortParams[field] === 'ASC' ? 'DESC' : 'ASC';
-    const updatedSort = {
-      ...sortParams,
+    const nextOrder = sortOrders[field] === 'ASC' ? 'DESC' : 'ASC';
+    const updatedOrders = {
+      ...sortOrders,
       [field]: nextOrder,
     };
-    setSortParams(updatedSort);
+    setSortOrders(updatedOrders);
+    setActiveSortField(field);
     setCurrentPage(1);
-    fetchEmployeeList(employeeName, departmentId, updatedSort, 0);
+    fetchEmployeeList(employeeName, departmentId, field, updatedOrders, 0);
   };
 
   // Xử lý chuyển trang
@@ -116,7 +131,7 @@ export default function EmployeeListPage() {
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages || page === currentPage) return;
     setCurrentPage(page);
-    fetchEmployeeList(employeeName, departmentId, sortParams, (page - 1) * limit);
+    fetchEmployeeList(employeeName, departmentId, activeSortField, sortOrders, (page - 1) * limit);
   };
 
   return (
@@ -178,7 +193,7 @@ export default function EmployeeListPage() {
               onClick={() => handleSort('ord_employee_name')}
               title="氏名で並び替え"
             >
-              氏名 {sortParams.ord_employee_name === 'ASC' ? '▲▽' : '△▼'}
+              氏名 {sortOrders.ord_employee_name === 'ASC' ? '▲▽' : '△▼'}
             </div>
             <div>生年月日</div>
             <div>グループ</div>
@@ -189,14 +204,14 @@ export default function EmployeeListPage() {
               onClick={() => handleSort('ord_certification_name')}
               title="日本語能力で並び替え"
             >
-              日本語能力 {sortParams.ord_certification_name === 'ASC' ? '▲▽' : '△▼'}
+              日本語能力 {sortOrders.ord_certification_name === 'ASC' ? '▲▽' : '△▼'}
             </div>
             <div
               style={{ cursor: 'pointer', userSelect: 'none' }}
               onClick={() => handleSort('ord_end_date')}
               title="失効日で並び替え"
             >
-              失効日 {sortParams.ord_end_date === 'ASC' ? '▲▽' : '△▼'}
+              失効日 {sortOrders.ord_end_date === 'ASC' ? '▲▽' : '△▼'}
             </div>
             <div>点数</div>
           </div>
