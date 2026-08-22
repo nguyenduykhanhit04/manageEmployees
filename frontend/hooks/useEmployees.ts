@@ -1,3 +1,8 @@
+/**
+ * Copyright(C) 2026 Luvina Software Company
+ *
+ * useEmployees.ts, 22/8/2026 nguyenduykhanh2
+ */
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -18,7 +23,7 @@ export interface SortOrders {
 
 /**
  * Custom Hook quản lý toàn bộ nghiệp vụ lấy danh sách nhân viên, phòng ban,
- * tìm kiếm, sắp xếp và phân trang theo đúng kiến trúc Clean UI và Checklist.
+ * tìm kiếm, sắp xếp đa cột theo thứ tự ưu tiên động và phân trang theo đúng kiến trúc Clean UI và Checklist.
  *
  * @author nguyenduykhanh2
  * @return Các state và hàm handler phục vụ cho màn hình danh sách nhân viên
@@ -33,13 +38,19 @@ export function useEmployees() {
   const [employeeName, setEmployeeName] = useState<string>('');
   const [departmentId, setDepartmentId] = useState<string>('');
 
-  // State sắp xếp
+  // State chiều sắp xếp của từng cột
   const [sortOrders, setSortOrders] = useState<SortOrders>({
     ord_employee_name: SORT_ORDER.ASC,
     ord_certification_name: SORT_ORDER.ASC,
     ord_end_date: SORT_ORDER.ASC,
   });
-  const [activeSortField, setActiveSortField] = useState<SortField>('ord_employee_name');
+
+  // Danh sách thứ tự ưu tiên các cột sắp xếp (cột click gần nhất sẽ nằm ở đầu mảng)
+  const [sortPriority, setSortPriority] = useState<SortField[]>([
+    'ord_employee_name',
+    'ord_certification_name',
+    'ord_end_date',
+  ]);
 
   // State phân trang
   const [currentPage, setCurrentPage] = useState<number>(PAGING.DEFAULT_PAGE);
@@ -66,33 +77,30 @@ export function useEmployees() {
   }, []);
 
   /**
-   * Gọi API lấy danh sách nhân viên theo điều kiện tìm kiếm, sắp xếp và phân trang.
+   * Gọi API lấy danh sách nhân viên theo điều kiện tìm kiếm, sắp xếp đa cột theo thứ tự ưu tiên và phân trang.
    *
    * @param name tên nhân viên cần tìm kiếm
    * @param deptId mã phòng ban cần tìm kiếm
-   * @param field tên cột đang được chọn sắp xếp
-   * @param orders chiều sắp xếp của các cột
+   * @param priority danh sách các cột sắp xếp theo thứ tự ưu tiên (cột ưu tiên 1 đứng đầu)
+   * @param orders chiều sắp xếp của từng cột
    * @param offsetVal vị trí bắt đầu lấy dữ liệu
    */
   const fetchEmployees = useCallback(
     async (
       name: string = employeeName,
       deptId: string = departmentId,
-      field: SortField = activeSortField,
+      priority: SortField[] = sortPriority,
       orders: SortOrders = sortOrders,
       offsetVal: number = 0
     ) => {
       setLoading(true);
       setErrorMessage('');
       try {
-        // Chỉ gửi tham số sort của cột đang được active
-        const sortPayload: {
-          ord_employee_name?: string;
-          ord_certification_name?: string;
-          ord_end_date?: string;
-        } = {};
-
-        sortPayload[field] = orders[field];
+        // Đóng gói các tham số sort theo đúng thứ tự ưu tiên trong mảng priority
+        const sortPayload: Record<string, string> = {};
+        priority.forEach((fieldKey) => {
+          sortPayload[fieldKey] = orders[fieldKey];
+        });
 
         const res = await getEmployees({
           employee_name: name.trim() || undefined,
@@ -118,12 +126,12 @@ export function useEmployees() {
         setLoading(false);
       }
     },
-    [employeeName, departmentId, activeSortField, sortOrders, limit]
+    [employeeName, departmentId, sortPriority, sortOrders, limit]
   );
 
-  // Tải danh sách mặc định ban đầu (ASC cho cả 3 trường)
+  // Tải danh sách mặc định ban đầu
   useEffect(() => {
-    fetchEmployees('', '', 'ord_employee_name', {
+    fetchEmployees('', '', ['ord_employee_name', 'ord_certification_name', 'ord_end_date'], {
       ord_employee_name: SORT_ORDER.ASC,
       ord_certification_name: SORT_ORDER.ASC,
       ord_end_date: SORT_ORDER.ASC,
@@ -142,26 +150,34 @@ export function useEmployees() {
     }
     // Đưa phân trang về trang 1 khi tìm kiếm mới
     setCurrentPage(1);
-    fetchEmployees(employeeName, departmentId, activeSortField, sortOrders, 0);
+    fetchEmployees(employeeName, departmentId, sortPriority, sortOrders, 0);
   };
 
   /**
-   * Xử lý khi người dùng click vào tiêu đề cột để đảo chiều sắp xếp.
+   * Xử lý khi người dùng click vào tiêu đề cột để đảo chiều sắp xếp và đẩy cột đó lên ưu tiên số 1.
    *
-   * @param field tên trường cần sắp xếp
+   * @param field tên trường vừa được click
    */
   const handleSort = (field: SortField) => {
-    // Đảo chiều sắp xếp ASC <-> DESC
+    // Đảo chiều sắp xếp ASC <-> DESC của cột vừa click
     const nextOrder = sortOrders[field] === SORT_ORDER.ASC ? SORT_ORDER.DESC : SORT_ORDER.ASC;
     const updatedOrders: SortOrders = {
       ...sortOrders,
       [field]: nextOrder,
     };
+
+    // Đưa cột vừa click lên đầu danh sách ưu tiên (Priority #1)
+    const updatedPriority: SortField[] = [
+      field,
+      ...sortPriority.filter((f) => f !== field),
+    ];
+
     setSortOrders(updatedOrders);
-    setActiveSortField(field);
+    setSortPriority(updatedPriority);
+
     // Đưa phân trang về trang 1 khi sắp xếp lại
     setCurrentPage(1);
-    fetchEmployees(employeeName, departmentId, field, updatedOrders, 0);
+    fetchEmployees(employeeName, departmentId, updatedPriority, updatedOrders, 0);
   };
 
   // Tính toán tổng số trang
@@ -178,7 +194,7 @@ export function useEmployees() {
       return;
     }
     setCurrentPage(page);
-    fetchEmployees(employeeName, departmentId, activeSortField, sortOrders, (page - 1) * limit);
+    fetchEmployees(employeeName, departmentId, sortPriority, sortOrders, (page - 1) * limit);
   };
 
   return {
@@ -191,6 +207,7 @@ export function useEmployees() {
     departmentId,
     setDepartmentId,
     sortOrders,
+    sortPriority,
     currentPage,
     totalPages,
     handleSearch,

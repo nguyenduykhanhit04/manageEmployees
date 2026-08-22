@@ -88,7 +88,13 @@ INSERT INTO `employees` (
     (28, 4, 'Đoàn Minh Tuấn',       'ドアン ミン トゥアン',     '1988-10-30', 'tuandm@luvina.net',     '0901234522', 1, 'tuandm',      '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
     (29, 5, 'Lâm Thị Nhung',        'ラム ティ ニュン',         '1997-01-15', 'nhunglt@luvina.net',    '0901234523', 1, 'nhunglt',     '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
     (30, 6, 'Cao Văn Đạt',          'カオ ヴァン ダット',       '1992-04-12', 'datcv@luvina.net',      '0901234524', 1, 'datcv',       '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
-    (31, 7, 'Hồ Thị Thùy',          'ホー ティ トゥイ',         '1995-11-28', 'thuyht@luvina.net',     '0901234525', 1, 'thuyht',      '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq');
+    (31, 7, 'Hồ Thị Thùy',          'ホー ティ トゥイ',         '1995-11-28', 'thuyht@luvina.net',     '0901234525', 1, 'thuyht',      '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (32, 2, 'Nguyễn Văn A',         'グエン ヴァン アー',       '1996-01-01', 'anguyen@luvina.net',    '0901234526', 1, 'anguyen',     '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (33, 2, 'Nguyễn Văn B',         'グエン ヴァン ビー',       '1995-02-02', 'bnguyen@luvina.net',    '0901234527', 1, 'bnguyen',     '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (34, 2, 'Nguyễn Văn C',         'グエン ヴァン シー',       '1994-03-03', 'cnguyen@luvina.net',    '0901234528', 1, 'cnguyen',     '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (35, 3, 'Lê Hoàng Nam',         'レ ホアン ナム',           '1993-04-04', 'namlh1@luvina.net',     '0901234529', 1, 'namlh1',      '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (36, 3, 'Lê Hoàng Nam',         'レ ホアン ナム',           '1992-05-05', 'namlh2@luvina.net',     '0901234530', 1, 'namlh2',      '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (37, 3, 'Lê Hoàng Nam',         'レ ホアン ナム',           '1991-06-06', 'namlh3@luvina.net',     '0901234531', 1, 'namlh3',      '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq');
 
 -- 5. Nạp dữ liệu chứng chỉ cho nhân viên mẫu --
 INSERT INTO `employees_certifications` (`employee_certification_id`, `employee_id`, `certification_id`, `start_date`, `end_date`, `score`) VALUES
@@ -111,5 +117,12 @@ INSERT INTO `employees_certifications` (`employee_certification_id`, `employee_i
     (17, 23, 2, '2019-07-15', '2020-07-15', 340.00),
     (18, 25, 3, '2021-09-01', '2022-09-01', 315.00),
     (19, 28, 4, '2018-05-10', '2019-05-10', 295.00),
-    (20, 30, 2, '2020-11-20', '2021-11-20', 335.00);
+    (20, 30, 2, '2020-11-20', '2021-11-20', 335.00),
+    (21, 32, 1, '2023-12-31', '2024-12-31', 380.00),
+    (22, 33, 1, '2021-06-30', '2022-06-30', 370.00),
+    (23, 34, 1, '2022-08-15', '2023-08-15', 365.00),
+    (24, 35, 2, '2024-10-10', '2025-10-10', 340.00),
+    (25, 36, 1, '2020-05-05', '2021-05-05', 390.00),
+    (26, 37, 3, '2022-01-01', '2023-01-01', 310.00);
+
 

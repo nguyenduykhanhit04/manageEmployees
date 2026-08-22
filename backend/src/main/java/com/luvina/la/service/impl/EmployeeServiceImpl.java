@@ -114,31 +114,13 @@ public class EmployeeServiceImpl implements EmployeeService {
                     new ArrayList<>());
         }
 
-        // Lấy danh sách projection từ repository.
-        List<EmployeeDisplayDTO> projections = employeeRepository.findDisplayEmployees(
+        // Lấy danh sách nhân viên từ repository tùy biến theo thứ tự ưu tiên sắp xếp động.
+        List<EmployeeDTO> employees = employeeRepository.findDisplayEmployees(
                 escapedName,
                 departmentId,
-                ordName,
-                ordCert,
-                ordEndDate,
+                orderParams,
                 offset,
                 limit);
-
-        // Chuyển đổi projection sang DTO.
-        List<EmployeeDTO> employees = new ArrayList<>();
-
-        for (EmployeeDisplayDTO projection : projections) {
-            employees.add(new EmployeeDTO(
-                    projection.getEmployeeId(),
-                    projection.getEmployeeName(),
-                    projection.getEmployeeBirthDate(),
-                    projection.getDepartmentName(),
-                    projection.getEmployeeEmail(),
-                    projection.getEmployeeTelephone(),
-                    projection.getCertificationName(),
-                    projection.getEndDate(),
-                    projection.getScore()));
-        }
 
         return new EmployeeListResponse(
                 Constants.CODE_SUCCESS,
