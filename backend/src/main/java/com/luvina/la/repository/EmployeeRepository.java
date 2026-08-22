@@ -49,7 +49,7 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
                 from employees e
                 inner join departments d on d.department_id = e.department_id
                 where e.employee_role = 1
-                and (:employeeName is null or :employeeName = '' or e.employee_name like concat('%', :employeeName, '%') escape '\\\\')
+                and (:employeeName is null or :employeeName = '' or e.employee_name like binary concat('%', :employeeName, '%') escape '\\\\')
                 and (:departmentId is null or e.department_id = :departmentId)
                 """, nativeQuery = true)
         long countDisplayEmployees(@Param("employeeName") String employeeName, @Param("departmentId") Long departmentId);
@@ -90,7 +90,7 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
                 left join employees_certifications ec on ec.employee_id = e.employee_id
                 left join certifications c on c.certification_id = ec.certification_id
                 where e.employee_role = 1
-                and (p.employeeName is null or p.employeeName = '' or e.employee_name like concat('%', p.employeeName, '%') escape '\\\\')
+                and (p.employeeName is null or p.employeeName = '' or e.employee_name like binary concat('%', p.employeeName, '%') escape '\\\\')
                 and (p.departmentId is null or e.department_id = p.departmentId)
                 order by
                 case when upper(p.ordName) = 'ASC' then e.employee_name collate utf8mb4_vietnamese_ci end asc,

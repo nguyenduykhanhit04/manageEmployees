@@ -27,10 +27,13 @@ export default function EmployeeListPage() {
       .then((res) => {
         if (res && res.code === 200) {
           setDepartments(res.departments || []);
+        } else {
+          setErrorMessage('部門を取得できません');
         }
       })
       .catch((err) => {
         console.error('Error fetching departments:', err);
+        setErrorMessage('部門を取得できません');
       });
   }, []);
 
@@ -49,11 +52,11 @@ export default function EmployeeListPage() {
       if (res && res.code === 200) {
         setEmployees(res.employees || []);
       } else {
-        setErrorMessage('Không thể tải danh sách nhân viên.');
+        setErrorMessage('従業員を取得できません');
       }
     } catch (error) {
       console.error(error);
-      setErrorMessage('Đã xảy ra lỗi khi kết nối máy chủ');
+      setErrorMessage('従業員を取得できません');
     } finally {
       setLoading(false);
     }
@@ -72,6 +75,13 @@ export default function EmployeeListPage() {
 
   return (
     <>
+      {/* Hiển thị lỗi chung nếu có */}
+      {errorMessage && (
+        <div className="box-err" style={{ marginBottom: '16px' }}>
+          <div className="box-err-content">{errorMessage}</div>
+        </div>
+      )}
+
       <div className="search-memb">
         <h1 className="title">会員名称で会員を検索します。検索条件無しの場合は全て表示されます。</h1>
         <form className="c-form" onSubmit={handleSearch}>
