@@ -1,113 +1,137 @@
-# TÓM TẮT DỰ ÁN QUẢN LÝ NHÂN VIÊN (MANAGE EMPLOYEES)
+# TỔNG QUAN DỰ ÁN QUẢN LÝ NHÂN VIÊN (MANAGE EMPLOYEES)
 
-Document tóm tắt luồng hoạt động hiện tại, cấu trúc dự án và giải thích định hướng thiết kế kiến trúc Backend & Frontend.
+Tài liệu tổng hợp kiến trúc hệ thống, luồng hoạt động, cấu trúc thư mục và tài liệu thiết kế của dự án Quản lý nhân viên.
 
 ---
 
 ## 1. Tổng quan Kiến Trúc (Architecture Overview)
 
 Dự án được xây dựng theo mô hình **Client - Server (Decoupled Frontend & Backend)**:
-- **Backend**: Java 17+, **Spring Boot**, Spring Security (Stateless JWT Authentication), Spring Data JPA / Hibernate, MapStruct, Lombok, MySQL Database.
-- **Frontend**: **Next.js** (App Router, TypeScript), Tailwind CSS, React Context / Custom Hooks, Axios / Fetch API.
-
----
-
-## 2. Luồng Hoạt Động Hiện Tại (Current Workflow)
-
-Hiện tại dự án đã hoàn tất luồng **Đăng nhập (Login), Đăng xuất (Logout) & Xác thực JWT**.
+- **Backend**: Java 17+, **Spring Boot 3.x**, Spring Security (Stateless JWT Authentication), Spring Data JPA / Hibernate, MapStruct, Lombok, MySQL Database.
+- **Frontend**: **Next.js** (App Router, TypeScript), Tailwind CSS, React Hook Form, Zod, Axios.
 
 ```
-[ Frontend (Next.js) ]                          [ Backend (Spring Boot) ]                      [ Database (MySQL) ]
-         |                                                 |                                           |
-         | --- (1) POST /login (username, password) -----> |                                           |
-         |                                                 | --- (2) loadUserByUsername(loginId) ----> |
-         |                                                 | <--- (3) Trả về thông tin Employee ------- |
-         |                                                 |                                           |
-         |                                                 | --- (4) Verify Password (BCrypt)          |
-         |                                                 | --- (5) Generate JWT Access Token         |
-         | <--- (6) Return LoginResponse (accessToken) --- |                                           |
-         |                                                 |                                           |
-  (Lưu Token vào Storage/State)                            |                                           |
-         |                                                 |                                           |
-         | --- (7) GET /employees (Header: Bearer Token) ->|                                           |
-         |                                                 | --- (8) JwtTokenFilter intercept & verify |
-         |                                                 | --- (9) Set SecurityContext & execute     |
-         | <--- (10) Trả dữ liệu được bảo vệ ------------- |                                           |
+                    ┌────────────────────────────────────────┐
+                    │          Frontend (Next.js)            │
+                    │   App Router + TypeScript + Zod/RHF    │
+                    └──────────────────┬─────────────────────┘
+                                       │ HTTP REST (JSON)
+                                       │ Bearer JWT Token
+                                       ▼
+                    ┌────────────────────────────────────────┐
+                    │        Backend (Spring Boot)           │
+                    │  Controller -> Service -> Repository   │
+                    └──────────────────┬─────────────────────┘
+                                       │ Spring Data JPA
+                                       ▼
+                    ┌────────────────────────────────────────┐
+                    │            MySQL Database              │
+                    │  (Managed by Flyway/SQL Migrations)    │
+                    └────────────────────────────────────────┘
 ```
 
-### Chi tiết luồng xử lý:
+---
 
-1. **Luồng Đăng nhập (Login)**:
-   - User nhập thông tin trên giao diện Login (`frontend/app/(auth)/login`).
-   - Frontend gửi HTTP POST request đến endpoint `/login` đi kèm `LoginRequest` (gồm `username` và `password`).
-   - `AuthController` tiếp nhận request, gọi `AuthenticationManager.authenticate()`.
-   - Spring Security ủy quyền cho `UserDetailsServiceImpl` tìm kiếm nhân viên trong DB qua `EmployeeRepository.findByEmployeeLoginId()`.
-   - Nếu khớp mật khẩu (mã hóa BCrypt), `JwtTokenProvider` tạo một chuỗi **JWT Access Token** dựa trên thông tin tài khoản.
-   - Backend phản hồi `LoginResponse` chứa `accessToken` về cho Frontend.
-   - Frontend lưu `accessToken` và điều hướng người dùng tới trang quản lý nhân viên (`/employees`).
+## 2. Cấu Trúc Tài Liệu Thiết Kế (`docs/`)
 
-2. **Luồng Xác thực Request (JWT Authentication Filter)**:
-   - Với mọi request truy cập trang/API bảo vệ, Frontend gửi đính kèm Header: `Authorization: Bearer <accessToken>`.
-   - Bộ lọc `JwtTokenFilter` của Backend giải mã và kiểm tra tính hợp lệ (chữ ký, thời hạn) của Token.
-   - Nếu hợp lệ, hệ thống thiết lập đối tượng `Authentication` vào `SecurityContextHolder`, cho phép request đi tiếp vào Controller.
+Toàn bộ tài liệu kỹ thuật và quy chuẩn phát triển được lưu trữ có cấu trúc trong thư mục `docs/`:
 
-3. **Luồng Đăng xuất (Logout)**:
-   - Vì cơ chế JWT là **Stateless** (Server không duy trì Session ID), việc đăng xuất ở Frontend được thực hiện bằng cách xóa Token khỏi Client Storage/Context và redirect về màn hình `/login`.
+| Thư mục / File | Mô tả nội dung |
+| :--- | :--- |
+| **`docs/api/`** | **Tài liệu thiết kế chi tiết các REST API** |
+| ├── `TKAPI_ListEmployee.md` | API Tìm kiếm & phân trang danh sách nhân viên (`GET /employee`) |
+| ├── `TKAPI_AddEmployee.md` | API Thêm mới nhân viên (`POST /employee`) — Dùng cho màn hình ADM003 |
+| ├── `TKAPI_GetEmployee.md` | API Lấy chi tiết nhân viên (`GET /employee/{id}`) |
+| ├── `TKAPI_UpdateEmployee.md` | API Cập nhật nhân viên (`PUT /employee/{id}`) |
+| ├── `TKAPI_DeleteEmployee.md` | API Xóa nhân viên (`DELETE /employee/{id}`) |
+| ├── `TKAPI_ListDepartments.md` | API Lấy danh sách phòng ban cho dropdown (`GET /departments`) |
+| └── `TKAPI_ListCertifications.md` | API Lấy danh sách chứng chỉ tiếng Nhật cho dropdown (`GET /certifications`) |
+| **`docs/db/`** | **Tài liệu thiết kế Database** |
+| └── `TKDB.md` | Chi tiết cấu trúc các bảng (`employees`, `departments`, `certifications`, `employees_certifications`) |
+| **`docs/guidelines/`** | **Quy chuẩn lập trình & Checklist nghiệm thu** |
+| └── `ManageUser_Checklist.md` | Coding rules Java (Javadoc, 3-tier), Next.js (Custom Hooks, Zod, SoC) & Checklist |
 
 ---
 
-## 3. Cấu Trúc Các File & Thiết Kế Thư Mục
+## 3. Luồng Hoạt Động Cốt Lõi (Core Workflows)
 
-### Phía Backend (`backend/src/main/java/com/luvina/la`)
+### 3.1. Luồng Xác Thực (Login / Logout / JWT Filter)
+- **Login**: `POST /login` $\rightarrow$ `AuthController` xác thực qua `AuthenticationManager` $\rightarrow$ Trả về JWT Access Token.
+- **JWT Filter**: `JwtTokenFilter` giải mã Token từ Header `Authorization: Bearer <token>`, nạp thông tin người dùng vào `SecurityContextHolder`.
+- **Logout**: Phía Client xóa Token khỏi Local Storage/Cookies và chuyển hướng về màn hình `/login`.
 
-| Package / Folder | Vai trò & Lý do thiết kế |
-| :--- | :--- |
-| **`config/`** | Cấu hình hệ thống (CORS, JPA/Persistence, Spring Security). Gồm subpackage `config/jwt` quản lý các lớp liên quan đến JWT Token (Filter, Token Provider, UserDetails). |
-| **`controller/`** | Tầng tiếp nhận request REST API (`AuthController`, `HomeController`). Đóng vai trò làm đầu mối tiếp nhận HTTP Request và phản hồi HTTP Response. |
-| **`entity/`** | Ánh xạ trực tiếp các bảng trong Database MySQL sang Java Object bằng JPA (`Employee.java`). |
-| **`repository/`** | Tầng truy xuất dữ liệu DB, mở rộng từ Spring Data `CrudRepository` (`EmployeeRepository.java`). Tránh viết câu lệnh SQL thủ công. |
-| **`dto/`** | Data Transfer Object (`EmployeeDTO.java`) dùng để truyền tải dữ liệu ra bên ngoài API. Giúp ẩn các thông tin nhạy cảm của Entity gốc (như `employeeLoginPassword`). |
-| **`payload/`** | Chứa các Class định dạng dữ liệu đầu vào / đầu ra của API (VD: `LoginRequest`, `LoginResponse`). |
-| **`mapper/`** | Sử dụng **MapStruct** (`EmployeeMapper.java`) để tự động chuyển đổi qua lại giữa Entity và DTO một cách tối ưu. |
+### 3.2. Luồng Màn Hình Nghiệp Vụ Nhân Viên
 
-### Phía Frontend (`frontend/`)
-
-| Đường dẫn | Vai trò & Lý do thiết kế |
-| :--- | :--- |
-| **`app/(auth)`** | Group route trong Next.js dành cho các trang xác thực không cần bảo vệ (`login`, `logout`). |
-| **`app/(protected)`** | Group route trong Next.js dành cho các trang yêu cầu đăng nhập (`employees`). |
-| **`lib/`** | Nơi chứa logic bổ trợ: `api` (gọi API backend), `auth` (Context/State quản lý auth), `validation` (Zod validation schema). |
-| **`proxy.ts`** | Middleware hỗ trợ điều hướng và kiểm tra route an toàn phía server/proxy. |
+```
+[ ADM001: Đăng nhập (/login) ]
+             │
+             ▼
+[ ADM002: Danh sách nhân viên (/employees/adm002) ]
+      │               │                      │
+      │ (Nút Thêm)   │ (Click Tên)          │ (Nút Sửa/Xóa)
+      ▼               ▼                      ▼
+[ ADM003: Thêm mới ] [ ADM006: Chi tiết ]   [ Chỉnh sửa / Xóa ]
+      │ (Xác nhận)
+      ▼
+[ ADM004: Xác nhận (/employees/confirm) ]
+      │ (Lưu / OK)
+      ▼
+[ ADM005: Hoàn thành (/employees/complete) ] ──> Quay về ADM002
+```
 
 ---
 
-## 4. Giải Thích Về Package `service` Phía Backend
+## 4. Cấu Trúc Mã Nguồn Dự Án
 
-### 🔴 Thực trạng hiện tại:
-Trong cấu trúc backend hiện tại **chưa có package `com.luvina.la.service` riêng biệt**.
-- **Nguyên nhân**: Dự án mới ở giai đoạn đầu (chỉ mới phát triển chức năng Login/Logout).
-- Nơi xử lý nghiệp vụ duy nhất hiện tại là `UserDetailsServiceImpl` (được gắn annotation `@Service`), nhưng lại đang được đặt trong package `config/jwt` để phục vụ trực tiếp cho cấu hình Spring Security.
-- Trong `AuthController`, logic xác thực được gọi trực tiếp thông qua `AuthenticationManager`.
+### 4.1. Backend (`backend/src/main/java/com/luvina/la`)
 
-### 🟢 Tại sao CẦN PHẢI DÙNG package `service` ở các bước tiếp theo?
+Áp dụng nghiêm ngặt mô hình **3-Tier Layered Architecture**:
 
-Mô hình tiêu chuẩn của Spring Boot là **Mô hình 3 lớp (3-Tier Layered Architecture)**:
-$$\text{Controller} \longrightarrow \text{Service (Business Layer)} \longrightarrow \text{Repository (Data Access Layer)} \longrightarrow \text{Database}$$
+```
+com.luvina.la
+├── config/                  # Cấu hình hệ thống (CORS, Security, JWT Filter, Constants)
+├── controller/              # REST Controllers (AuthController, EmployeeController, DepartmentController)
+├── service/                 # Tầng nghiệp vụ (Business Service Interfaces)
+│   └── impl/                # Service Implementations (@Service, @Transactional)
+├── repository/              # Tầng truy xuất dữ liệu Spring Data JPA
+├── entity/                  # JPA Entities ánh xạ bảng Database
+├── dto/                     # Data Transfer Objects
+├── payload/                 # Request/Response payloads
+├── mapper/                  # MapStruct Mappers chuyển đổi Entity <-> DTO
+└── exception/               # Xử lý lỗi toàn cục (GlobalExceptionHandler, BusinessException)
+```
 
-Khi bạn tiến hành làm tiếp các chức năng quản lý nhân viên (CRUD: Tìm kiếm, Thêm mới, Chỉnh sửa, Xóa, Export CSV,...), **việc bổ sung package `service` là BẮT BUỘC** vì các lý do sau:
+### 4.2. Frontend (`frontend/`)
 
-1. **Tách biệt trách nhiệm (Separation of Concerns - SoC)**:
-   - `Controller` chỉ nên làm nhiệm vụ validate input HTTP, điều hướng và trả về kết quả JSON (`LoginResponse`, `EmployeeDTO`).
-   - `Service` sẽ là nơi chứa toàn bộ **Business Logic** (logic nghiệp vụ) như: kiểm tra tính hợp lệ của dữ liệu nhân viên, kiểm tra trùng lặp ID/Email, mã hóa mật khẩu, tính toán trình độ tiếng Nhật, v.v.
+```
+frontend/
+├── app/
+│   ├── (auth)/login/        # Màn hình Đăng nhập (ADM001)
+│   └── (protected)/         # Nhóm route yêu cầu xác thực
+│       └── employees/
+│           ├── adm002/      # Màn hình Danh sách nhân viên (ADM002)
+│           ├── edit/        # Màn hình Thêm mới/Chỉnh sửa nhân viên (ADM003)
+│           ├── confirm/     # Màn hình Xác nhận thông tin (ADM004)
+│           ├── complete/    # Màn hình Thông báo hoàn tất (ADM005)
+│           └── detail/      # Màn hình Chi tiết nhân viên (ADM006)
+├── components/              # UI Components dùng chung (Header, Footer, Layout)
+├── hooks/                   # Custom Hooks quản lý logic (useAuth, useEmployee...)
+├── lib/
+│   ├── api/                 # Tầng gọi API qua Axios client (employee.ts, department.ts...)
+│   └── validation/          # Schema validate form với Zod
+└── types/                   # TypeScript interfaces & types định nghĩa dữ liệu
+```
 
-2. **Quản lý Giao dịch (Transaction Management - `@Transactional`)**:
-   - Các thao tác cập nhật dữ liệu liên quan đến nhiều bảng (VD: thêm nhân viên đồng thời lưu trình độ tiếng Nhật) cần được bọc trong một Transaction ở tầng Service để đảm bảo tính toàn vẹn dữ liệu (Rollback khi có lỗi).
+---
 
-3. **Khả năng tái sử dụng & Viết Unit Test**:
-   - Khi tách Business Logic ra `Service`, bạn có thể dễ dàng tái sử dụng logic đó ở các Controller khác nhau.
-   - Giúp viết Unit Test (sử dụng JUnit / Mockito) cho phần nghiệp vụ một cách độc lập mà không cần phải khởi chạy web container hay HTTP Context.
+## 5. Quy Chuẩn Kỹ Thuật Bắt Buộc (Coding Standards)
 
-### 💡 Đề xuất kiến trúc cho giai đoạn tiếp theo:
-Tạo package `com.luvina.la.service` chứa:
-- `EmployeeService.java` (Interface định nghĩa các hàm nghiệp vụ: `searchEmployees`, `createEmployee`, `updateEmployee`, `deleteEmployee`,...)
-- `impl/EmployeeServiceImpl.java` (Class triển khai interface, inject `EmployeeRepository` và `EmployeeMapper`).
+1. **Java Backend**:
+   - Tất cả các file và method phải có Javadoc đầy đủ theo chuẩn `docs/guidelines/ManageUser_Checklist.md`.
+   - Controller không gọi trực tiếp Repository, phải thông qua Service Interface.
+   - Định dạng mã lỗi thống nhất: `{ "code": 500, "message": { "code": "ERxxx", "params": [...] } }`.
+2. **Next.js Frontend**:
+   - Tách biệt hoàn toàn UI và Logic: Component $\rightarrow$ Custom Hook $\rightarrow$ API Service.
+   - Không gọi axios/fetch trực tiếp bên trong component giao diện.
+   - Form xử lý bằng React Hook Form kết hợp Zod schema validation.
+   - Đảm bảo Type Safety (không sử dụng kiểu `any`).
