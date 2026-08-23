@@ -15,6 +15,7 @@ import com.luvina.la.service.EmployeeService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,13 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
+
+    private static final Set<String> VALID_ORDER_KEYS = Set.of(
+            Constants.ORDER_KEY_EMPLOYEE_NAME,
+            Constants.ORDER_KEY_CERTIFICATION_NAME,
+            Constants.ORDER_KEY_CERTIFICATION_LEVEL,
+            Constants.ORDER_KEY_END_DATE
+    );
 
     private final EmployeeRepository employeeRepository;
 
@@ -56,38 +64,60 @@ public class EmployeeServiceImpl implements EmployeeService {
             int offset,
             int limit) {
 
-        // Kiểm tra điều kiện phân trang.
-        if (offset < 0 || limit <= 0) {
+        // Kiểm tra điều kiện phân trang cho offset.
+        if (offset < 0) {
             return new EmployeeListResponse(
                     Constants.CODE_ERROR,
                     new ApiErrorMessage(
                             Constants.ERROR_CODE_INVALID_PAGING,
-                            List.of("offset/limit")));
+                            List.of(Constants.OFFSET_PARAM_LABEL)));
         }
 
-        // Kiểm tra độ dài tên nhân viên.
+        // Kiểm tra điều kiện phân trang cho limit.
+        if (limit <= 0) {
+            return new EmployeeListResponse(
+                    Constants.CODE_ERROR,
+                    new ApiErrorMessage(
+                            Constants.ERROR_CODE_INVALID_PAGING,
+                            List.of(Constants.LIMIT_PARAM_LABEL)));
+        }
+
+        // Kiểm tra độ dài tên nhân viên (vượt quá 125 ký tự).
         if (employeeName != null
-                && employeeName.length() >= Constants.MAX_EMPLOYEE_NAME_LENGTH) {
+                && employeeName.length() > Constants.MAX_EMPLOYEE_NAME_LENGTH) {
             return new EmployeeListResponse(
                     Constants.CODE_ERROR,
                     new ApiErrorMessage(
                             Constants.ERROR_CODE_INVALID_EMPLOYEE_NAME,
                             List.of(
-                                    "氏名",
+                                    Constants.LABEL_EMPLOYEE_NAME,
                                     String.valueOf(Constants.MAX_EMPLOYEE_NAME_LENGTH))));
         }
 
-        // Kiểm tra giá trị các tham số sắp xếp.
-        for (Map.Entry<String, String> entry : orderParams.entrySet()) {
-            String value = entry.getValue();
+        // Kiểm tra tên trường và giá trị các tham số sắp xếp.
+        if (orderParams != null) {
+            for (Map.Entry<String, String> entry : orderParams.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
 
-            if (!Constants.SORT_ASC.equalsIgnoreCase(value)
-                    && !Constants.SORT_DESC.equalsIgnoreCase(value)) {
-                return new EmployeeListResponse(
-                        Constants.CODE_ERROR,
-                        new ApiErrorMessage(
-                                Constants.ERROR_CODE_INVALID_SORT,
-                                List.of(entry.getKey())));
+                // Kiểm tra tên tham số sắp xếp có thuộc whitelist hay không
+                if (!VALID_ORDER_KEYS.contains(key.toLowerCase())) {
+                    return new EmployeeListResponse(
+                            Constants.CODE_ERROR,
+                            new ApiErrorMessage(
+                                    Constants.ERROR_CODE_INVALID_SORT,
+                                    List.of(key)));
+                }
+
+                // Kiểm tra giá trị tham số sắp xếp phải là ASC hoặc DESC
+                if (!Constants.SORT_ASC.equalsIgnoreCase(value)
+                        && !Constants.SORT_DESC.equalsIgnoreCase(value)) {
+                    return new EmployeeListResponse(
+                            Constants.CODE_ERROR,
+                            new ApiErrorMessage(
+                                    Constants.ERROR_CODE_INVALID_SORT,
+                                    List.of(key)));
+                }
             }
         }
 

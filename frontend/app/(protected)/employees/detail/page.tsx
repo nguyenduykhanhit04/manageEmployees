@@ -1,11 +1,32 @@
+/**
+ * Copyright(C) 2026 Luvina Software Company
+ *
+ * page.tsx (ADM003 Detail), 24/8/2026 nguyenduykhanh2
+ */
 'use client';
 
+import React, { Suspense } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { SYSTEM_MESSAGES } from '@/lib/constants/messages';
 
-export default function EmployeeDetailPage() {
+function EmployeeDetailContent() {
   useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Đọc returnTo từ URL nếu có, mặc định là /employees/adm002
+  const returnTo = searchParams.get('returnTo') || '/employees/adm002';
+
+  const handleBack = () => {
+    router.push(returnTo);
+  };
+
+  const handleEdit = () => {
+    const editUrl = `/employees/edit?returnTo=${encodeURIComponent(returnTo)}`;
+    router.push(editUrl);
+  };
+
   return (
     <div className="row">
       <form className="c-form box-shadow">
@@ -33,9 +54,9 @@ export default function EmployeeDetailPage() {
           </li>
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">メールアドレス</label>
-            <div className="col-sm col-sm-10">	ntmhuong@luvina.net</div>
+            <div className="col-sm col-sm-10">ntmhuong@luvina.net</div>
           </li>
-          <li className="form-group row d-flex  bor-none">
+          <li className="form-group row d-flex bor-none">
             <label className="col-form-label col-sm-2">電話番号</label>
             <div className="col-sm col-sm-10">0914326386</div>
           </li>
@@ -58,9 +79,9 @@ export default function EmployeeDetailPage() {
           </li>
           <li className="form-group row d-flex">
             <div className="btn-group col-sm col-sm-10 ml">
-              <button type="button" onClick={() => router.push('/employees/edit')} className="btn btn-primary btn-sm">編集</button>
+              <button type="button" onClick={handleEdit} className="btn btn-primary btn-sm">編集</button>
               <button type="button" className="btn btn-secondary btn-sm">削除</button>
-              <button type="button" onClick={() => router.push('/employees/adm002')} className="btn btn-secondary btn-sm">戻る</button>
+              <button type="button" onClick={handleBack} className="btn btn-secondary btn-sm">戻る</button>
             </div>
           </li>
         </ul>
@@ -69,3 +90,16 @@ export default function EmployeeDetailPage() {
   );
 }
 
+export default function EmployeeDetailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div style={{ textAlign: 'center', padding: '40px' }}>
+          {SYSTEM_MESSAGES.LOADING}
+        </div>
+      }
+    >
+      <EmployeeDetailContent />
+    </Suspense>
+  );
+}

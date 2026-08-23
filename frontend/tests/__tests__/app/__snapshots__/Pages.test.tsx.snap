@@ -335,11 +335,11 @@ exports[`Page Snapshots renders EmployeeDetailPage unchanged 1`] = `
           <div
             class="col-sm col-sm-10"
           >
-            	ntmhuong@luvina.net
+            ntmhuong@luvina.net
           </div>
         </li>
         <li
-          class="form-group row d-flex  bor-none"
+          class="form-group row d-flex bor-none"
         >
           <label
             class="col-form-label col-sm-2"
@@ -1037,7 +1037,7 @@ exports[`Page Snapshots renders EmployeeListPage unchanged 1`] = `
         <div
           style="grid-column: 1 / -1; text-align: center; padding: 20px;"
         >
-          Đang tải dữ liệu ...
+          データを読み込み中...
         </div>
       </div>
     </div>

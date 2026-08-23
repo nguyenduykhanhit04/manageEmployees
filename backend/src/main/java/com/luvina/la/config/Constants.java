@@ -63,6 +63,9 @@ public class Constants {
     // Key sắp xếp theo tên nhân viên.
     public static final String ORDER_KEY_EMPLOYEE_NAME = "ord_employee_name";
 
+    // Key sắp xếp theo tên chứng chỉ tiếng Nhật (theo chuẩn TKAPI).
+    public static final String ORDER_KEY_CERTIFICATION_NAME = "ord_certification_name";
+
     // Key sắp xếp theo trình độ chứng chỉ.
     public static final String ORDER_KEY_CERTIFICATION_LEVEL = "ord_certification_level";
 

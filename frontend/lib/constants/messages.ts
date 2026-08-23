@@ -14,6 +14,14 @@ export const SUCCESS_MESSAGES: Record<string, string> = {
 };
 
 /**
+ * Định nghĩa các thông báo hệ thống / trạng thái hiển thị
+ */
+export const SYSTEM_MESSAGES = {
+  MSG005: '該当するデータがありません。', // Không tìm thấy dữ liệu
+  LOADING: 'データを読み込み中...', // Đang tải dữ liệu
+} as const;
+
+/**
  * Định nghĩa các mẫu câu thông báo lỗi chuẩn (ER001 - ER023)
  * {0}, {1}, {2}... sẽ được thay thế động bởi danh sách params tương ứng.
  */

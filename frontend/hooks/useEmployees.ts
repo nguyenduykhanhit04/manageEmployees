@@ -1,11 +1,12 @@
 /**
  * Copyright(C) 2026 Luvina Software Company
  *
- * useEmployees.ts, 22/8/2026 nguyenduykhanh2
+ * useEmployees.ts, 24/8/2026 nguyenduykhanh2
  */
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { getEmployees } from '@/lib/api/employee';
 import { getDepartments } from '@/lib/api/department';
 import { EmployeeItem } from '@/types/employee';
@@ -23,29 +24,44 @@ export interface SortOrders {
 
 /**
  * Custom Hook quản lý toàn bộ nghiệp vụ lấy danh sách nhân viên, phòng ban,
- * tìm kiếm, sắp xếp đa cột theo thứ tự ưu tiên động và phân trang theo đúng kiến trúc Clean UI và Checklist.
+ * tìm kiếm, sắp xếp đa cột theo thứ tự ưu tiên động, phân trang và đồng bộ 2 chiều với URL.
  *
  * @author nguyenduykhanh2
  * @return Các state và hàm handler phục vụ cho màn hình danh sách nhân viên
  */
 export function useEmployees() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Đọc các giá trị từ URL Search Params
+  const paramEmployeeName = searchParams.get('employee_name') || '';
+  const paramDepartmentId = searchParams.get('department_id') || '';
+  const paramOffset = parseInt(searchParams.get('offset') || '0', 10);
+  const initialOffset = !isNaN(paramOffset) && paramOffset >= 0 ? paramOffset : 0;
+  const initialPage = Math.floor(initialOffset / PAGING.DEFAULT_LIMIT) + 1;
+
+  const paramOrdName = (searchParams.get('ord_employee_name') || '').toUpperCase();
+  const paramOrdCert = (searchParams.get('ord_certification_name') || '').toUpperCase();
+  const paramOrdEndDate = (searchParams.get('ord_end_date') || '').toUpperCase();
+
   const [employees, setEmployees] = useState<EmployeeItem[]>([]);
   const [departments, setDepartments] = useState<DepartmentItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
-  // State điều kiện tìm kiếm
-  const [employeeName, setEmployeeName] = useState<string>('');
-  const [departmentId, setDepartmentId] = useState<string>('');
+  // State input điều kiện tìm kiếm (trên form)
+  const [employeeName, setEmployeeName] = useState<string>(paramEmployeeName);
+  const [departmentId, setDepartmentId] = useState<string>(paramDepartmentId);
 
   // State chiều sắp xếp của từng cột
   const [sortOrders, setSortOrders] = useState<SortOrders>({
-    ord_employee_name: SORT_ORDER.ASC,
-    ord_certification_name: SORT_ORDER.ASC,
-    ord_end_date: SORT_ORDER.ASC,
+    ord_employee_name: paramOrdName === SORT_ORDER.DESC ? SORT_ORDER.DESC : SORT_ORDER.ASC,
+    ord_certification_name: paramOrdCert === SORT_ORDER.DESC ? SORT_ORDER.DESC : SORT_ORDER.ASC,
+    ord_end_date: paramOrdEndDate === SORT_ORDER.DESC ? SORT_ORDER.DESC : SORT_ORDER.ASC,
   });
 
-  // Danh sách thứ tự ưu tiên các cột sắp xếp (cột click gần nhất sẽ nằm ở đầu mảng)
+  // Danh sách thứ tự ưu tiên các cột sắp xếp
   const [sortPriority, setSortPriority] = useState<SortField[]>([
     'ord_employee_name',
     'ord_certification_name',
@@ -53,50 +69,68 @@ export function useEmployees() {
   ]);
 
   // State phân trang
-  const [currentPage, setCurrentPage] = useState<number>(PAGING.DEFAULT_PAGE);
+  const [currentPage, setCurrentPage] = useState<number>(initialPage);
   const [totalRecords, setTotalRecords] = useState<number>(0);
   const limit = PAGING.DEFAULT_LIMIT;
 
-  // Tải danh sách phòng ban khi khởi tạo component
+  // Đồng bộ URL mỗi khi điều kiện tìm kiếm / sort / phân trang thay đổi
+  const syncUrl = useCallback(
+    (name: string, deptId: string, priority: SortField[], orders: SortOrders, page: number) => {
+      const params = new URLSearchParams();
+      if (name.trim()) {
+        params.set('employee_name', name.trim());
+      }
+      if (deptId) {
+        params.set('department_id', deptId);
+      }
+
+      // Gắn các trường sắp xếp theo thứ tự ưu tiên
+      priority.forEach((fieldKey) => {
+        params.set(fieldKey, orders[fieldKey]);
+      });
+
+      const offsetVal = (page - 1) * limit;
+      if (offsetVal > 0) {
+        params.set('offset', offsetVal.toString());
+      }
+
+      const queryString = params.toString();
+      const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+      router.push(newUrl, { scroll: false });
+    },
+    [pathname, router, limit]
+  );
+
+  // Tải danh sách phòng ban khi khởi tạo hook
   useEffect(() => {
     getDepartments()
       .then((res) => {
-        // Kiểm tra phản hồi API thành công
         if (res && res.code === 200) {
           setDepartments(res.departments || []);
         } else {
-          // Trường hợp API trả về mã lỗi
           setErrorMessage(ERROR_MESSAGES.GET_DEPARTMENTS_FAILED);
         }
       })
       .catch((err) => {
-        // Ghi log và thông báo lỗi khi kết nối thất bại
         console.error('Error fetching departments:', err);
         setErrorMessage(ERROR_MESSAGES.GET_DEPARTMENTS_FAILED);
       });
   }, []);
 
   /**
-   * Gọi API lấy danh sách nhân viên theo điều kiện tìm kiếm, sắp xếp đa cột theo thứ tự ưu tiên và phân trang.
-   *
-   * @param name tên nhân viên cần tìm kiếm
-   * @param deptId mã phòng ban cần tìm kiếm
-   * @param priority danh sách các cột sắp xếp theo thứ tự ưu tiên (cột ưu tiên 1 đứng đầu)
-   * @param orders chiều sắp xếp của từng cột
-   * @param offsetVal vị trí bắt đầu lấy dữ liệu
+   * Gọi API lấy danh sách nhân viên theo điều kiện tìm kiếm, sắp xếp và phân trang.
    */
   const fetchEmployees = useCallback(
     async (
-      name: string = employeeName,
-      deptId: string = departmentId,
-      priority: SortField[] = sortPriority,
-      orders: SortOrders = sortOrders,
-      offsetVal: number = 0
+      name: string,
+      deptId: string,
+      priority: SortField[],
+      orders: SortOrders,
+      offsetVal: number
     ) => {
       setLoading(true);
       setErrorMessage('');
       try {
-        // Đóng gói các tham số sort theo đúng thứ tự ưu tiên trong mảng priority
         const sortPayload: Record<string, string> = {};
         priority.forEach((fieldKey) => {
           sortPayload[fieldKey] = orders[fieldKey];
@@ -110,63 +144,68 @@ export function useEmployees() {
           limit: limit,
         });
 
-        // Kiểm tra kết quả trả về từ Backend
         if (res && res.code === 200) {
           setEmployees(res.employees || []);
           setTotalRecords(res.totalRecords || 0);
         } else {
-          // Gán thông báo lỗi khi API phản hồi thất bại
           setErrorMessage(ERROR_MESSAGES.GET_EMPLOYEES_FAILED);
         }
       } catch (error) {
-        // Bắt lỗi ngoại lệ khi gọi API
         console.error('Error fetching employees:', error);
         setErrorMessage(ERROR_MESSAGES.GET_EMPLOYEES_FAILED);
       } finally {
         setLoading(false);
       }
     },
-    [employeeName, departmentId, sortPriority, sortOrders, limit]
+    [limit]
   );
 
-  // Tải danh sách mặc định ban đầu
+  // Tải dữ liệu ban đầu theo searchParams trên URL
   useEffect(() => {
-    fetchEmployees('', '', ['ord_employee_name', 'ord_certification_name', 'ord_end_date'], {
-      ord_employee_name: SORT_ORDER.ASC,
-      ord_certification_name: SORT_ORDER.ASC,
-      ord_end_date: SORT_ORDER.ASC,
-    }, 0);
-  }, []);
+    const activeOrders: SortOrders = {
+      ord_employee_name: paramOrdName === SORT_ORDER.DESC ? SORT_ORDER.DESC : SORT_ORDER.ASC,
+      ord_certification_name: paramOrdCert === SORT_ORDER.DESC ? SORT_ORDER.DESC : SORT_ORDER.ASC,
+      ord_end_date: paramOrdEndDate === SORT_ORDER.DESC ? SORT_ORDER.DESC : SORT_ORDER.ASC,
+    };
+
+    setEmployeeName(paramEmployeeName);
+    setDepartmentId(paramDepartmentId);
+    setSortOrders(activeOrders);
+    setCurrentPage(initialPage);
+
+    fetchEmployees(paramEmployeeName, paramDepartmentId, sortPriority, activeOrders, initialOffset);
+  }, [
+    paramEmployeeName,
+    paramDepartmentId,
+    paramOrdName,
+    paramOrdCert,
+    paramOrdEndDate,
+    initialOffset,
+    initialPage,
+  ]);
 
   /**
    * Xử lý khi người dùng nhấn nút Tìm kiếm trên Form.
-   *
-   * @param e sự kiện form submit (tùy chọn)
    */
   const handleSearch = (e?: React.FormEvent) => {
-    // Ngăn chặn reload trang mặc định của trình duyệt
     if (e) {
       e.preventDefault();
     }
-    // Đưa phân trang về trang 1 khi tìm kiếm mới
     setCurrentPage(1);
+    syncUrl(employeeName, departmentId, sortPriority, sortOrders, 1);
     fetchEmployees(employeeName, departmentId, sortPriority, sortOrders, 0);
   };
 
   /**
-   * Xử lý khi người dùng click vào tiêu đề cột để đảo chiều sắp xếp và đẩy cột đó lên ưu tiên số 1.
-   *
-   * @param field tên trường vừa được click
+   * Xử lý khi người dùng click vào tiêu đề cột để sắp xếp.
    */
   const handleSort = (field: SortField) => {
-    // Đảo chiều sắp xếp ASC <-> DESC của cột vừa click
     const nextOrder = sortOrders[field] === SORT_ORDER.ASC ? SORT_ORDER.DESC : SORT_ORDER.ASC;
     const updatedOrders: SortOrders = {
       ...sortOrders,
       [field]: nextOrder,
     };
 
-    // Đưa cột vừa click lên đầu danh sách ưu tiên (Priority #1)
     const updatedPriority: SortField[] = [
       field,
       ...sortPriority.filter((f) => f !== field),
@@ -174,28 +213,47 @@ export function useEmployees() {
 
     setSortOrders(updatedOrders);
     setSortPriority(updatedPriority);
-
-    // Đưa phân trang về trang 1 khi sắp xếp lại
     setCurrentPage(1);
+
+    syncUrl(employeeName, departmentId, updatedPriority, updatedOrders, 1);
     fetchEmployees(employeeName, departmentId, updatedPriority, updatedOrders, 0);
   };
 
   // Tính toán tổng số trang
-  const totalPages = Math.ceil(totalRecords / limit) || 1;
+  const totalPages = Math.max(1, Math.ceil(totalRecords / limit));
 
   /**
-   * Xử lý khi người dùng click chuyển sang trang khác.
-   *
-   * @param page số trang muốn chuyển tới
+   * Xử lý khi chuyển trang.
    */
   const handlePageChange = (page: number) => {
-    // Kiểm tra tính hợp lệ của số trang chuyển tới
     if (page < 1 || page > totalPages || page === currentPage) {
       return;
     }
     setCurrentPage(page);
-    fetchEmployees(employeeName, departmentId, sortPriority, sortOrders, (page - 1) * limit);
+    const offsetVal = (page - 1) * limit;
+    syncUrl(employeeName, departmentId, sortPriority, sortOrders, page);
+    fetchEmployees(employeeName, departmentId, sortPriority, sortOrders, offsetVal);
   };
+
+  // Đường dẫn hiện tại kèm đầy đủ query params để truyền returnTo sang các màn hình khác
+  const currentReturnUrl = useMemo(() => {
+    const params = new URLSearchParams();
+    if (employeeName.trim()) {
+      params.set('employee_name', employeeName.trim());
+    }
+    if (departmentId) {
+      params.set('department_id', departmentId);
+    }
+    sortPriority.forEach((fieldKey) => {
+      params.set(fieldKey, sortOrders[fieldKey]);
+    });
+    const offsetVal = (currentPage - 1) * limit;
+    if (offsetVal > 0) {
+      params.set('offset', offsetVal.toString());
+    }
+    const query = params.toString();
+    return query ? `${pathname}?${query}` : pathname;
+  }, [employeeName, departmentId, sortPriority, sortOrders, currentPage, limit, pathname]);
 
   return {
     employees,
@@ -210,6 +268,7 @@ export function useEmployees() {
     sortPriority,
     currentPage,
     totalPages,
+    currentReturnUrl,
     handleSearch,
     handleSort,
     handlePageChange,
