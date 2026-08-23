@@ -4,7 +4,7 @@
  * employee.ts, 22/8/2026 nguyenduykhanh2
  */
 
-import { EmployeeListApiResponse } from "@/types/employee";
+import { AddEmployeeApiResponse, AddEmployeePayload, EmployeeListApiResponse } from "@/types/employee";
 import { apiClient } from "@/lib/api/client";
 
 /**
@@ -49,5 +49,16 @@ export const getEmployees = async (params: {
   const response = await apiClient.get<EmployeeListApiResponse>('/employee', {
     params: queryParams,
   });
+  return response.data;
+};
+
+/**
+ * Gọi API thêm mới nhân viên.
+ *
+ * @param payload dữ liệu nhân viên và chứng chỉ cần thêm
+ * @return phản hồi kết quả thêm mới từ Backend
+ */
+export const createEmployee = async (payload: AddEmployeePayload): Promise<AddEmployeeApiResponse> => {
+  const response = await apiClient.post<AddEmployeeApiResponse>('/employee', payload);
   return response.data;
 };

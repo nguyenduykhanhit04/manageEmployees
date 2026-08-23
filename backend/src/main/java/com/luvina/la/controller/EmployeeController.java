@@ -6,6 +6,8 @@
 package com.luvina.la.controller;
 
 import com.luvina.la.config.Constants;
+import com.luvina.la.payload.AddEmployeeRequest;
+import com.luvina.la.payload.AddEmployeeResponse;
 import com.luvina.la.payload.EmployeeListResponse;
 import com.luvina.la.service.EmployeeService;
 import java.util.LinkedHashMap;
@@ -65,6 +67,18 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
 
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Thêm mới nhân viên.
+     *
+     * @param request thông tin nhân viên cần thêm mới
+     * @return thông tin phản hồi chứa mã kết quả và mã nhân viên vừa tạo
+     */
+    @PostMapping("/employee")
+    public ResponseEntity<AddEmployeeResponse> addEmployee(@RequestBody AddEmployeeRequest request) {
+        AddEmployeeResponse response = employeeService.addEmployee(request);
         return ResponseEntity.ok(response);
     }
 }

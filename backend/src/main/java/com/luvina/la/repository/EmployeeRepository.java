@@ -30,6 +30,14 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long>, Empl
         Optional<Employee> findByEmployeeLoginId(String employeeLoginId);
 
         /**
+         * Kiểm tra xem mã đăng nhập đã tồn tại trong hệ thống hay chưa.
+         *
+         * @param employeeLoginId mã đăng nhập của nhân viên
+         * @return true nếu đã tồn tại, ngược lại là false
+         */
+        boolean existsByEmployeeLoginId(String employeeLoginId);
+
+        /**
          * Tìm nhân viên theo mã nhân viên.
          *
          * @param employeeId mã nhân viên

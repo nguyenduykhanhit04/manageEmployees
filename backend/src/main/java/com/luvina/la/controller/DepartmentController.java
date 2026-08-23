@@ -8,6 +8,7 @@ package com.luvina.la.controller;
 import com.luvina.la.payload.DepartmentListResponse;
 import com.luvina.la.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @author nguyenduykhanh2
  */
 @RestController
-@RequestMapping("/department")
+@CrossOrigin(origins = "*")
+@RequestMapping({"/department", "/departments"})
 public class DepartmentController {
 
     private final DepartmentService departmentService;

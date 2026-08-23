@@ -11,7 +11,7 @@ exports[`Page Snapshots renders EmployeeCompletePage unchanged 1`] = `
       <h1
         class="msg-title"
       >
-        ユーザの登録が完了しました。 or ユーザの更新が完了しました。 or ユーザの削除が完了しました。
+        ユーザの登録が完了しました。
       </h1>
       <div
         class="notification-box-btn"
@@ -60,7 +60,7 @@ exports[`Page Snapshots renders EmployeeConfirmPage unchanged 1`] = `
           <div
             class="col-sm col-sm-10"
           >
-            ntmhuong
+            -
           </div>
         </li>
         <li
@@ -74,7 +74,7 @@ exports[`Page Snapshots renders EmployeeConfirmPage unchanged 1`] = `
           <div
             class="col-sm col-sm-10"
           >
-            Nhóm 1
+            -
           </div>
         </li>
         <li
@@ -88,7 +88,7 @@ exports[`Page Snapshots renders EmployeeConfirmPage unchanged 1`] = `
           <div
             class="col-sm col-sm-10"
           >
-            Nguyễn Thị Mai Hương
+            -
           </div>
         </li>
         <li
@@ -102,7 +102,7 @@ exports[`Page Snapshots renders EmployeeConfirmPage unchanged 1`] = `
           <div
             class="col-sm col-sm-10"
           >
-            名カナ
+            -
           </div>
         </li>
         <li
@@ -116,7 +116,7 @@ exports[`Page Snapshots renders EmployeeConfirmPage unchanged 1`] = `
           <div
             class="col-sm col-sm-10"
           >
-            1983/07/08
+            -
           </div>
         </li>
         <li
@@ -130,11 +130,11 @@ exports[`Page Snapshots renders EmployeeConfirmPage unchanged 1`] = `
           <div
             class="col-sm col-sm-10"
           >
-            メールアドレス
+            -
           </div>
         </li>
         <li
-          class="form-group row d-flex  bor-none"
+          class="form-group row d-flex bor-none"
         >
           <label
             class="col-form-label col-sm-2"
@@ -144,72 +144,7 @@ exports[`Page Snapshots renders EmployeeConfirmPage unchanged 1`] = `
           <div
             class="col-sm col-sm-10"
           >
-            0914326386
-          </div>
-        </li>
-        <li
-          class="title mt-12"
-        >
-          <a
-            href="#!"
-          >
-            日本語能力
-          </a>
-        </li>
-        <li
-          class="form-group row d-flex"
-        >
-          <label
-            class="col-form-label col-sm-2"
-          >
-            資格
-          </label>
-          <div
-            class="col-sm col-sm-10"
-          >
-            Trình độ tiếng nhật cấp 1
-          </div>
-        </li>
-        <li
-          class="form-group row d-flex"
-        >
-          <label
-            class="col-form-label col-sm-2"
-          >
-            資格交付日
-          </label>
-          <div
-            class="col-sm col-sm-10"
-          >
-            2010/07/08
-          </div>
-        </li>
-        <li
-          class="form-group row d-flex"
-        >
-          <label
-            class="col-form-label col-sm-2"
-          >
-            失効日
-          </label>
-          <div
-            class="col-sm col-sm-10"
-          >
-            2010/07/08
-          </div>
-        </li>
-        <li
-          class="form-group row d-flex"
-        >
-          <label
-            class="col-form-label col-sm-2"
-          >
-            点数
-          </label>
-          <div
-            class="col-sm col-sm-10"
-          >
-            290
+            -
           </div>
         </li>
         <li
@@ -220,7 +155,7 @@ exports[`Page Snapshots renders EmployeeConfirmPage unchanged 1`] = `
           >
             <button
               class="btn btn-primary btn-sm"
-              type="button"
+              type="submit"
             >
               OK
             </button>
@@ -455,22 +390,13 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
     class="row"
   >
     <form
-      class="c-form box-shadow was-validated"
+      class="c-form box-shadow"
     >
       <ul>
         <li
           class="title"
         >
           会員情報編集
-        </li>
-        <li
-          class="box-err"
-        >
-          <div
-            class="box-err-content"
-          >
-            Hiển thị lỗi chung lại đây
-          </div>
         </li>
         <li
           class="form-group row d-flex"
@@ -493,8 +419,10 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
             class="col-sm col-sm-10"
           >
             <input
-              class="form-control"
+              class="form-control "
+              maxlength="50"
               type="text"
+              value=""
             />
           </div>
         </li>
@@ -519,16 +447,12 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
             class="col-sm col-sm-10"
           >
             <select
-              class="form-control"
+              class="form-control "
             >
-              <option>
+              <option
+                value=""
+              >
                 選択してください
-              </option>
-              <option>
-                Nhóm 1
-              </option>
-              <option>
-                Nhóm 2
               </option>
             </select>
           </div>
@@ -554,8 +478,10 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
             class="col-sm col-sm-10"
           >
             <input
-              class="form-control"
+              class="form-control "
+              maxlength="125"
               type="text"
+              value=""
             />
           </div>
         </li>
@@ -580,15 +506,11 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
             class="col-sm col-sm-10"
           >
             <input
-              class="form-control"
-              required=""
+              class="form-control "
+              maxlength="125"
               type="text"
+              value=""
             />
-            <div
-              class="invalid-feedback"
-            >
-              Example invalid form file feedback
-            </div>
           </div>
         </li>
         <li
@@ -655,8 +577,10 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
             class="col-sm col-sm-10"
           >
             <input
-              class="form-control"
+              class="form-control "
+              maxlength="125"
               type="text"
+              value=""
             />
           </div>
         </li>
@@ -681,8 +605,10 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
             class="col-sm col-sm-10"
           >
             <input
-              class="form-control"
+              class="form-control "
+              maxlength="50"
               type="text"
+              value=""
             />
           </div>
         </li>
@@ -707,8 +633,10 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
             class="col-sm col-sm-10"
           >
             <input
-              class="form-control"
-              type="text"
+              class="form-control "
+              maxlength="50"
+              type="password"
+              value=""
             />
           </div>
         </li>
@@ -722,14 +650,21 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
               class="relative"
             >
               パスワード（確認）:
+              <span
+                class="note-red"
+              >
+                *
+              </span>
             </i>
           </label>
           <div
             class="col-sm col-sm-10"
           >
             <input
-              class="form-control"
-              type="text"
+              class="form-control "
+              maxlength="50"
+              type="password"
+              value=""
             />
           </div>
         </li>
@@ -758,16 +693,12 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
             class="col-sm col-sm-10"
           >
             <select
-              class="form-control"
+              class="form-control "
             >
-              <option>
+              <option
+                value=""
+              >
                 選択してください
-              </option>
-              <option>
-                N 1
-              </option>
-              <option>
-                N 2
               </option>
             </select>
           </div>
@@ -782,11 +713,6 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
               class="relative"
             >
               資格交付日:
-              <span
-                class="note-red"
-              >
-                *
-              </span>
             </i>
           </label>
           <div
@@ -825,11 +751,6 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
               class="relative"
             >
               失効日:
-              <span
-                class="note-red"
-              >
-                *
-              </span>
             </i>
           </label>
           <div
@@ -874,8 +795,10 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
             class="col-sm col-sm-10"
           >
             <input
-              class="form-control"
+              class="form-control "
+              maxlength="5"
               type="text"
+              value=""
             />
           </div>
         </li>
@@ -887,7 +810,7 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
           >
             <button
               class="btn btn-primary btn-sm"
-              type="button"
+              type="submit"
             >
               確認
             </button>

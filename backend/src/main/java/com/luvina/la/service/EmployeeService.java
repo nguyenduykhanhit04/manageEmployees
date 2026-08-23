@@ -5,6 +5,8 @@
  */
 package com.luvina.la.service;
 
+import com.luvina.la.payload.AddEmployeeRequest;
+import com.luvina.la.payload.AddEmployeeResponse;
 import com.luvina.la.payload.EmployeeListResponse;
 import java.util.Map;
 
@@ -14,6 +16,7 @@ import java.util.Map;
  * @author nguyenduykhanh2
  */
 public interface EmployeeService {
+
     /**
      * Lấy danh sách nhân viên theo điều kiện tìm kiếm, sắp xếp và phân trang.
      *
@@ -25,4 +28,12 @@ public interface EmployeeService {
      * @return thông tin phản hồi chứa mã response và danh sách nhân viên
      */
     EmployeeListResponse getEmployees(String employeeName, Long departmentId, Map<String, String> orderParams, int offset, int limit);
+
+    /**
+     * Thêm mới nhân viên và thông tin chứng chỉ tiếng Nhật liên quan.
+     *
+     * @param request thông tin nhân viên cần thêm mới
+     * @return kết quả phản hồi chứa mã response và mã nhân viên vừa tạo
+     */
+    AddEmployeeResponse addEmployee(AddEmployeeRequest request);
 }

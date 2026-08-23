@@ -25,8 +25,11 @@ public class Certification implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "certification_id", unique = true, nullable = false)
-    private Long certification_id;
+    private Long certificationId;
 
-    @Column(name = "certification_name", unique = true, nullable = false)
+    @Column(name = "certification_name", unique = true, nullable = false, length = 50)
     private String certificationName;
+
+    @Column(name = "certification_level", nullable = false)
+    private Integer certificationLevel;
 }

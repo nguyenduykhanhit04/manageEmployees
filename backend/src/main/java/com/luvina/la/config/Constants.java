@@ -31,6 +31,8 @@ public class Constants {
             "/login/**",
             "/error/**",
             "/department/**",
+            "/departments/**",
+            "/certifications/**",
             "/employee",
             "/employee/**"
     };
@@ -116,6 +118,9 @@ public class Constants {
 
     // Mã lỗi phải là ký tự Katakana.
     public static final String ER009 = "ER009";
+
+    // Mã lỗi ngày không hợp lệ.
+    public static final String ER011 = "ER011";
 
     // Mã lỗi ngày kết thúc nhỏ hơn hoặc bằng ngày bắt đầu.
     public static final String ER012 = "ER012";
