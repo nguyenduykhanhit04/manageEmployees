@@ -15,7 +15,7 @@ export interface PaginationProps {
 }
 
 /**
- * Component thanh phân trang (Pagination) tái sử dụng cho các bảng dữ liệu.
+ * Component thanh phân trang tái sử dụng cho các bảng dữ liệu.
  *
  * @author nguyenduykhanh2
  */
@@ -29,7 +29,7 @@ export const Pagination: React.FC<PaginationProps> = ({
     return null;
   }
 
-  // Tính toán dải số trang hiển thị theo cửa sổ trượt (sliding window)
+  // Tính toán dải số trang hiển thị theo cửa sổ trượt
   let startPage = Math.max(1, currentPage - Math.floor(maxDisplayPages / 2));
   let endPage = startPage + maxDisplayPages - 1;
 
