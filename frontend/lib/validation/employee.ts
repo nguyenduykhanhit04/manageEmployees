@@ -19,78 +19,109 @@ const HALF_WIDTH_REGEX = /^[\x00-\x7F]+$/;
 const DATE_FORMAT_REGEX = /^\d{4}\/\d{2}\/\d{2}$/;
 
 /**
- * Schema validate thông tin nhân viên cho form Thêm mới / Chỉnh sửa (ADM003)
+ * Hàm tạo Schema validate thông tin nhân viên cho form Thêm mới / Chỉnh sửa (ADM003)
+ *
+ * @param isEditMode cờ xác định chế độ chỉnh sửa (mật khẩu không bắt buộc nếu bỏ trống)
  */
-export const employeeFormSchema = z.object({
-  employeeLoginId: z
-    .string()
-    .trim()
-    .min(1, 'ER001')
-    .max(50, 'ER006')
-    .regex(LOGIN_ID_REGEX, 'ER019'),
-  departmentId: z
-    .string()
-    .min(1, 'ER002'),
-  employeeName: z
-    .string()
-    .trim()
-    .min(1, 'ER001')
-    .max(125, 'ER006'),
-  employeeNameKana: z
-    .string()
-    .trim()
-    .min(1, 'ER001')
-    .max(125, 'ER006')
-    .regex(KATAKANA_REGEX, 'ER009'),
-  employeeBirthDate: z
-    .string()
-    .trim()
-    .min(1, 'ER001')
-    .regex(DATE_FORMAT_REGEX, 'ER005'),
-  employeeEmail: z
-    .string()
-    .trim()
-    .min(1, 'ER001')
-    .max(125, 'ER006')
-    .email('ER005'),
-  employeeTelephone: z
-    .string()
-    .trim()
-    .min(1, 'ER001')
-    .max(50, 'ER006')
-    .regex(HALF_WIDTH_REGEX, 'ER008'),
-  employeeLoginPassword: z
-    .string()
-    .min(8, 'ER007')
-    .max(50, 'ER007'),
-  passwordConfirmation: z
-    .string()
-    .min(1, 'ER001'),
-  certificationId: z
-    .string()
-    .optional()
-    .or(z.literal('')),
-  certificationStartDate: z
-    .string()
-    .optional()
-    .or(z.literal('')),
-  certificationEndDate: z
-    .string()
-    .optional()
-    .or(z.literal('')),
-  employeeCertificationScore: z
-    .string()
-    .optional()
-    .or(z.literal('')),
-}).superRefine((data, ctx) => {
-  // 1. Kiểm tra passwordConfirmation khớp với employeeLoginPassword
-  if (data.employeeLoginPassword && data.passwordConfirmation && data.employeeLoginPassword !== data.passwordConfirmation) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'ER017',
-      path: ['passwordConfirmation'],
-    });
-  }
+export const getEmployeeFormSchema = (isEditMode: boolean = false) =>
+  z.object({
+    employeeLoginId: z
+      .string()
+      .trim()
+      .min(1, 'ER001')
+      .max(50, 'ER006')
+      .regex(LOGIN_ID_REGEX, 'ER019'),
+    departmentId: z
+      .string()
+      .min(1, 'ER002'),
+    employeeName: z
+      .string()
+      .trim()
+      .min(1, 'ER001')
+      .max(125, 'ER006'),
+    employeeNameKana: z
+      .string()
+      .trim()
+      .min(1, 'ER001')
+      .max(125, 'ER006')
+      .regex(KATAKANA_REGEX, 'ER009'),
+    employeeBirthDate: z
+      .string()
+      .trim()
+      .min(1, 'ER001')
+      .regex(DATE_FORMAT_REGEX, 'ER005'),
+    employeeEmail: z
+      .string()
+      .trim()
+      .min(1, 'ER001')
+      .max(125, 'ER006')
+      .email('ER005'),
+    employeeTelephone: z
+      .string()
+      .trim()
+      .min(1, 'ER001')
+      .max(50, 'ER006')
+      .regex(HALF_WIDTH_REGEX, 'ER008'),
+    employeeLoginPassword: z
+      .string()
+      .optional()
+      .or(z.literal('')),
+    passwordConfirmation: z
+      .string()
+      .optional()
+      .or(z.literal('')),
+    certificationId: z
+      .string()
+      .optional()
+      .or(z.literal('')),
+    certificationStartDate: z
+      .string()
+      .optional()
+      .or(z.literal('')),
+    certificationEndDate: z
+      .string()
+      .optional()
+      .or(z.literal('')),
+    employeeCertificationScore: z
+      .string()
+      .optional()
+      .or(z.literal('')),
+  }).superRefine((data, ctx) => {
+    // 1. Kiểm tra mật khẩu
+    if (!isEditMode) {
+      if (!data.employeeLoginPassword || data.employeeLoginPassword.length < 8 || data.employeeLoginPassword.length > 50) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'ER007',
+          path: ['employeeLoginPassword'],
+        });
+      }
+      if (!data.passwordConfirmation || data.passwordConfirmation.trim() === '') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'ER001',
+          path: ['passwordConfirmation'],
+        });
+      }
+    } else {
+      if (data.employeeLoginPassword && data.employeeLoginPassword.trim() !== '') {
+        if (data.employeeLoginPassword.length < 8 || data.employeeLoginPassword.length > 50) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'ER007',
+            path: ['employeeLoginPassword'],
+          });
+        }
+      }
+    }
+
+    if (data.employeeLoginPassword && data.passwordConfirmation && data.employeeLoginPassword !== data.passwordConfirmation) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'ER017',
+        path: ['passwordConfirmation'],
+      });
+    }
 
   // 2. Nếu có chọn chứng chỉ tiếng Nhật (certificationId khác rỗng)
   if (data.certificationId && data.certificationId.trim() !== '') {

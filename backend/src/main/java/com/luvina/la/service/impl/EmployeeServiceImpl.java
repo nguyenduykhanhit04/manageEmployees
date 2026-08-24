@@ -6,6 +6,7 @@
 package com.luvina.la.service.impl;
 
 import com.luvina.la.config.Constants;
+import com.luvina.la.dto.EmployeeCertificationDetailDTO;
 import com.luvina.la.dto.EmployeeDTO;
 import com.luvina.la.entity.Certification;
 import com.luvina.la.entity.Department;
@@ -16,6 +17,7 @@ import com.luvina.la.payload.AddEmployeeRequest;
 import com.luvina.la.payload.AddEmployeeResponse;
 import com.luvina.la.payload.ApiErrorMessage;
 import com.luvina.la.payload.CertificationRequest;
+import com.luvina.la.payload.EmployeeDetailResponse;
 import com.luvina.la.payload.EmployeeListResponse;
 import com.luvina.la.repository.CertificationRepository;
 import com.luvina.la.repository.DepartmentRepository;
@@ -372,6 +374,72 @@ public class EmployeeServiceImpl implements EmployeeService {
                 Constants.CODE_SUCCESS,
                 savedEmployee.getEmployeeId(),
                 new ApiErrorMessage(Constants.MSG_ADD_SUCCESS, new ArrayList<>()));
+    }
+
+    /**
+     * Lấy thông tin chi tiết của một nhân viên theo mã nhân viên.
+     *
+     * @param employeeId mã nhân viên cần lấy thông tin chi tiết
+     * @return thông tin chi tiết nhân viên và danh sách chứng chỉ tiếng Nhật
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public EmployeeDetailResponse getEmployeeById(Long employeeId) {
+        // 1. Validate parameter employeeId
+        if (employeeId == null) {
+            throw new BusinessException(Constants.ER001, List.of("ＩＤ"));
+        }
+
+        // 2. Get thông tin chi tiết nhân viên từ database
+        Employee employee = employeeRepository.findById(employeeId).orElse(null);
+        if (employee == null) {
+            throw new BusinessException(Constants.ER013, List.of("ＩＤ"));
+        }
+
+        // 3. Get danh sách chứng chỉ tiếng Nhật sắp xếp theo level tăng dần
+        List<EmployeeCertification> empCerts = employeeCertificationRepository
+                .findByEmployeeEmployeeIdOrderByCertificationCertificationLevelAsc(employeeId);
+
+        List<EmployeeCertificationDetailDTO> certDTOList = new ArrayList<>();
+        if (empCerts != null) {
+            for (EmployeeCertification ec : empCerts) {
+                Certification cert = ec.getCertification();
+                String certName = cert != null ? cert.getCertificationName() : "";
+                String startDateStr = ec.getStartDate() != null ? ec.getStartDate().format(DATE_FORMATTER) : null;
+                String endDateStr = ec.getEndDate() != null ? ec.getEndDate().format(DATE_FORMATTER) : null;
+                Long certId = cert != null ? cert.getCertificationId() : null;
+
+                certDTOList.add(new EmployeeCertificationDetailDTO(
+                        certId,
+                        certName,
+                        startDateStr,
+                        endDateStr,
+                        ec.getScore()
+                ));
+            }
+        }
+
+        // 4. Định dạng ngày sinh
+        String birthDateStr = employee.getEmployeeBirthDate() != null
+                ? employee.getEmployeeBirthDate().format(DATE_FORMATTER)
+                : null;
+
+        Long deptId = employee.getDepartment() != null ? employee.getDepartment().getDepartmentId() : null;
+        String deptName = employee.getDepartment() != null ? employee.getDepartment().getDepartmentName() : null;
+
+        return new EmployeeDetailResponse(
+                Constants.CODE_SUCCESS,
+                employee.getEmployeeId(),
+                employee.getEmployeeName(),
+                birthDateStr,
+                deptId,
+                deptName,
+                employee.getEmployeeEmail(),
+                employee.getEmployeeTelephone(),
+                employee.getEmployeeNameKana(),
+                employee.getEmployeeLoginId(),
+                certDTOList
+        );
     }
 
     /**

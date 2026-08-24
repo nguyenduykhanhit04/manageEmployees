@@ -8,6 +8,7 @@ package com.luvina.la.controller;
 import com.luvina.la.config.Constants;
 import com.luvina.la.payload.AddEmployeeRequest;
 import com.luvina.la.payload.AddEmployeeResponse;
+import com.luvina.la.payload.EmployeeDetailResponse;
 import com.luvina.la.payload.EmployeeListResponse;
 import com.luvina.la.service.EmployeeService;
 import java.util.LinkedHashMap;
@@ -79,6 +80,18 @@ public class EmployeeController {
     @PostMapping("/employee")
     public ResponseEntity<AddEmployeeResponse> addEmployee(@RequestBody AddEmployeeRequest request) {
         AddEmployeeResponse response = employeeService.addEmployee(request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Lấy thông tin chi tiết của một nhân viên.
+     *
+     * @param id mã nhân viên cần lấy thông tin chi tiết
+     * @return thông tin phản hồi chứa mã kết quả và dữ liệu chi tiết nhân viên
+     */
+    @GetMapping("/employee/{id}")
+    public ResponseEntity<EmployeeDetailResponse> getEmployee(@PathVariable("id") Long id) {
+        EmployeeDetailResponse response = employeeService.getEmployeeById(id);
         return ResponseEntity.ok(response);
     }
 }

@@ -22,6 +22,32 @@ export interface EmployeeListApiResponse {
   employees: EmployeeItem[];
 }
 
+export interface EmployeeCertificationDetail {
+  certificationId: number;
+  certificationName: string;
+  startDate: string;
+  endDate: string;
+  score: number;
+}
+
+export interface EmployeeDetailApiResponse {
+  code: number;
+  employeeId: number;
+  employeeName: string;
+  employeeBirthDate: string;
+  departmentId: number;
+  departmentName: string;
+  employeeEmail: string;
+  employeeTelephone: string;
+  employeeNameKana: string;
+  employeeLoginId: string;
+  certifications: EmployeeCertificationDetail[];
+  message?: {
+    code: string;
+    params: string[];
+  };
+}
+
 export interface EmployeeSearchParams {
   name?: string;
   departmentId?: number;

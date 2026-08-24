@@ -6,11 +6,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useDepartments } from '@/hooks/useDepartments';
 import { useCertifications } from '@/hooks/useCertifications';
-import { createEmployee } from '@/lib/api/employee';
-import { employeeFormSchema, EmployeeFormData } from '@/lib/validation/employee';
+import { createEmployee, getEmployeeById } from '@/lib/api/employee';
+import { getEmployeeFormSchema } from '@/lib/validation/employee';
 import { ERROR_MESSAGES, FIELD_LABELS } from '@/lib/constants/messages';
 import { AddEmployeePayload, EmployeeFormState } from '@/types/employee';
 
@@ -62,6 +62,15 @@ export function formatErrorMessage(errorCode: string, fieldName: string, params:
  */
 export function useEmployeeForm() {
   const router = useRouter();
+  let searchParams: URLSearchParams | null = null;
+  try {
+    searchParams = useSearchParams() as unknown as URLSearchParams;
+  } catch {
+    // SSR / test safe
+  }
+  const editId = searchParams?.get?.('id');
+  const isEditMode = !!editId;
+
   const { departments, loading: loadingDepartments } = useDepartments();
   const { certifications, loading: loadingCertifications } = useCertifications();
 
@@ -69,10 +78,44 @@ export function useEmployeeForm() {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [generalError, setGeneralError] = useState<string>('');
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [loadingData, setLoadingData] = useState<boolean>(false);
 
-  // Tải dữ liệu đã nhập từ sessionStorage (nếu quay lại từ màn hình Confirm)
+  // Tải dữ liệu nhân viên nếu ở chế độ Edit (có param id)
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (editId) {
+      setLoadingData(true);
+      getEmployeeById(editId)
+        .then((data) => {
+          if (data && data.code === 200) {
+            const cert = data.certifications && data.certifications.length > 0 ? data.certifications[0] : null;
+            setFormData({
+              employeeLoginId: data.employeeLoginId || '',
+              departmentId: data.departmentId ? String(data.departmentId) : '',
+              departmentName: data.departmentName || '',
+              employeeName: data.employeeName || '',
+              employeeNameKana: data.employeeNameKana || '',
+              employeeBirthDate: data.employeeBirthDate ? data.employeeBirthDate.replaceAll('-', '/') : '',
+              employeeEmail: data.employeeEmail || '',
+              employeeTelephone: data.employeeTelephone || '',
+              employeeLoginPassword: '',
+              passwordConfirmation: '',
+              certificationId: cert?.certificationId ? String(cert.certificationId) : '',
+              certificationName: cert?.certificationName || '',
+              certificationStartDate: cert?.startDate ? cert.startDate.replaceAll('-', '/') : '',
+              certificationEndDate: cert?.endDate ? cert.endDate.replaceAll('-', '/') : '',
+              employeeCertificationScore: cert?.score !== null && cert?.score !== undefined ? String(cert.score) : '',
+            });
+          }
+        })
+        .catch((err) => {
+          console.error('Error fetching employee for edit:', err);
+          setGeneralError('該当するユーザが存在しません。');
+        })
+        .finally(() => {
+          setLoadingData(false);
+        });
+    } else if (typeof window !== 'undefined') {
+      // Tải dữ liệu đã nhập từ sessionStorage (nếu quay lại từ màn hình Confirm)
       const savedData = sessionStorage.getItem(FORM_STORAGE_KEY);
       if (savedData) {
         try {
@@ -83,7 +126,7 @@ export function useEmployeeForm() {
         }
       }
     }
-  }, []);
+  }, [editId]);
 
   /**
    * Thay đổi giá trị từng trường trong form.
@@ -115,7 +158,8 @@ export function useEmployeeForm() {
     setFormErrors({});
     setGeneralError('');
 
-    const validationResult = employeeFormSchema.safeParse(formData);
+    const schema = getEmployeeFormSchema(isEditMode);
+    const validationResult = schema.safeParse(formData);
 
     if (!validationResult.success) {
       const fieldErrors: Record<string, string> = {};
@@ -175,9 +219,9 @@ export function useEmployeeForm() {
         payload.certifications = [
           {
             certificationId: Number(formData.certificationId),
-            startDate: formData.certificationStartDate ? formData.certificationStartDate.trim() : '',
-            endDate: formData.certificationEndDate ? formData.certificationEndDate.trim() : '',
-            score: Number(formData.employeeCertificationScore),
+            startDate: formData.certificationStartDate || '',
+            endDate: formData.certificationEndDate || '',
+            score: Number(formData.employeeCertificationScore || 0),
           },
         ];
       }
@@ -186,7 +230,6 @@ export function useEmployeeForm() {
 
       if (res && res.code === 200) {
         sessionStorage.removeItem(FORM_STORAGE_KEY);
-        sessionStorage.setItem('complete_message', 'MSG001');
         router.push('/employees/complete');
       } else {
         const errCode = res?.message?.code || 'ER015';
@@ -235,7 +278,9 @@ export function useEmployeeForm() {
     setGeneralError,
     departments,
     certifications,
-    loading: loadingDepartments || loadingCertifications,
+    loading: loadingDepartments || loadingCertifications || loadingData,
+    isEditMode,
+    editId,
     submitting,
     handleFieldChange,
     handleConfirm,

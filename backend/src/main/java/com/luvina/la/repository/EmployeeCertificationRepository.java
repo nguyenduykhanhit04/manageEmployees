@@ -25,4 +25,12 @@ public interface EmployeeCertificationRepository extends CrudRepository<Employee
      * @return danh sách chứng chỉ của nhân viên
      */
     List<EmployeeCertification> findByEmployeeEmployeeId(Long employeeId);
+
+    /**
+     * Lấy danh sách chứng chỉ theo mã nhân viên sắp xếp theo trình độ chứng chỉ tăng dần.
+     *
+     * @param employeeId mã nhân viên
+     * @return danh sách chứng chỉ của nhân viên sắp xếp theo level tăng dần
+     */
+    List<EmployeeCertification> findByEmployeeEmployeeIdOrderByCertificationCertificationLevelAsc(Long employeeId);
 }

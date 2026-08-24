@@ -4,7 +4,7 @@
  * employee.ts, 22/8/2026 nguyenduykhanh2
  */
 
-import { AddEmployeeApiResponse, AddEmployeePayload, EmployeeListApiResponse } from "@/types/employee";
+import { AddEmployeeApiResponse, AddEmployeePayload, EmployeeDetailApiResponse, EmployeeListApiResponse } from "@/types/employee";
 import { apiClient } from "@/lib/api/client";
 
 /**
@@ -60,5 +60,16 @@ export const getEmployees = async (params: {
  */
 export const createEmployee = async (payload: AddEmployeePayload): Promise<AddEmployeeApiResponse> => {
   const response = await apiClient.post<AddEmployeeApiResponse>('/employee', payload);
+  return response.data;
+};
+
+/**
+ * Gọi API lấy thông tin chi tiết một nhân viên theo ID.
+ *
+ * @param id mã nhân viên cần lấy thông tin chi tiết
+ * @return phản hồi chi tiết nhân viên từ Backend
+ */
+export const getEmployeeById = async (id: number | string): Promise<EmployeeDetailApiResponse> => {
+  const response = await apiClient.get<EmployeeDetailApiResponse>(`/employee/${id}`);
   return response.data;
 };

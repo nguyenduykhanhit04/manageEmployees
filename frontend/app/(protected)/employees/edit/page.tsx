@@ -55,6 +55,7 @@ export default function EmployeeEditPage() {
     generalError,
     departments,
     certifications,
+    isEditMode,
     handleFieldChange,
     handleConfirm,
     handleBack,
@@ -78,7 +79,7 @@ export default function EmployeeEditPage() {
         }}
       >
         <ul>
-          <li className="title">会員情報編集</li>
+          <li className="title">{isEditMode ? '会員情報編集' : '会員情報入力'}</li>
 
           {/* Hiển thị lỗi chung */}
           {generalError && (
@@ -97,6 +98,7 @@ export default function EmployeeEditPage() {
             <div className="col-sm col-sm-10">
               <input
                 type="text"
+                disabled={isEditMode}
                 className={`form-control ${formErrors.employeeLoginId ? 'is-invalid' : ''}`}
                 value={formData.employeeLoginId}
                 maxLength={50}
@@ -264,7 +266,7 @@ export default function EmployeeEditPage() {
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">
               <i className="relative">
-                パスワード:<span className="note-red">*</span>
+                パスワード:{!isEditMode && <span className="note-red">*</span>}
               </i>
             </label>
             <div className="col-sm col-sm-10">
@@ -287,7 +289,7 @@ export default function EmployeeEditPage() {
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">
               <i className="relative">
-                パスワード（確認）:<span className="note-red">*</span>
+                パスワード（確認）:{!isEditMode && <span className="note-red">*</span>}
               </i>
             </label>
             <div className="col-sm col-sm-10">

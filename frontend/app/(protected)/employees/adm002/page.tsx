@@ -149,7 +149,11 @@ export default function EmployeeListPage() {
                       </Link>
                     </div>
 
-                    <div>{emp.employeeName}</div>
+                    <div>
+                      <Link href={`/employees/detail?id=${emp.employeeId}`}>
+                        {emp.employeeName}
+                      </Link>
+                    </div>
                     <div>{emp.employeeBirthDate ? emp.employeeBirthDate.replaceAll('-', '/') : ''}</div>
                     <div>{emp.departmentName || ''}</div>
                     <div>{emp.employeeEmail || ''}</div>

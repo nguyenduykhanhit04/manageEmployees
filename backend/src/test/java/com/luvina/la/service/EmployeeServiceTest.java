@@ -213,4 +213,97 @@ class EmployeeServiceTest {
         BusinessException ex = assertThrows(BusinessException.class, () -> employeeService.addEmployee(validRequest));
         assertEquals(Constants.ER012, ex.getErrorCode());
     }
+
+    @Test
+    @DisplayName("Lấy chi tiết nhân viên thành công kèm thông tin chứng chỉ")
+    void testGetEmployeeById_Success_WithCertifications() {
+        Employee emp = new Employee();
+        emp.setEmployeeId(1L);
+        emp.setEmployeeName("Nguyễn Văn A");
+        emp.setEmployeeBirthDate(LocalDate.of(1990, 5, 20));
+        emp.setEmployeeEmail("nguyenvana@luvina.net");
+        emp.setEmployeeTelephone("0123456789");
+        emp.setEmployeeNameKana("グエン ヴァン A");
+        emp.setEmployeeLoginId("nguyenvana");
+        emp.setDepartment(testDepartment);
+
+        Certification cert = new Certification();
+        cert.setCertificationId(1L);
+        cert.setCertificationName("N1");
+        cert.setCertificationLevel(1);
+
+        com.luvina.la.entity.EmployeeCertification empCert = new com.luvina.la.entity.EmployeeCertification();
+        empCert.setEmployee(emp);
+        empCert.setCertification(cert);
+        empCert.setStartDate(LocalDate.of(2023, 1, 1));
+        empCert.setEndDate(LocalDate.of(2025, 1, 1));
+        empCert.setScore(new BigDecimal("180"));
+
+        when(employeeRepository.findById(1L)).thenReturn(Optional.of(emp));
+        when(employeeCertificationRepository.findByEmployeeEmployeeIdOrderByCertificationCertificationLevelAsc(1L))
+                .thenReturn(List.of(empCert));
+
+        var response = employeeService.getEmployeeById(1L);
+
+        assertNotNull(response);
+        assertEquals(200, response.getCode());
+        assertEquals(1L, response.getEmployeeId());
+        assertEquals("Nguyễn Văn A", response.getEmployeeName());
+        assertEquals("1990/05/20", response.getEmployeeBirthDate());
+        assertEquals("Phòng DEV1", response.getDepartmentName());
+        assertEquals("nguyenvana@luvina.net", response.getEmployeeEmail());
+        assertEquals("0123456789", response.getEmployeeTelephone());
+        assertEquals("グエン ヴァン A", response.getEmployeeNameKana());
+        assertEquals("nguyenvana", response.getEmployeeLoginId());
+        assertEquals(1, response.getCertifications().size());
+        assertEquals("N1", response.getCertifications().get(0).getCertificationName());
+        assertEquals("2023/01/01", response.getCertifications().get(0).getStartDate());
+        assertEquals("2025/01/01", response.getCertifications().get(0).getEndDate());
+        assertEquals(new BigDecimal("180"), response.getCertifications().get(0).getScore());
+    }
+
+    @Test
+    @DisplayName("Lấy chi tiết nhân viên thành công khi không có chứng chỉ")
+    void testGetEmployeeById_Success_WithoutCertifications() {
+        Employee emp = new Employee();
+        emp.setEmployeeId(2L);
+        emp.setEmployeeName("Trần Thị B");
+        emp.setEmployeeBirthDate(LocalDate.of(1995, 10, 15));
+        emp.setEmployeeEmail("tranthib@luvina.net");
+        emp.setEmployeeTelephone("0987654321");
+        emp.setEmployeeNameKana("トラン ティ B");
+        emp.setEmployeeLoginId("tranthib");
+        emp.setDepartment(testDepartment);
+
+        when(employeeRepository.findById(2L)).thenReturn(Optional.of(emp));
+        when(employeeCertificationRepository.findByEmployeeEmployeeIdOrderByCertificationCertificationLevelAsc(2L))
+                .thenReturn(List.of());
+
+        var response = employeeService.getEmployeeById(2L);
+
+        assertNotNull(response);
+        assertEquals(200, response.getCode());
+        assertEquals(2L, response.getEmployeeId());
+        assertEquals("Trần Thị B", response.getEmployeeName());
+        assertEquals("1995/10/15", response.getEmployeeBirthDate());
+        assertEquals(0, response.getCertifications().size());
+    }
+
+    @Test
+    @DisplayName("Lỗi ER001 khi employeeId là null")
+    void testGetEmployeeById_NullId_ThrowsER001() {
+        BusinessException ex = assertThrows(BusinessException.class, () -> employeeService.getEmployeeById(null));
+        assertEquals(Constants.ER001, ex.getErrorCode());
+        assertEquals(List.of("ＩＤ"), ex.getParams());
+    }
+
+    @Test
+    @DisplayName("Lỗi ER013 khi không tìm thấy nhân viên trong DB")
+    void testGetEmployeeById_NotFound_ThrowsER013() {
+        when(employeeRepository.findById(999L)).thenReturn(Optional.empty());
+
+        BusinessException ex = assertThrows(BusinessException.class, () -> employeeService.getEmployeeById(999L));
+        assertEquals(Constants.ER013, ex.getErrorCode());
+        assertEquals(List.of("ＩＤ"), ex.getParams());
+    }
 }

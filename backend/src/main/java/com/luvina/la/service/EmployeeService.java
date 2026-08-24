@@ -7,6 +7,7 @@ package com.luvina.la.service;
 
 import com.luvina.la.payload.AddEmployeeRequest;
 import com.luvina.la.payload.AddEmployeeResponse;
+import com.luvina.la.payload.EmployeeDetailResponse;
 import com.luvina.la.payload.EmployeeListResponse;
 import java.util.Map;
 
@@ -36,4 +37,12 @@ public interface EmployeeService {
      * @return kết quả phản hồi chứa mã response và mã nhân viên vừa tạo
      */
     AddEmployeeResponse addEmployee(AddEmployeeRequest request);
+
+    /**
+     * Lấy thông tin chi tiết của một nhân viên theo mã nhân viên.
+     *
+     * @param employeeId mã nhân viên cần lấy chi tiết
+     * @return kết quả phản hồi chứa thông tin chi tiết nhân viên và danh sách chứng chỉ tiếng Nhật
+     */
+    EmployeeDetailResponse getEmployeeById(Long employeeId);
 }

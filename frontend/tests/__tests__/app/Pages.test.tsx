@@ -13,6 +13,7 @@ jest.mock('next/navigation', () => ({
     push: jest.fn(),
   }),
   usePathname: () => '/', // Mock pathname for layout test
+  useSearchParams: () => new URLSearchParams('id=1'),
 }));
 
 

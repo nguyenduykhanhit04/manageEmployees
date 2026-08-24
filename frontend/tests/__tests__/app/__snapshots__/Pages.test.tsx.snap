@@ -181,204 +181,11 @@ exports[`Page Snapshots renders EmployeeDetailPage unchanged 1`] = `
     <form
       class="c-form box-shadow"
     >
-      <ul
-        class="show-data"
+      <div
+        style="padding: 30px; text-align: center;"
       >
-        <li
-          class="title"
-        >
-          情報確認
-        </li>
-        <li
-          class="form-group row d-flex"
-        >
-          <label
-            class="col-form-label col-sm-2"
-          >
-            アカウント名
-          </label>
-          <div
-            class="col-sm col-sm-10"
-          >
-            ntmhuong
-          </div>
-        </li>
-        <li
-          class="form-group row d-flex"
-        >
-          <label
-            class="col-form-label col-sm-2"
-          >
-            グループ
-          </label>
-          <div
-            class="col-sm col-sm-10"
-          >
-            Nhóm 1
-          </div>
-        </li>
-        <li
-          class="form-group row d-flex"
-        >
-          <label
-            class="col-form-label col-sm-2"
-          >
-            氏名
-          </label>
-          <div
-            class="col-sm col-sm-10"
-          >
-            Nguyễn Thị Mai Hương
-          </div>
-        </li>
-        <li
-          class="form-group row d-flex"
-        >
-          <label
-            class="col-form-label col-sm-2"
-          >
-            カタカナ氏名
-          </label>
-          <div
-            class="col-sm col-sm-10"
-          >
-            名カナ
-          </div>
-        </li>
-        <li
-          class="form-group row d-flex"
-        >
-          <label
-            class="col-form-label col-sm-2"
-          >
-            生年月日
-          </label>
-          <div
-            class="col-sm col-sm-10"
-          >
-            1983/07/08
-          </div>
-        </li>
-        <li
-          class="form-group row d-flex"
-        >
-          <label
-            class="col-form-label col-sm-2"
-          >
-            メールアドレス
-          </label>
-          <div
-            class="col-sm col-sm-10"
-          >
-            	ntmhuong@luvina.net
-          </div>
-        </li>
-        <li
-          class="form-group row d-flex  bor-none"
-        >
-          <label
-            class="col-form-label col-sm-2"
-          >
-            電話番号
-          </label>
-          <div
-            class="col-sm col-sm-10"
-          >
-            0914326386
-          </div>
-        </li>
-        <li
-          class="title mt-12"
-        >
-          <a
-            href="#!"
-          >
-            日本語能力
-          </a>
-        </li>
-        <li
-          class="form-group row d-flex"
-        >
-          <label
-            class="col-form-label col-sm-2"
-          >
-            資格
-          </label>
-          <div
-            class="col-sm col-sm-10"
-          >
-            Trình độ tiếng nhật cấp 1
-          </div>
-        </li>
-        <li
-          class="form-group row d-flex"
-        >
-          <label
-            class="col-form-label col-sm-2"
-          >
-            資格交付日
-          </label>
-          <div
-            class="col-sm col-sm-10"
-          >
-            2010/07/08
-          </div>
-        </li>
-        <li
-          class="form-group row d-flex"
-        >
-          <label
-            class="col-form-label col-sm-2"
-          >
-            失効日
-          </label>
-          <div
-            class="col-sm col-sm-10"
-          >
-            2010/07/08
-          </div>
-        </li>
-        <li
-          class="form-group row d-flex"
-        >
-          <label
-            class="col-form-label col-sm-2"
-          >
-            点数
-          </label>
-          <div
-            class="col-sm col-sm-10"
-          >
-            290
-          </div>
-        </li>
-        <li
-          class="form-group row d-flex"
-        >
-          <div
-            class="btn-group col-sm col-sm-10 ml"
-          >
-            <button
-              class="btn btn-primary btn-sm"
-              type="button"
-            >
-              編集
-            </button>
-            <button
-              class="btn btn-secondary btn-sm"
-              type="button"
-            >
-              削除
-            </button>
-            <button
-              class="btn btn-secondary btn-sm"
-              type="button"
-            >
-              戻る
-            </button>
-          </div>
-        </li>
-      </ul>
+        Đang tải thông tin nhân viên...
+      </div>
     </form>
   </div>
 </div>
@@ -420,6 +227,7 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
           >
             <input
               class="form-control "
+              disabled=""
               maxlength="50"
               type="text"
               value=""
@@ -622,11 +430,6 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
               class="relative"
             >
               パスワード:
-              <span
-                class="note-red"
-              >
-                *
-              </span>
             </i>
           </label>
           <div
@@ -650,11 +453,6 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
               class="relative"
             >
               パスワード（確認）:
-              <span
-                class="note-red"
-              >
-                *
-              </span>
             </i>
           </label>
           <div
