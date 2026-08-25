@@ -7,15 +7,13 @@ package com.luvina.la.service.impl;
 
 import com.luvina.la.config.Constants;
 import com.luvina.la.dto.EmployeeDTO;
-import com.luvina.la.dto.EmployeeDisplayDTO;
-import com.luvina.la.payload.ApiErrorMessage;
 import com.luvina.la.payload.EmployeeListResponse;
 import com.luvina.la.repository.EmployeeRepository;
 import com.luvina.la.service.EmployeeService;
+import com.luvina.la.validator.EmployeeValidator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,22 +25,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private static final Set<String> VALID_ORDER_KEYS = Set.of(
-            Constants.ORDER_KEY_EMPLOYEE_NAME,
-            Constants.ORDER_KEY_CERTIFICATION_NAME,
-            Constants.ORDER_KEY_CERTIFICATION_LEVEL,
-            Constants.ORDER_KEY_END_DATE
-    );
-
     private final EmployeeRepository employeeRepository;
+    private final EmployeeValidator employeeValidator;
 
     /**
-     * Khởi tạo EmployeeServiceImpl với EmployeeRepository.
+     * Khởi tạo EmployeeServiceImpl với EmployeeRepository và EmployeeValidator.
      *
      * @param employeeRepository repository thao tác với dữ liệu nhân viên
+     * @param employeeValidator validator kiểm tra tính hợp lệ của dữ liệu đầu vào
      */
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+    public EmployeeServiceImpl(
+            EmployeeRepository employeeRepository,
+            EmployeeValidator employeeValidator) {
         this.employeeRepository = employeeRepository;
+        this.employeeValidator = employeeValidator;
     }
 
     /**
@@ -64,75 +60,13 @@ public class EmployeeServiceImpl implements EmployeeService {
             int offset,
             int limit) {
 
-        // Kiểm tra điều kiện phân trang cho offset.
-        if (offset < 0) {
-            return new EmployeeListResponse(
-                    Constants.CODE_ERROR,
-                    new ApiErrorMessage(
-                            Constants.ERROR_CODE_INVALID_PAGING,
-                            List.of(Constants.OFFSET_PARAM_LABEL)));
-        }
+        // 1. Kiểm tra tính hợp lệ của tham số đầu vào thông qua Validator
+        employeeValidator.validateGetEmployees(employeeName, offset, limit, orderParams);
 
-        // Kiểm tra điều kiện phân trang cho limit.
-        if (limit <= 0) {
-            return new EmployeeListResponse(
-                    Constants.CODE_ERROR,
-                    new ApiErrorMessage(
-                            Constants.ERROR_CODE_INVALID_PAGING,
-                            List.of(Constants.LIMIT_PARAM_LABEL)));
-        }
-
-        // Kiểm tra độ dài tên nhân viên (vượt quá 125 ký tự).
-        if (employeeName != null
-                && employeeName.length() > Constants.MAX_EMPLOYEE_NAME_LENGTH) {
-            return new EmployeeListResponse(
-                    Constants.CODE_ERROR,
-                    new ApiErrorMessage(
-                            Constants.ERROR_CODE_INVALID_EMPLOYEE_NAME,
-                            List.of(
-                                    Constants.LABEL_EMPLOYEE_NAME,
-                                    String.valueOf(Constants.MAX_EMPLOYEE_NAME_LENGTH))));
-        }
-
-        // Kiểm tra tên trường và giá trị các tham số sắp xếp.
-        if (orderParams != null) {
-            for (Map.Entry<String, String> entry : orderParams.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-
-                // Kiểm tra tên tham số sắp xếp có thuộc whitelist hay không
-                if (!VALID_ORDER_KEYS.contains(key.toLowerCase())) {
-                    return new EmployeeListResponse(
-                            Constants.CODE_ERROR,
-                            new ApiErrorMessage(
-                                    Constants.ERROR_CODE_INVALID_SORT,
-                                    List.of(key)));
-                }
-
-                // Kiểm tra giá trị tham số sắp xếp phải là ASC hoặc DESC
-                if (!Constants.SORT_ASC.equalsIgnoreCase(value)
-                        && !Constants.SORT_DESC.equalsIgnoreCase(value)) {
-                    return new EmployeeListResponse(
-                            Constants.CODE_ERROR,
-                            new ApiErrorMessage(
-                                    Constants.ERROR_CODE_INVALID_SORT,
-                                    List.of(key)));
-                }
-            }
-        }
-
-        // Escape các ký tự đặc biệt cho điều kiện LIKE.
+        // 2. Escape các ký tự đặc biệt cho điều kiện LIKE
         String escapedName = escapeLikePattern(employeeName);
 
-        // Lấy thứ tự sắp xếp theo tham số truyền vào.
-        String ordName = orderParams.get(Constants.ORDER_KEY_EMPLOYEE_NAME);
-        String ordCert = orderParams.get(Constants.ORDER_KEY_CERTIFICATION_LEVEL);
-        if (ordCert == null) {
-            ordCert = orderParams.get("ord_certification_name");
-        }
-        String ordEndDate = orderParams.get(Constants.ORDER_KEY_END_DATE);
-
-        // Đếm tổng số bản ghi.
+        // 3. Đếm tổng số bản ghi thỏa mãn điều kiện
         long totalRecords = employeeRepository.countDisplayEmployees(
                 escapedName,
                 departmentId);
@@ -144,7 +78,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     new ArrayList<>());
         }
 
-        // Lấy danh sách nhân viên từ repository tùy biến theo thứ tự ưu tiên sắp xếp động.
+        // 4. Lấy danh sách nhân viên từ repository tùy biến theo thứ tự ưu tiên sắp xếp động
         List<EmployeeDTO> employees = employeeRepository.findDisplayEmployees(
                 escapedName,
                 departmentId,
@@ -152,6 +86,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 offset,
                 limit);
 
+        // 5. Trả về kết quả danh sách nhân viên và tổng số bản ghi
         return new EmployeeListResponse(
                 Constants.CODE_SUCCESS,
                 totalRecords,
