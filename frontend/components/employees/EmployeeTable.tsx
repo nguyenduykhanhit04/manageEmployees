@@ -17,6 +17,7 @@ import {
   QUERY_PARAMS,
 } from '@/lib/constants';
 import { SYSTEM_MESSAGES } from '@/lib/constants/messages';
+import { truncateText } from '@/lib/utils/format';
 
 /**
  * Props truyền vào Component EmployeeTable.
@@ -42,7 +43,7 @@ export interface EmployeeTableProps {
 
 /**
  * Component bảng danh sách nhân viên hiển thị 9 cột dữ liệu,
- * hỗ trợ sắp xếp các cột và thanh phân trang.
+ * hỗ trợ sắp xếp các cột, thanh phân trang và tự động cắt ngắn chuỗi nếu quá 22 ký tự.
  *
  * @author nguyenduykhanh2
  */
@@ -126,14 +127,30 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
                   </Link>
                 </div>
 
-                <div>{emp.employeeName}</div>
-                <div>{emp.employeeBirthDate ? emp.employeeBirthDate.replaceAll('-', '/') : ''}</div>
-                <div>{emp.departmentName || ''}</div>
-                <div>{emp.employeeEmail || ''}</div>
-                <div>{emp.employeeTelephone || ''}</div>
-                <div>{emp.certificationName || ''}</div>
-                <div>{emp.endDate ? emp.endDate.replaceAll('-', '/') : ''}</div>
-                <div>{emp.score !== null && emp.score !== undefined ? emp.score : ''}</div>
+                <div title={emp.employeeName}>
+                  {truncateText(emp.employeeName)}
+                </div>
+                <div>
+                  {emp.employeeBirthDate ? emp.employeeBirthDate.replaceAll('-', '/') : ''}
+                </div>
+                <div title={emp.departmentName || ''}>
+                  {truncateText(emp.departmentName)}
+                </div>
+                <div title={emp.employeeEmail || ''}>
+                  {truncateText(emp.employeeEmail)}
+                </div>
+                <div title={emp.employeeTelephone || ''}>
+                  {truncateText(emp.employeeTelephone)}
+                </div>
+                <div title={emp.certificationName || ''}>
+                  {truncateText(emp.certificationName)}
+                </div>
+                <div>
+                  {emp.endDate ? emp.endDate.replaceAll('-', '/') : ''}
+                </div>
+                <div>
+                  {emp.score !== null && emp.score !== undefined ? emp.score : ''}
+                </div>
               </React.Fragment>
             ))
           )}

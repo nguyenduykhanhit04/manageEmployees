@@ -15,6 +15,13 @@ export const PAGING = {
 } as const;
 
 /**
+ * Cấu hình hiển thị dữ liệu trên giao diện.
+ */
+export const DISPLAY_CONFIG = {
+  MAX_TABLE_TEXT_LENGTH: 22,
+} as const;
+
+/**
  * Chiều sắp xếp dữ liệu.
  */
 export const SORT_ORDER = {
