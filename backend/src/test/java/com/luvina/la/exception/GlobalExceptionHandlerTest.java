@@ -1,7 +1,7 @@
 /**
  * Copyright(C) 2026 Luvina Software Company
  *
- * GlobalExceptionHandlerTest.java, 22/8/2026 nguyenduykhanh2
+ * GlobalExceptionHandlerTest.java, 25/08/2026 nguyenduykhanh2
  */
 package com.luvina.la.exception;
 
@@ -9,13 +9,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.luvina.la.config.Constants;
-import com.luvina.la.payload.ApiResponse;
+import com.luvina.la.payload.response.ApiResponse;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+/**
+ * Unit test cho GlobalExceptionHandler.
+ *
+ * @author nguyenduykhanh2
+ */
 class GlobalExceptionHandlerTest {
 
     private GlobalExceptionHandler exceptionHandler;

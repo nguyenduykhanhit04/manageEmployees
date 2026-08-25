@@ -1,13 +1,13 @@
 /**
  * Copyright(C) 2026 Luvina Software Company
  *
- * EmployeeServiceImpl.java, 21/8/2026 nguyenduykhanh2
+ * EmployeeServiceImpl.java, 25/08/2026 nguyenduykhanh2
  */
 package com.luvina.la.service.impl;
 
 import com.luvina.la.config.Constants;
 import com.luvina.la.dto.EmployeeDTO;
-import com.luvina.la.payload.EmployeeListResponse;
+import com.luvina.la.payload.response.EmployeeListResponse;
 import com.luvina.la.repository.EmployeeRepository;
 import com.luvina.la.service.EmployeeService;
 import com.luvina.la.validator.EmployeeValidator;

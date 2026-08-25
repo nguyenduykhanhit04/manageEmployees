@@ -1,19 +1,18 @@
 /**
  * Copyright(C) 2026 Luvina Software Company
  *
- * DepartmentServiceImpl.java, 21/8/2026 nguyenduykhanh2
+ * DepartmentServiceImpl.java, 25/08/2026 nguyenduykhanh2
  */
 package com.luvina.la.service.impl;
 
 import com.luvina.la.config.Constants;
 import com.luvina.la.dto.DepartmentDTO;
-import com.luvina.la.entity.Department;
-import com.luvina.la.payload.DepartmentListResponse;
+import com.luvina.la.entity.DepartmentEntity;
+import com.luvina.la.mapper.DepartmentMapper;
+import com.luvina.la.payload.response.DepartmentListResponse;
 import com.luvina.la.repository.DepartmentRepository;
 import com.luvina.la.service.DepartmentService;
 import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -25,15 +24,19 @@ import org.springframework.stereotype.Service;
 public class DepartmentServiceImpl implements DepartmentService {
 
     private final DepartmentRepository departmentRepository;
+    private final DepartmentMapper departmentMapper;
 
     /**
-     * Khởi tạo DepartmentServiceImpl với DepartmentRepository.
+     * Khởi tạo DepartmentServiceImpl với DepartmentRepository và DepartmentMapper.
      *
      * @param departmentRepository repository thao tác với dữ liệu phòng ban
+     * @param departmentMapper mapper chuyển đổi giữa DepartmentEntity và DepartmentDTO
      */
-    @Autowired
-    public DepartmentServiceImpl(DepartmentRepository departmentRepository) {
+    public DepartmentServiceImpl(
+            DepartmentRepository departmentRepository,
+            DepartmentMapper departmentMapper) {
         this.departmentRepository = departmentRepository;
+        this.departmentMapper = departmentMapper;
     }
 
     /**
@@ -43,11 +46,13 @@ public class DepartmentServiceImpl implements DepartmentService {
      */
     @Override
     public DepartmentListResponse getAllDepartments() {
-        List<Department> entities = departmentRepository.findAll();
+        // 1. Lấy toàn bộ danh sách Entity phòng ban từ cơ sở dữ liệu
+        List<DepartmentEntity> entities = departmentRepository.findAll();
 
-        List<DepartmentDTO> dtos = entities.stream().map(
-                d -> new DepartmentDTO(d.getDepartmentId(), d.getDepartmentName())
-        ).collect(Collectors.toList());
+        // 2. Chuyển đổi danh sách Entity sang DTO thông qua Mapper
+        List<DepartmentDTO> dtos = departmentMapper.toDtoList(entities);
+
+        // 3. Đóng gói dữ liệu vào Response và trả về kết quả thành công
         return new DepartmentListResponse(Constants.CODE_SUCCESS, dtos);
     }
 }

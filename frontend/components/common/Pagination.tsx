@@ -1,16 +1,24 @@
 /**
  * Copyright(C) 2026 Luvina Software Company
  *
- * Pagination.tsx, 24/8/2026 nguyenduykhanh2
+ * Pagination.tsx, 25/8/2026 nguyenduykhanh2
  */
 'use client';
 
 import React from 'react';
+import { PAGING } from '@/lib/constants';
 
+/**
+ * Props truyền vào Component thanh phân trang Pagination.
+ */
 export interface PaginationProps {
+  /** Trang hiện tại (bắt đầu từ 1) */
   currentPage: number;
+  /** Tổng số trang */
   totalPages: number;
+  /** Callback xử lý sự kiện khi người dùng chuyển trang */
   onPageChange: (page: number) => void;
+  /** Số trang tối đa hiển thị trên thanh phân trang (mặc định là 3) */
   maxDisplayPages?: number;
 }
 
@@ -23,7 +31,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   totalPages,
   onPageChange,
-  maxDisplayPages = 3,
+  maxDisplayPages = PAGING.MAX_DISPLAY_PAGES,
 }) => {
   if (totalPages <= 1) {
     return null;

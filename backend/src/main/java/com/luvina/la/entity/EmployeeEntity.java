@@ -1,25 +1,34 @@
 /**
  * Copyright(C) 2026 Luvina Software Company
  *
- * Employee.java, 21/8/2026 nguyenduykhanh2
+ * EmployeeEntity.java, 25/08/2026 nguyenduykhanh2
  */
 package com.luvina.la.entity;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import javax.persistence.*;
-
-import lombok.Data;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Entity lưu trữ thông tin nhân viên.
+ * Entity ánh xạ bảng employees trong cơ sở dữ liệu.
  *
  * @author nguyenduykhanh2
  */
 @Entity
 @Table(name = "employees")
-@Data
-public class Employee implements Serializable {
+@Getter
+@Setter
+public class EmployeeEntity implements Serializable {
 
     private static final long serialVersionUID = 5771173953267484096L;
 
@@ -30,7 +39,7 @@ public class Employee implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
-    private Department department;
+    private DepartmentEntity department;
 
     @Column(name = "employee_name", nullable = false, length = 255)
     private String employeeName;

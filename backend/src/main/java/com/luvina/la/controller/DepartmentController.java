@@ -1,15 +1,14 @@
 /**
  * Copyright(C) 2026 Luvina Software Company
- * 
- * DepartmentController.java, 21/8/2026 nguyenduykhanh2
+ *
+ * DepartmentController.java, 25/08/2026 nguyenduykhanh2
  */
 package com.luvina.la.controller;
 
-import com.luvina.la.payload.DepartmentListResponse;
+import com.luvina.la.payload.response.DepartmentListResponse;
 import com.luvina.la.service.DepartmentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author nguyenduykhanh2
  */
 @RestController
-@RequestMapping("/department")
+@CrossOrigin(origins = "*")
 public class DepartmentController {
 
     private final DepartmentService departmentService;
@@ -26,20 +25,19 @@ public class DepartmentController {
     /**
      * Khởi tạo DepartmentController.
      *
-     * @param departmentService service xử lý các chức năng liên quan đến phòng ban
+     * @param departmentService service xử lý các chức năng phòng ban
      */
-    @Autowired
     public DepartmentController(DepartmentService departmentService) {
         this.departmentService = departmentService;
     }
 
     /**
-     * Lấy danh sách tất cả các phòng ban.
+     * Lấy danh sách toàn bộ các phòng ban trong hệ thống.
      *
-     * @return thông tin phản hồi chứa mã response và danh sách phòng ban
+     * @return danh sách phòng ban
      */
-    @GetMapping
-    public DepartmentListResponse getAllDepartments() {
+    @GetMapping("/department")
+    public DepartmentListResponse getDepartments() {
         return departmentService.getAllDepartments();
     }
 }

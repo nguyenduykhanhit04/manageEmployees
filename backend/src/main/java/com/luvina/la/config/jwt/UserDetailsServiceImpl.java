@@ -1,12 +1,11 @@
-package com.luvina.la.config.jwt;
-
 /**
  * Copyright(C) 2026 Luvina Software Company
- * <p>
- * UserDetailsServiceImpl.java, 21/8/2026 nguyenduykhanh2
+ *
+ * UserDetailsServiceImpl.java, 25/08/2026 nguyenduykhanh2
  */
+package com.luvina.la.config.jwt;
 
-import com.luvina.la.entity.Employee;
+import com.luvina.la.entity.EmployeeEntity;
 import com.luvina.la.repository.EmployeeRepository;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,11 +41,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     /**
      * Tải thông tin user theo username.
-     * <p>
-     * Phương thức này:
-     * 1. Tìm kiếm employee theo employee_login_id (username)
-     * 2. Nếu tìm thấy, tạo AuthUserDetails với quyền ROLE_USER
-     * 3. Nếu không tìm thấy, throw UsernameNotFoundException
      *
      * @param username Employee Login ID
      * @return UserDetails object
@@ -54,11 +48,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Employee> entity = this.userRepository.findByEmployeeLoginId(username);
+        Optional<EmployeeEntity> entity = this.userRepository.findByEmployeeLoginId(username);
         Collection<GrantedAuthority> roles;
 
         if (entity.isPresent()) {
-            // Tất cả users có role ROLE_USER
             roles = Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
             return new AuthUserDetails(entity.get(), roles);
         } else {
