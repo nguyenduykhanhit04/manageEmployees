@@ -94,7 +94,13 @@ INSERT INTO `employees` (
     (34, 2, 'Nguyễn Văn C',         'グエン ヴァン シー',       '1994-03-03', 'cnguyen@luvina.net',    '0901234528', 1, 'cnguyen',     '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
     (35, 3, 'Lê Hoàng Nam',         'レ ホアン ナム',           '1993-04-04', 'namlh1@luvina.net',     '0901234529', 1, 'namlh1',      '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
     (36, 3, 'Lê Hoàng Nam',         'レ ホアン ナム',           '1992-05-05', 'namlh2@luvina.net',     '0901234530', 1, 'namlh2',      '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
-    (37, 3, 'Lê Hoàng Nam',         'レ ホアン ナム',           '1991-06-06', 'namlh3@luvina.net',     '0901234531', 1, 'namlh3',      '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq');
+    (37, 3, 'Lê Hoàng Nam',         'レ ホアン ナム',           '1991-06-06', 'namlh3@luvina.net',     '0901234531', 1, 'namlh3',      '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (38, 1, 'WWWWWWWW10WWWWWWWW20WWWWWWWW30WWWWWWWW40WWWWWWW49',                                                                                                'テスト', '1995-01-01', 'test49@luvina.net',  '0901234538', 1, 'testw49',  '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (39, 1, 'WWWWWWWW10WWWWWWWW20WWWWWWWW30WWWWWWWW40WWWWWWWW50',                                                                                               'テスト', '1995-01-01', 'test50@luvina.net',  '0901234539', 1, 'testw50',  '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (40, 1, 'WWWWWWWW10WWWWWWWW20WWWWWWWW30WWWWWWWW40WWWWWWWW50W',                                                                                              'テスト', '1995-01-01', 'test51@luvina.net',  '0901234540', 1, 'testw51',  '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (41, 1, 'WWWWWWWW10WWWWWWWW20WWWWWWWW30WWWWWWWW40WWWWWWWW50WWWWWWWW60WWWWWWWW70WWWWWWWW80WWWWWWWW90WWWWWWW100WWWWWWW110WWWWWWW120W124',                   'テスト', '1995-01-01', 'test124@luvina.net', '0901234541', 1, 'testw124', '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (42, 1, 'WWWWWWWW10WWWWWWWW20WWWWWWWW30WWWWWWWW40WWWWWWWW50WWWWWWWW60WWWWWWWW70WWWWWWWW80WWWWWWWW90WWWWWWW100WWWWWWW110WWWWWWW120WW125',                  'テスト', '1995-01-01', 'test125@luvina.net', '0901234542', 1, 'testw125', '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+    (43, 1, 'WWWWWWWW10WWWWWWWW20WWWWWWWW30WWWWWWWW40WWWWWWWW50WWWWWWWW60WWWWWWWW70WWWWWWWW80WWWWWWWW90WWWWWWW100WWWWWWW110WWWWWWW120WWW126',                 'テスト', '1995-01-01', 'test126@luvina.net', '0901234543', 1, 'testw126', '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq');
 
 -- 5. Nạp dữ liệu chứng chỉ cho nhân viên mẫu --
 INSERT INTO `employees_certifications` (`employee_certification_id`, `employee_id`, `certification_id`, `start_date`, `end_date`, `score`) VALUES

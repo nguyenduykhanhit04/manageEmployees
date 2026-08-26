@@ -586,6 +586,10 @@ select {
   padding: 12px 4px;
   text-align: left;
   border-bottom: 1px solid #ccc;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .css-grid-table .css-grid-table-header div:not(:first-child),
