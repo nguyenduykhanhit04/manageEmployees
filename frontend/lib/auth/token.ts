@@ -1,12 +1,15 @@
 export function storeToken(token: string, tokenType: string) {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem('access_token', token);
+  localStorage.setItem('token_type', tokenType);
   sessionStorage.setItem('access_token', token);
   sessionStorage.setItem('token_type', tokenType);
 }
 
 export function getToken(): { accessToken: string; tokenType: string } | null {
   if (typeof window === 'undefined') return null;
-  const accessToken = sessionStorage.getItem('access_token');
-  const tokenType = sessionStorage.getItem('token_type');
+  const accessToken = localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
+  const tokenType = localStorage.getItem('token_type') || sessionStorage.getItem('token_type') || 'Bearer';
 
   if (accessToken && tokenType) {
     return { accessToken, tokenType };
@@ -16,6 +19,8 @@ export function getToken(): { accessToken: string; tokenType: string } | null {
 
 export function removeToken() {
   if (typeof window === 'undefined') return;
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('token_type');
   sessionStorage.removeItem('access_token');
   sessionStorage.removeItem('token_type');
 }

@@ -1,12 +1,12 @@
 /**
  * Copyright(C) 2026 Luvina Software Company
  *
- * EmployeeController.java, 21/8/2026 nguyenduykhanh2
+ * EmployeeController.java, 25/08/2026 nguyenduykhanh2
  */
 package com.luvina.la.controller;
 
 import com.luvina.la.config.Constants;
-import com.luvina.la.payload.EmployeeListResponse;
+import com.luvina.la.payload.response.EmployeeListResponse;
 import com.luvina.la.service.EmployeeService;
 import java.util.LinkedHashMap;
 import java.util.Map;

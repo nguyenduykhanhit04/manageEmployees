@@ -1,17 +1,22 @@
 /**
  * Copyright(C) 2026 Luvina Software Company
  *
- * Department.java, 21/8/2026 nguyenduykhanh2
+ * DepartmentEntity.java, 25/08/2026 nguyenduykhanh2
  */
 package com.luvina.la.entity;
 
+import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import javax.persistence.*;
-import java.io.Serializable;
 
 /**
- * Entity lưu trữ thông tin phòng ban.
+ * Entity ánh xạ bảng departments trong cơ sở dữ liệu.
  *
  * @author nguyenduykhanh2
  */
@@ -19,7 +24,7 @@ import java.io.Serializable;
 @Table(name = "departments")
 @Getter
 @Setter
-public class Department implements Serializable {
+public class DepartmentEntity implements Serializable {
 
     private static final long serialVersionUID = 374901496785272389L;
 

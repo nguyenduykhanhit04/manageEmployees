@@ -1,23 +1,24 @@
 /**
  * Copyright(C) 2026 Luvina Software Company
  *
- * page.tsx (ADM002), 24/8/2026 nguyenduykhanh2
+ * page.tsx (ADM002), 25/8/2026 nguyenduykhanh2
  */
 'use client';
 
 import React, { Suspense } from 'react';
-import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { useEmployees } from '@/hooks/useEmployees';
 import { EmployeeTable } from '@/components/employees/EmployeeTable';
 import { SYSTEM_MESSAGES } from '@/lib/constants/messages';
 
 /**
- * Component nội dung chính của màn hình ADM002.
+ * Component nội dung chính của màn hình danh sách nhân viên (ADM002).
+ *
+ * @author nguyenduykhanh2
+ * @return Giao diện nội dung danh sách nhân viên
  */
 function EmployeeListContent() {
   useAuth();
-  const router = useRouter();
 
   const {
     employees,
@@ -35,13 +36,8 @@ function EmployeeListContent() {
     handleSearch,
     handleSort,
     handlePageChange,
+    handleAddNew,
   } = useEmployees();
-
-  // Điều hướng sang màn hình thêm mới kèm đường dẫn quay lại
-  const handleAddNew = () => {
-    const targetUrl = `/employees/edit?returnTo=${encodeURIComponent(currentReturnUrl)}`;
-    router.push(targetUrl);
-  };
 
   return (
     <>

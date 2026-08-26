@@ -1,13 +1,13 @@
 /**
  * Copyright(C) 2026 Luvina Software Company
  *
- * GlobalExceptionHandler.java, 22/8/2026 nguyenduykhanh2
+ * GlobalExceptionHandler.java, 25/08/2026 nguyenduykhanh2
  */
 package com.luvina.la.exception;
 
 import com.luvina.la.config.Constants;
-import com.luvina.la.payload.ApiErrorMessage;
-import com.luvina.la.payload.ApiResponse;
+import com.luvina.la.payload.response.ApiErrorMessage;
+import com.luvina.la.payload.response.ApiResponse;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.ConstraintViolation;

@@ -1,31 +1,49 @@
 /**
  * Copyright(C) 2026 Luvina Software Company
  *
- * EmployeeTable.tsx, 24/8/2026 nguyenduykhanh2
+ * EmployeeTable.tsx, 25/8/2026 nguyenduykhanh2
  */
 'use client';
 
 import React from 'react';
 import Link from 'next/link';
-import { EmployeeItem } from '@/types/employee';
-import { SortOrders, SortField } from '@/hooks/useEmployees';
+import { EmployeeItem, SortOrders, SortField } from '@/types/employee';
 import { Pagination } from '@/components/common/Pagination';
+import {
+  SORT_ORDER,
+  SORT_ICONS,
+  SORT_FIELDS,
+  ROUTES,
+  QUERY_PARAMS,
+} from '@/lib/constants';
 import { SYSTEM_MESSAGES } from '@/lib/constants/messages';
+import { truncateText } from '@/lib/utils/format';
 
+/**
+ * Props truyền vào Component EmployeeTable.
+ */
 export interface EmployeeTableProps {
+  /** Danh sách nhân viên cần hiển thị */
   employees: EmployeeItem[];
+  /** Trạng thái đang tải dữ liệu */
   loading: boolean;
+  /** Trạng thái chiều sắp xếp của từng cột */
   sortOrders: SortOrders;
+  /** Callback xử lý khi click vào tiêu đề cột để sắp xếp */
   onSort: (field: SortField) => void;
+  /** Trang hiện tại */
   currentPage: number;
+  /** Tổng số trang */
   totalPages: number;
+  /** Callback xử lý khi người dùng chọn trang khác */
   onPageChange: (page: number) => void;
+  /** URL quay lại kèm đầy đủ query params để truyền sang màn hình chi tiết */
   returnUrl?: string;
 }
 
 /**
  * Component bảng danh sách nhân viên hiển thị 9 cột dữ liệu,
- * hỗ trợ sắp xếp các cột và thanh phân trang.
+ * hỗ trợ sắp xếp các cột, thanh phân trang và tự động cắt ngắn chuỗi nếu quá 22 ký tự.
  *
  * @author nguyenduykhanh2
  */
@@ -39,12 +57,12 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
   onPageChange,
   returnUrl,
 }) => {
-  // Tạo query string returnTo cho link chuyển trang chi tiết
+  // Tạo đường dẫn chi tiết kèm tham số returnTo
   const getDetailLink = (employeeId: number) => {
     if (returnUrl) {
-      return `/employees/detail?id=${employeeId}&returnTo=${encodeURIComponent(returnUrl)}`;
+      return `${ROUTES.EMPLOYEE_DETAIL}?${QUERY_PARAMS.ID}=${employeeId}&${QUERY_PARAMS.RETURN_TO}=${encodeURIComponent(returnUrl)}`;
     }
-    return `/employees/detail?id=${employeeId}`;
+    return `${ROUTES.EMPLOYEE_DETAIL}?${QUERY_PARAMS.ID}=${employeeId}`;
   };
 
   return (
@@ -55,10 +73,12 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
           <div>ID</div>
           <div
             style={{ cursor: 'pointer', userSelect: 'none' }}
-            onClick={() => onSort('ord_employee_name')}
+            onClick={() => onSort(SORT_FIELDS.EMPLOYEE_NAME)}
             title="氏名で並び替え"
           >
-            氏名 {sortOrders.ord_employee_name === 'ASC' ? '▲▽' : '△▼'}
+            氏名 {sortOrders.ord_employee_name === SORT_ORDER.ASC
+              ? SORT_ICONS.ASC
+              : SORT_ICONS.DESC}
           </div>
           <div>生年月日</div>
           <div>グループ</div>
@@ -66,17 +86,21 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
           <div>電話番号</div>
           <div
             style={{ cursor: 'pointer', userSelect: 'none' }}
-            onClick={() => onSort('ord_certification_name')}
+            onClick={() => onSort(SORT_FIELDS.CERTIFICATION_NAME)}
             title="日本語能力で並び替え"
           >
-            日本語能力 {sortOrders.ord_certification_name === 'ASC' ? '▲▽' : '△▼'}
+            日本語能力 {sortOrders.ord_certification_name === SORT_ORDER.ASC
+              ? SORT_ICONS.ASC
+              : SORT_ICONS.DESC}
           </div>
           <div
             style={{ cursor: 'pointer', userSelect: 'none' }}
-            onClick={() => onSort('ord_end_date')}
+            onClick={() => onSort(SORT_FIELDS.END_DATE)}
             title="失効日で並び替え"
           >
-            失効日 {sortOrders.ord_end_date === 'ASC' ? '▲▽' : '△▼'}
+            失効日 {sortOrders.ord_end_date === SORT_ORDER.ASC
+              ? SORT_ICONS.ASC
+              : SORT_ICONS.DESC}
           </div>
           <div>点数</div>
         </div>
@@ -103,14 +127,30 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
                   </Link>
                 </div>
 
-                <div>{emp.employeeName}</div>
-                <div>{emp.employeeBirthDate ? emp.employeeBirthDate.replaceAll('-', '/') : ''}</div>
-                <div>{emp.departmentName || ''}</div>
-                <div>{emp.employeeEmail || ''}</div>
-                <div>{emp.employeeTelephone || ''}</div>
-                <div>{emp.certificationName || ''}</div>
-                <div>{emp.endDate ? emp.endDate.replaceAll('-', '/') : ''}</div>
-                <div>{emp.score !== null && emp.score !== undefined ? emp.score : ''}</div>
+                <div title={emp.employeeName}>
+                  {truncateText(emp.employeeName)}
+                </div>
+                <div>
+                  {emp.employeeBirthDate ? emp.employeeBirthDate.replaceAll('-', '/') : ''}
+                </div>
+                <div title={emp.departmentName || ''}>
+                  {truncateText(emp.departmentName)}
+                </div>
+                <div title={emp.employeeEmail || ''}>
+                  {truncateText(emp.employeeEmail)}
+                </div>
+                <div title={emp.employeeTelephone || ''}>
+                  {truncateText(emp.employeeTelephone)}
+                </div>
+                <div title={emp.certificationName || ''}>
+                  {truncateText(emp.certificationName)}
+                </div>
+                <div>
+                  {emp.endDate ? emp.endDate.replaceAll('-', '/') : ''}
+                </div>
+                <div>
+                  {emp.score !== null && emp.score !== undefined ? emp.score : ''}
+                </div>
               </React.Fragment>
             ))
           )}

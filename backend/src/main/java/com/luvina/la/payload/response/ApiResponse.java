@@ -1,9 +1,9 @@
 /**
  * Copyright(C) 2026 Luvina Software Company
  *
- * ApiResponse.java, 22/8/2026 nguyenduykhanh2
+ * ApiResponse.java, 25/08/2026 nguyenduykhanh2
  */
-package com.luvina.la.payload;
+package com.luvina.la.payload.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;

@@ -1,9 +1,9 @@
 /**
  * Copyright(C) 2026 Luvina Software Company
  *
- * EmployeeListResponse.java, 21/8/2026 nguyenduykhanh2
+ * EmployeeListResponse.java, 25/08/2026 nguyenduykhanh2
  */
-package com.luvina.la.payload;
+package com.luvina.la.payload.response;
 
 import com.luvina.la.dto.EmployeeDTO;
 import java.util.ArrayList;
