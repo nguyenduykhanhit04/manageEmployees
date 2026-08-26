@@ -1,0 +1,64 @@
+-- -- ===================================================================
+-- -- File Migration V3: Bộ dữ liệu phục vụ kiểm thử (Test Dataset)
+-- -- Bao gồm: Ký tự đặc biệt (/, %, _, ;, ,) và kiểm thử biên (124, 125, 126 ký tự)
+-- -- ===================================================================
+
+-- -- 1. Nạp dữ liệu bảng departments --
+-- INSERT INTO `departments` (`department_id`, `department_name`) VALUES
+--     (1, 'DEV1'),
+--     (2, 'DEV2'),
+--     (3, 'DEV3'),
+--     (4, 'DEV4'),
+--     (5, 'DEV5');
+
+-- -- 2. Nạp dữ liệu bảng certifications --
+-- INSERT INTO `certifications` (`certification_id`, `certification_name`, `certification_level`) VALUES
+--     (1, 'Trình độ tiếng nhật cấp 1', 1),
+--     (2, 'Trình độ tiếng nhật cấp 2', 2),
+--     (3, 'Trình độ tiếng nhật cấp 3', 3),
+--     (4, 'Trình độ tiếng nhật cấp 4', 4),
+--     (5, 'Trình độ tiếng nhật cấp 5', 5);
+
+-- -- 3. Nạp dữ liệu bảng employees --
+-- -- Mật khẩu mặc định: Luvina@123 (mã hoá BCrypt: $2a$10$7Nn.c37.k4lD7qA6R.V.i.r9p4F2e9b9.xL6z7m3eNOPhvn7V6lCq hoặc dùng hash chuẩn hệ thống)
+-- INSERT INTO `employees` (
+--     `employee_id`,
+--     `department_id`,
+--     `employee_name`,
+--     `employee_name_kana`,
+--     `employee_birth_date`,
+--     `employee_email`,
+--     `employee_telephone`,
+--     `employee_role`,
+--     `employee_login_id`,
+--     `employee_login_password`
+-- ) VALUES
+--     (1, 1, 'Administrator', 'アドミニストレーター', '2000-01-01', 'admin@luvina.net', '0123456789', 0, 'admin', '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+--     (2, 1, 'Pham Thi Thanh Nga', 'グループ', '2002-02-02', 'ngantt@luvina.net', '778520123', 1, 'ngaptt265', '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+--     (3, 2, 'QuỳnhNga/', 'グループ', '2002-02-02', 'nga@luvina.net', '778520123', 1, 'ngaptt266', '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+--     (4, 3, 'Quỳnh%Nga', 'グループ', '2002-02-02', 'nga@luvina.net', '778520123', 1, 'ngaptt267', '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+--     (5, 3, 'Quỳnh_Nga', 'グループ', '2002-02-02', 'nga@luvina.net', '778520123', 1, 'ngaptt268', '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+--     (6, 3, 'Quỳnh;Nga', 'グループ', '2002-02-02', 'nga@luvina.net', '778520123', 1, 'ngaptt269', '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+--     (7, 4, 'Quỳnh,Nga', 'グループ', '2002-02-02', 'nga@luvina.net', '778520123', 1, 'ngappt269', '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+
+--     -- 3 bản ghi kiểm thử độ dài tên 124, 125, 126 ký tự chuẩn xác --
+--     (8, 1, 'wwwwwwww10wwwwwwww20wwwwwwww30wwwwwwww40wwwwwwww50wwwwwwww60wwwwwwww70wwwwwwww80wwwwwwww90wwwwwww100wwwwwww110wwwwwww120w124', 'テスト', '1995-01-01', 'test124@luvina.net', '0901234124', 1, 'testw124', '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+--     (9, 1, 'wwwwwwww10wwwwwwww20wwwwwwww30wwwwwwww40wwwwwwww50wwwwwwww60wwwwwwww70wwwwwwww80wwwwwwww90wwwwwww100wwwwwww110wwwwwww120ww125', 'テスト', '1995-01-01', 'test125@luvina.net', '0901234125', 1, 'testw125', '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq'),
+--     (10, 1, 'wwwwwwww10wwwwwwww20wwwwwwww30wwwwwwww40wwwwwwww50wwwwwwww60wwwwwwww70wwwwwwww80wwwwwwww90wwwwwww100wwwwwww110wwwwwww120www126', 'テスト', '1995-01-01', 'test126@luvina.net', '0901234126', 1, 'testw126', '$2a$10$.2W3K6BiWBW5kBT/miKZBOOR.Dn0ZBbwJg47EG4meNOPhvn7V6lCq');
+
+-- -- 4. Nạp dữ liệu bảng employees_certifications --
+-- INSERT INTO `employees_certifications` (
+--     `employee_certification_id`,
+--     `employee_id`,
+--     `certification_id`,
+--     `start_date`,
+--     `end_date`,
+--     `score`
+-- ) VALUES
+--     (1, 1, 3, '2014-05-06', '2020-02-03', 77.00),
+--     (2, 2, 5, '2015-03-06', '2021-03-04', 89.00),
+--     (3, 3, 1, '2016-04-07', '2022-08-09', 123.00),
+--     (4, 4, 2, '2017-05-04', '2024-06-09', 123.00),
+--     (5, 5, 4, '2019-04-05', '2024-03-08', 124.00),
+--     (6, 6, 4, '2017-02-06', '2025-02-02', 127.00),
+--     (7, 7, 3, '2018-03-03', '2025-02-01', 145.00);

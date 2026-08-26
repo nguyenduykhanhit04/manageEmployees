@@ -25,6 +25,58 @@ import {
 export type { SortField, SortDirection, SortOrders };
 
 /**
+ * Trích xuất thứ tự ưu tiên và chiều sắp xếp của các cột từ URLSearchParams.
+ *
+ * @param params danh sách tham số URL
+ * @return bộ giá trị sortOrders và danh sách sortPriority theo thứ tự xuất hiện trên URL
+ */
+function parseSortFromParams(params: { get: (k: string) => string | null; forEach?: (cb: (v: string, k: string) => void) => void }): {
+  parsedOrders: SortOrders;
+  detectedPriority: SortField[];
+} {
+  const allSortFields: SortField[] = [
+    SORT_FIELDS.EMPLOYEE_NAME,
+    SORT_FIELDS.CERTIFICATION_NAME,
+    SORT_FIELDS.END_DATE,
+  ];
+
+  const parsedOrders: SortOrders = {
+    [SORT_FIELDS.EMPLOYEE_NAME]: SORT_ORDER.ASC,
+    [SORT_FIELDS.CERTIFICATION_NAME]: SORT_ORDER.ASC,
+    [SORT_FIELDS.END_DATE]: SORT_ORDER.ASC,
+  };
+
+  const detectedPriority: SortField[] = [];
+
+  // Duyệt qua các param theo thứ tự xuất hiện trên URL nếu có hàm forEach
+  if (typeof params.forEach === 'function') {
+    params.forEach((val, key) => {
+      if (allSortFields.includes(key as SortField)) {
+        const field = key as SortField;
+        const upperVal = val ? val.toUpperCase() : '';
+        parsedOrders[field] = upperVal === SORT_ORDER.DESC ? SORT_ORDER.DESC : SORT_ORDER.ASC;
+        if (!detectedPriority.includes(field)) {
+          detectedPriority.push(field);
+        }
+      }
+    });
+  }
+
+  // Bổ sung các trường còn lại vào priority nếu chưa có
+  allSortFields.forEach((field) => {
+    if (!detectedPriority.includes(field)) {
+      const val = params.get(field);
+      if (val) {
+        parsedOrders[field] = val.toUpperCase() === SORT_ORDER.DESC ? SORT_ORDER.DESC : SORT_ORDER.ASC;
+      }
+      detectedPriority.push(field);
+    }
+  });
+
+  return { parsedOrders, detectedPriority };
+}
+
+/**
  * Custom Hook quản lý toàn bộ nghiệp vụ lấy danh sách nhân viên, phòng ban,
  * tìm kiếm, sắp xếp đa cột theo thứ tự ưu tiên động, phân trang, điều hướng và đồng bộ 2 chiều với URL.
  *
@@ -43,9 +95,10 @@ export function useEmployees() {
   const initialOffset = !isNaN(paramOffset) && paramOffset >= 0 ? paramOffset : PAGING.DEFAULT_OFFSET;
   const initialPage = Math.floor(initialOffset / PAGING.DEFAULT_LIMIT) + PAGING.DEFAULT_PAGE;
 
-  const paramOrdName = (searchParams.get(SORT_FIELDS.EMPLOYEE_NAME) || '').toUpperCase();
-  const paramOrdCert = (searchParams.get(SORT_FIELDS.CERTIFICATION_NAME) || '').toUpperCase();
-  const paramOrdEndDate = (searchParams.get(SORT_FIELDS.END_DATE) || '').toUpperCase();
+  const { parsedOrders: initialOrders, detectedPriority: initialPriority } = useMemo(
+    () => parseSortFromParams(searchParams),
+    [searchParams]
+  );
 
   const [employees, setEmployees] = useState<EmployeeItem[]>([]);
   const [departments, setDepartments] = useState<DepartmentItem[]>([]);
@@ -57,24 +110,10 @@ export function useEmployees() {
   const [departmentId, setDepartmentId] = useState<string>(paramDepartmentId);
 
   // State chiều sắp xếp của từng cột
-  const [sortOrders, setSortOrders] = useState<SortOrders>({
-    [SORT_FIELDS.EMPLOYEE_NAME]: paramOrdName === SORT_ORDER.DESC
-      ? SORT_ORDER.DESC
-      : SORT_ORDER.ASC,
-    [SORT_FIELDS.CERTIFICATION_NAME]: paramOrdCert === SORT_ORDER.DESC
-      ? SORT_ORDER.DESC
-      : SORT_ORDER.ASC,
-    [SORT_FIELDS.END_DATE]: paramOrdEndDate === SORT_ORDER.DESC
-      ? SORT_ORDER.DESC
-      : SORT_ORDER.ASC,
-  });
+  const [sortOrders, setSortOrders] = useState<SortOrders>(initialOrders);
 
   // Danh sách thứ tự ưu tiên các cột sắp xếp
-  const [sortPriority, setSortPriority] = useState<SortField[]>([
-    SORT_FIELDS.EMPLOYEE_NAME,
-    SORT_FIELDS.CERTIFICATION_NAME,
-    SORT_FIELDS.END_DATE,
-  ]);
+  const [sortPriority, setSortPriority] = useState<SortField[]>(initialPriority);
 
   // State phân trang
   const [currentPage, setCurrentPage] = useState<number>(initialPage);
@@ -168,34 +207,32 @@ export function useEmployees() {
     [limit]
   );
 
+  const paramOrdName = searchParams.get(SORT_FIELDS.EMPLOYEE_NAME) || '';
+  const paramOrdCert = searchParams.get(SORT_FIELDS.CERTIFICATION_NAME) || '';
+  const paramOrdEndDate = searchParams.get(SORT_FIELDS.END_DATE) || '';
+  const searchParamsString = searchParams.toString();
+
   // Tải dữ liệu ban đầu theo searchParams trên URL
   useEffect(() => {
-    const activeOrders: SortOrders = {
-      [SORT_FIELDS.EMPLOYEE_NAME]: paramOrdName === SORT_ORDER.DESC
-        ? SORT_ORDER.DESC
-        : SORT_ORDER.ASC,
-      [SORT_FIELDS.CERTIFICATION_NAME]: paramOrdCert === SORT_ORDER.DESC
-        ? SORT_ORDER.DESC
-        : SORT_ORDER.ASC,
-      [SORT_FIELDS.END_DATE]: paramOrdEndDate === SORT_ORDER.DESC
-        ? SORT_ORDER.DESC
-        : SORT_ORDER.ASC,
-    };
+    const { parsedOrders: activeOrders, detectedPriority: activePriority } = parseSortFromParams(searchParams);
 
     setEmployeeName(paramEmployeeName);
     setDepartmentId(paramDepartmentId);
     setSortOrders(activeOrders);
+    setSortPriority(activePriority);
     setCurrentPage(initialPage);
 
-    fetchEmployees(paramEmployeeName, paramDepartmentId, sortPriority, activeOrders, initialOffset);
+    fetchEmployees(paramEmployeeName, paramDepartmentId, activePriority, activeOrders, initialOffset);
   }, [
     paramEmployeeName,
     paramDepartmentId,
     paramOrdName,
     paramOrdCert,
     paramOrdEndDate,
+    searchParamsString,
     initialOffset,
     initialPage,
+    fetchEmployees,
   ]);
 
   /**
