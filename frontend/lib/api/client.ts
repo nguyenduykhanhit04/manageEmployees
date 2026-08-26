@@ -12,7 +12,9 @@ const apiClient = axios.create({
 export function setupInterceptors(client: ReturnType<typeof axios.create>) {
   client.interceptors.request.use(
     (config) => {
-      const token = sessionStorage.getItem('access_token');
+      const token = typeof window !== 'undefined'
+        ? (localStorage.getItem('access_token') || sessionStorage.getItem('access_token'))
+        : null;
       if (token) {
         if (config.headers) {
           config.headers.Authorization = `Bearer ${token}`;
@@ -29,9 +31,11 @@ export function setupInterceptors(client: ReturnType<typeof axios.create>) {
     (response) => response,
     (error) => {
       if (error.response?.status === 401) {
-        sessionStorage.removeItem('access_token');
-        sessionStorage.removeItem('token_type');
         if (typeof window !== 'undefined') {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('token_type');
+          sessionStorage.removeItem('access_token');
+          sessionStorage.removeItem('token_type');
           window.location.href = '/login';
         }
       }
