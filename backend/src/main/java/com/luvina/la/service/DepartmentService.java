@@ -5,7 +5,8 @@
  */
 package com.luvina.la.service;
 
-import com.luvina.la.payload.response.DepartmentListResponse;
+import com.luvina.la.dto.DepartmentDTO;
+import java.util.List;
 
 /**
  * Interface định nghĩa các phương thức xử lý nghiệp vụ liên quan đến phòng ban.
@@ -17,7 +18,8 @@ public interface DepartmentService {
     /**
      * Lấy toàn bộ danh sách phòng ban.
      *
-     * @return phản hồi chứa danh sách phòng ban
+     * @return danh sách các DTO phòng ban
      */
-    DepartmentListResponse getAllDepartments();
+    List<DepartmentDTO> getAllDepartments();
 }
+

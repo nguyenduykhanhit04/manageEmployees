@@ -5,15 +5,16 @@
  */
 package com.luvina.la.service.impl;
 
-import com.luvina.la.config.Constants;
 import com.luvina.la.dto.EmployeeDTO;
-import com.luvina.la.payload.response.EmployeeListResponse;
 import com.luvina.la.repository.EmployeeRepository;
 import com.luvina.la.service.EmployeeService;
-import com.luvina.la.validator.EmployeeValidator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,19 +27,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
-    private final EmployeeValidator employeeValidator;
 
     /**
-     * Khởi tạo EmployeeServiceImpl với EmployeeRepository và EmployeeValidator.
+     * Khởi tạo EmployeeServiceImpl với EmployeeRepository.
      *
      * @param employeeRepository repository thao tác với dữ liệu nhân viên
-     * @param employeeValidator validator kiểm tra tính hợp lệ của dữ liệu đầu vào
      */
-    public EmployeeServiceImpl(
-            EmployeeRepository employeeRepository,
-            EmployeeValidator employeeValidator) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
-        this.employeeValidator = employeeValidator;
     }
 
     /**
@@ -49,36 +45,34 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param orderParams các tham số sắp xếp
      * @param offset vị trí bắt đầu lấy dữ liệu
      * @param limit số lượng bản ghi tối đa được lấy
-     * @return thông tin phản hồi chứa mã response và danh sách nhân viên
+     * @return đối tượng Page chứa danh sách nhân viên và thông tin phân trang
      */
     @Override
     @Transactional(readOnly = true)
-    public EmployeeListResponse getEmployees(
+    public Page<EmployeeDTO> getEmployees(
             String employeeName,
             Long departmentId,
             Map<String, String> orderParams,
             int offset,
             int limit) {
 
-        // 1. Kiểm tra tính hợp lệ của tham số đầu vào thông qua Validator
-        employeeValidator.validateGetEmployees(employeeName, offset, limit, orderParams);
+        int pageSize = limit > 0 ? limit : 20;
+        int pageIndex = offset / pageSize;
+        Pageable pageable = PageRequest.of(pageIndex, pageSize);
 
-        // 2. Escape các ký tự đặc biệt cho điều kiện LIKE
+        // 1. Escape các ký tự đặc biệt cho điều kiện LIKE
         String escapedName = escapeLikePattern(employeeName);
 
-        // 3. Đếm tổng số bản ghi thỏa mãn điều kiện
+        // 2. Đếm tổng số bản ghi thỏa mãn điều kiện
         long totalRecords = employeeRepository.countDisplayEmployees(
                 escapedName,
                 departmentId);
 
         if (totalRecords <= 0) {
-            return new EmployeeListResponse(
-                    Constants.CODE_SUCCESS,
-                    0L,
-                    new ArrayList<>());
+            return new PageImpl<>(new ArrayList<>(), pageable, 0L);
         }
 
-        // 4. Lấy danh sách nhân viên từ repository tùy biến theo thứ tự ưu tiên sắp xếp động
+        // 3. Lấy danh sách nhân viên từ repository tùy biến theo thứ tự ưu tiên sắp xếp động
         List<EmployeeDTO> employees = employeeRepository.findDisplayEmployees(
                 escapedName,
                 departmentId,
@@ -86,11 +80,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                 offset,
                 limit);
 
-        // 5. Trả về kết quả danh sách nhân viên và tổng số bản ghi
-        return new EmployeeListResponse(
-                Constants.CODE_SUCCESS,
-                totalRecords,
-                employees);
+        // 4. Trả về kết quả phân trang chuẩn của Spring Data
+        return new PageImpl<>(employees, pageable, totalRecords);
     }
 
     /**

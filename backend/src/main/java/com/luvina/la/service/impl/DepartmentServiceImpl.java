@@ -42,17 +42,14 @@ public class DepartmentServiceImpl implements DepartmentService {
     /**
      * Lấy danh sách tất cả các phòng ban.
      *
-     * @return thông tin phản hồi chứa mã response và danh sách phòng ban
+     * @return danh sách các DTO phòng ban
      */
     @Override
-    public DepartmentListResponse getAllDepartments() {
+    public List<DepartmentDTO> getAllDepartments() {
         // 1. Lấy toàn bộ danh sách Entity phòng ban từ cơ sở dữ liệu
         List<DepartmentEntity> entities = departmentRepository.findAll();
 
         // 2. Chuyển đổi danh sách Entity sang DTO thông qua Mapper
-        List<DepartmentDTO> dtos = departmentMapper.toDtoList(entities);
-
-        // 3. Đóng gói dữ liệu vào Response và trả về kết quả thành công
-        return new DepartmentListResponse(Constants.CODE_SUCCESS, dtos);
+        return departmentMapper.toDtoList(entities);
     }
 }

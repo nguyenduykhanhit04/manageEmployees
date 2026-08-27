@@ -5,8 +5,9 @@
  */
 package com.luvina.la.service;
 
-import com.luvina.la.payload.response.EmployeeListResponse;
+import com.luvina.la.dto.EmployeeDTO;
 import java.util.Map;
+import org.springframework.data.domain.Page;
 
 /**
  * Interface định nghĩa các phương thức xử lý nghiệp vụ liên quan đến nhân viên.
@@ -23,9 +24,9 @@ public interface EmployeeService {
      * @param orderParams các tham số sắp xếp
      * @param offset vị trí bắt đầu lấy dữ liệu
      * @param limit số lượng bản ghi tối đa được lấy
-     * @return thông tin phản hồi chứa danh sách nhân viên và tổng số bản ghi
+     * @return đối tượng Page chứa danh sách nhân viên và thông tin phân trang
      */
-    EmployeeListResponse getEmployees(
+    Page<EmployeeDTO> getEmployees(
             String employeeName,
             Long departmentId,
             Map<String, String> orderParams,
