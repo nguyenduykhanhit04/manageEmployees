@@ -47,11 +47,11 @@ export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
   EMPLOYEE_LIST: '/employees/adm002',
-  EMPLOYEE_ADD: '/employees/edit',
-  EMPLOYEE_EDIT: '/employees/edit',
-  EMPLOYEE_DETAIL: '/employees/detail',
-  EMPLOYEE_CONFIRM: '/employees/confirm',
-  EMPLOYEE_COMPLETE: '/employees/complete',
+  EMPLOYEE_DETAIL: '/employees/adm003',
+  EMPLOYEE_ADD: '/employees/adm004',
+  EMPLOYEE_EDIT: '/employees/adm004',
+  EMPLOYEE_CONFIRM: '/employees/adm005',
+  EMPLOYEE_COMPLETE: '/employees/adm006',
 } as const;
 
 /**

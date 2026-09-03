@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/lib/constants';
 
 export default function EmployeeConfirmPage() {
   useAuth();
@@ -61,8 +62,8 @@ export default function EmployeeConfirmPage() {
           </li>
           <li className="form-group row d-flex">
             <div className="btn-group col-sm col-sm-10 ml">
-              <button type="button" onClick={() => router.push('/employees/complete')} className="btn btn-primary btn-sm">OK</button>
-              <button type="button" onClick={() => router.push('/employees/edit')} className="btn btn-secondary btn-sm">戻る</button>
+              <button type="button" onClick={() => router.push(ROUTES.EMPLOYEE_COMPLETE)} className="btn btn-primary btn-sm">OK</button>
+              <button type="button" onClick={() => router.push(ROUTES.EMPLOYEE_EDIT)} className="btn btn-secondary btn-sm">戻る</button>
             </div>
           </li>
         </ul>

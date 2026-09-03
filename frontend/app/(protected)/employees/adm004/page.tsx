@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { ROUTES } from '@/lib/constants';
 import { SYSTEM_MESSAGES } from '@/lib/constants/messages';
 
 function EmployeeEditContent() {
@@ -13,7 +14,7 @@ function EmployeeEditContent() {
   const searchParams = useSearchParams();
 
   // Đọc returnTo từ URL nếu có, mặc định là /employees/adm002
-  const returnTo = searchParams.get('returnTo') || '/employees/adm002';
+  const returnTo = searchParams.get('returnTo') || ROUTES.EMPLOYEE_LIST;
 
   const [birthDate, setBirthDate] = useState<Date | null>(null);
   const [certificationStartDate, setCertificationStartDate] = useState<Date | null>(null);
@@ -24,7 +25,7 @@ function EmployeeEditContent() {
   const certificationEndDateRef = useRef<DatePicker>(null);
 
   const handleConfirm = () => {
-    router.push('/employees/confirm');
+    router.push(ROUTES.EMPLOYEE_CONFIRM);
   };
 
   const handleBack = () => {

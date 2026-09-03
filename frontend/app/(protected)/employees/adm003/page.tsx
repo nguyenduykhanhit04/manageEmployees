@@ -3,6 +3,7 @@
 import React, { Suspense } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { ROUTES } from '@/lib/constants';
 import { SYSTEM_MESSAGES } from '@/lib/constants/messages';
 
 function EmployeeDetailContent() {
@@ -11,14 +12,14 @@ function EmployeeDetailContent() {
   const searchParams = useSearchParams();
 
   // Đọc returnTo từ URL nếu có, mặc định là /employees/adm002
-  const returnTo = searchParams.get('returnTo') || '/employees/adm002';
+  const returnTo = searchParams.get('returnTo') || ROUTES.EMPLOYEE_LIST;
 
   const handleBack = () => {
     router.push(returnTo);
   };
 
   const handleEdit = () => {
-    const editUrl = `/employees/edit?returnTo=${encodeURIComponent(returnTo)}`;
+    const editUrl = `${ROUTES.EMPLOYEE_EDIT}?returnTo=${encodeURIComponent(returnTo)}`;
     router.push(editUrl);
   };
 
