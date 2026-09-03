@@ -253,7 +253,7 @@ export function useAdm002() {
 
   /**
    * Xử lý khi người dùng click vào tiêu đề cột để sắp xếp:
-   * - Cột được click sẽ trở thành trường ưu tiên số 1 (đầu mảng priority).
+   * - Cột được click sẽ trở thành trường ưu tiên số 1 .
    * - Chiều sắp xếp của cột được đảo (ASC -> DESC hoặc DESC -> ASC).
    *
    * @param field tên trường cần sắp xếp
@@ -327,7 +327,7 @@ export function useAdm002() {
   }, [employeeName, departmentId, sortPriority, sortOrders, currentPage, limit, pathname]);
 
   /**
-   * Xử lý điều hướng sang màn hình thêm mới nhân viên (ADM003) kèm đường dẫn quay lại.
+   * Xử lý điều hướng sang màn hình thêm mới nhân viên kèm đường dẫn quay lại.
    */
   const handleAddNew = useCallback(() => {
     const targetUrl = `${ROUTES.EMPLOYEE_ADD}?${QUERY_PARAMS.RETURN_TO}=${encodeURIComponent(currentReturnUrl)}`;
