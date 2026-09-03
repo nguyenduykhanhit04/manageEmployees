@@ -1,10 +1,4 @@
 /**
- * Copyright(C) 2026 Luvina Software Company
- *
- * index.ts, 25/8/2026 nguyenduykhanh2
- */
-
-/**
  * Cấu hình phân trang cho toàn bộ Frontend.
  */
 export const PAGING = {

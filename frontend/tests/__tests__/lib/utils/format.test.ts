@@ -1,9 +1,3 @@
-/**
- * Copyright(C) 2026 Luvina Software Company
- *
- * format.test.ts, 25/08/2026 nguyenduykhanh2
- */
-
 import { truncateText } from '@/lib/utils/format';
 
 describe('truncateText utility', () => {

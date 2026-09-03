@@ -1,9 +1,3 @@
-/**
- * Copyright(C) 2026 Luvina Software Company
- *
- * messageHelper.ts, 22/8/2026 nguyenduykhanh2
- */
-
 import { ERROR_MESSAGES, FIELD_LABELS, SUCCESS_MESSAGES } from '@/lib/constants/messages';
 
 /**

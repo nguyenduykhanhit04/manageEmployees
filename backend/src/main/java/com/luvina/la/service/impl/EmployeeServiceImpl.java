@@ -64,7 +64,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         String escapedName = escapeLikePattern(employeeName);
 
         // 2. Đếm tổng số bản ghi thỏa mãn điều kiện
-        long totalRecords = employeeRepository.countDisplayEmployees(
+        long totalRecords = employeeRepository.countEmployees(
                 escapedName,
                 departmentId);
 
@@ -73,7 +73,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         // 3. Lấy danh sách nhân viên từ repository tùy biến theo thứ tự ưu tiên sắp xếp động
-        List<EmployeeDTO> employees = employeeRepository.findDisplayEmployees(
+        List<EmployeeDTO> employees = employeeRepository.findEmployees(
                 escapedName,
                 departmentId,
                 orderParams,

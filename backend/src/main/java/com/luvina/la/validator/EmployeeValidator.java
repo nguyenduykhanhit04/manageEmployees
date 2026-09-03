@@ -20,11 +20,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class EmployeeValidator {
 
-    // Danh sách các trường cho phép sắp xếp hợp lệ
+    // Danh sách các trường cho phép sắp xếp hợp lệ theo đặc tả TKAPI_ListEmployee
     private static final Set<String> VALID_ORDER_KEYS = Set.of(
             Constants.ORDER_KEY_EMPLOYEE_NAME,
             Constants.ORDER_KEY_CERTIFICATION_NAME,
-            Constants.ORDER_KEY_CERTIFICATION_LEVEL,
             Constants.ORDER_KEY_END_DATE
     );
 
@@ -89,5 +88,20 @@ public class EmployeeValidator {
                 }
             }
         }
+    }
+
+    /**
+     * Kiểm tra tính hợp lệ của request tìm kiếm nhân viên.
+     *
+     * @param request đối tượng EmployeeSearchRequest chứa các tham số tìm kiếm
+     * @throws BusinessException nếu bất kỳ tham số nào không hợp lệ
+     */
+    public void validateGetEmployees(com.luvina.la.payload.request.EmployeeSearchRequest request) {
+        if (request == null) {
+            return;
+        }
+        int offset = request.getOffset() != null ? request.getOffset() : 0;
+        int limit = request.getLimit() != null ? request.getLimit() : 20;
+        validateGetEmployees(request.getEmployeeName(), offset, limit, request.getOrderParams());
     }
 }

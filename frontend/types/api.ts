@@ -1,10 +1,4 @@
 /**
- * Copyright(C) 2026 Luvina Software Company
- *
- * api.ts, 25/8/2026 nguyenduykhanh2
- */
-
-/**
  * Thông tin lỗi phản hồi từ API.
  */
 export interface ApiError {

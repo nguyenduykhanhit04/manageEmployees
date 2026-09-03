@@ -26,11 +26,10 @@ public interface EmployeeRepositoryCustom {
      * @param limit số lượng bản ghi tối đa được lấy
      * @return danh sách DTO thông tin nhân viên
      */
-    List<EmployeeDTO> findDisplayEmployees(
+    List<EmployeeDTO> findEmployees(
             String employeeName,
             Long departmentId,
             Map<String, String> orderParams,
             int offset,
-            int limit
-    );
+            int limit);
 }

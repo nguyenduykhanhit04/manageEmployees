@@ -1,9 +1,3 @@
-/**
- * Copyright(C) 2026 Luvina Software Company
- *
- * employee.ts, 22/8/2026 nguyenduykhanh2
- */
-
 import { z } from 'zod';
 
 // Regex kiểm tra Katakana (toàn bộ là ký tự Katakana full-width)

@@ -1,9 +1,3 @@
-/**
- * Copyright(C) 2026 Luvina Software Company
- *
- * employee.ts, 22/8/2026 nguyenduykhanh2
- */
-
 import { EmployeeListApiResponse } from "@/types/employee";
 import { apiClient } from "@/lib/api/client";
 

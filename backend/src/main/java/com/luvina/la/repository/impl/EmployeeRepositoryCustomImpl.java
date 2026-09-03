@@ -42,13 +42,14 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
      * @return danh sách DTO thông tin nhân viên
      */
     @Override
-    public List<EmployeeDTO> findDisplayEmployees(
+    public List<EmployeeDTO> findEmployees(
             String employeeName,
             Long departmentId,
             Map<String, String> orderParams,
             int offset,
             int limit) {
 
+        // 1. Khởi tạo câu truy vấn SQL lấy thông tin nhân viên
         StringBuilder sql = new StringBuilder("""
             select
                 e.employee_id,
@@ -67,17 +68,17 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
             where e.employee_role = 1
         """);
 
-        // Điều kiện lọc theo tên nhân viên (phân biệt hoa thường với binary)
+        // 2. Bổ sung điều kiện lọc theo tên nhân viên (phân biệt hoa thường với binary)
         if (employeeName != null && !employeeName.isEmpty()) {
             sql.append(" and e.employee_name like binary concat('%', :employeeName, '%') escape '\\\\' ");
         }
 
-        // Điều kiện lọc theo phòng ban
+        // 3. Bổ sung điều kiện lọc theo phòng ban
         if (departmentId != null) {
             sql.append(" and e.department_id = :departmentId ");
         }
 
-        // Xây dựng mệnh đề ORDER BY động theo thứ tự các trường được truyền từ Frontend
+        // 4. Xây dựng mệnh đề ORDER BY động theo thứ tự các trường được truyền từ Frontend
         sql.append(" order by ");
         List<String> orderClauses = new ArrayList<>();
 
@@ -89,28 +90,26 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
                 // Sắp xếp theo tên nhân viên
                 if (Constants.ORDER_KEY_EMPLOYEE_NAME.equalsIgnoreCase(key)) {
                     orderClauses.add("e.employee_name collate utf8mb4_vietnamese_ci " + direction);
-                } 
-                // Sắp xếp theo trình độ chứng chỉ
-                else if (Constants.ORDER_KEY_CERTIFICATION_LEVEL.equalsIgnoreCase(key)
-                        || "ord_certification_name".equalsIgnoreCase(key)) {
+                } else if (Constants.ORDER_KEY_CERTIFICATION_NAME.equalsIgnoreCase(key)) {
+                    // Sắp xếp theo trình độ chứng chỉ (ưu tiên điểm/cấp bậc chứng chỉ cao nhất)
                     orderClauses.add("case when c.certification_level is null then 1 else 0 end asc, -c.certification_level " + direction);
-                } 
-                // Sắp xếp theo ngày hết hạn chứng chỉ
-                else if (Constants.ORDER_KEY_END_DATE.equalsIgnoreCase(key)) {
+                } else if (Constants.ORDER_KEY_END_DATE.equalsIgnoreCase(key)) {
+                    // Sắp xếp theo ngày hết hạn chứng chỉ
                     orderClauses.add("case when ec.end_date is null then 1 else 0 end asc, ec.end_date " + direction);
                 }
             }
         }
 
-        // Luôn kết thúc bằng e.employee_id asc để đảm bảo tính ổn định của phân trang
+        // 5. Luôn kết thúc bằng e.employee_id asc để đảm bảo tính ổn định của phân trang
         orderClauses.add("e.employee_id asc");
         sql.append(String.join(", ", orderClauses));
 
-        // Phân trang
+        // 6. Bổ sung phân trang LIMIT và OFFSET
         sql.append(" limit :limit offset :offset ");
 
         Query query = entityManager.createNativeQuery(sql.toString());
 
+        // 7. Gán giá trị các tham số truy vấn
         if (employeeName != null && !employeeName.isEmpty()) {
             query.setParameter("employeeName", employeeName);
         }
@@ -120,6 +119,7 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
         query.setParameter("limit", limit);
         query.setParameter("offset", offset);
 
+        // 8. Chuyển đổi dữ liệu thô sang danh sách EmployeeDTO
         @SuppressWarnings("unchecked")
         List<Object[]> rows = query.getResultList();
         List<EmployeeDTO> result = new ArrayList<>();

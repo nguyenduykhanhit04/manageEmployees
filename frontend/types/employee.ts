@@ -1,8 +1,3 @@
-/**
- * Copyright(C) 2026 Luvina Software Company
- *
- * employee.ts, 25/8/2026 nguyenduykhanh2
- */
 import { SORT_ORDER, SORT_FIELDS } from '@/lib/constants';
 
 /**

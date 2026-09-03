@@ -1,10 +1,4 @@
 /**
- * Copyright(C) 2026 Luvina Software Company
- *
- * auth.ts, 25/8/2026 nguyenduykhanh2
- */
-
-/**
  * Cấu trúc dữ liệu yêu cầu đăng nhập.
  */
 export interface LoginRequest {

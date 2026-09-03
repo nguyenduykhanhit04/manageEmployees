@@ -34,9 +34,7 @@ public class EmployeeController {
      * @param employeeService service xử lý các chức năng liên quan đến nhân viên
      * @param employeeValidator validator kiểm tra tính hợp lệ của dữ liệu đầu vào
      */
-    public EmployeeController(
-            EmployeeService employeeService,
-            EmployeeValidator employeeValidator) {
+    public EmployeeController(EmployeeService employeeService, EmployeeValidator employeeValidator) {
         this.employeeService = employeeService;
         this.employeeValidator = employeeValidator;
     }
@@ -57,8 +55,8 @@ public class EmployeeController {
             @RequestParam(name = "department_id", required = false) Long departmentId,
             @RequestParam(defaultValue = "0") Integer offset,
             @RequestParam(defaultValue = Constants.DEFAULT_EMPLOYEE_LIST_LIMIT) Integer limit,
-            @RequestParam Map<String, String> requestParams
-    ) {
+            @RequestParam Map<String, String> requestParams) {
+
         // 1. Trích xuất các tham số sắp xếp từ request
         Map<String, String> orderParams = new LinkedHashMap<>();
         for (Map.Entry<String, String> entry : requestParams.entrySet()) {
@@ -72,11 +70,7 @@ public class EmployeeController {
 
         // 3. Gọi Service để xử lý nghiệp vụ và lấy Page dữ liệu
         Page<EmployeeDTO> employeePage = employeeService.getEmployees(
-                employeeName,
-                departmentId,
-                orderParams,
-                offset,
-                limit);
+                employeeName, departmentId, orderParams, offset, limit);
 
         // 4. Đóng gói dữ liệu vào Response payload theo chuẩn API spec và trả về
         EmployeeListResponse response = new EmployeeListResponse(

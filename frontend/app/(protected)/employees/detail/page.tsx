@@ -1,8 +1,3 @@
-/**
- * Copyright(C) 2026 Luvina Software Company
- *
- * page.tsx (ADM003 Detail), 24/8/2026 nguyenduykhanh2
- */
 'use client';
 
 import React, { Suspense } from 'react';

@@ -1,9 +1,3 @@
-/**
- * Copyright(C) 2026 Luvina Software Company
- *
- * format.ts, 25/08/2026 nguyenduykhanh2
- */
-
 import { DISPLAY_CONFIG } from '@/lib/constants';
 
 /**

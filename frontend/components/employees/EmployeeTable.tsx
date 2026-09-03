@@ -1,8 +1,3 @@
-/**
- * Copyright(C) 2026 Luvina Software Company
- *
- * EmployeeTable.tsx, 25/8/2026 nguyenduykhanh2
- */
 'use client';
 
 import React from 'react';
@@ -57,12 +52,24 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
   onPageChange,
   returnUrl,
 }) => {
-  // Tạo đường dẫn chi tiết kèm tham số returnTo
+  /**
+   * Tạo đường dẫn chi tiết kèm tham số returnTo.
+   */
   const getDetailLink = (employeeId: number) => {
     if (returnUrl) {
       return `${ROUTES.EMPLOYEE_DETAIL}?${QUERY_PARAMS.ID}=${employeeId}&${QUERY_PARAMS.RETURN_TO}=${encodeURIComponent(returnUrl)}`;
     }
     return `${ROUTES.EMPLOYEE_DETAIL}?${QUERY_PARAMS.ID}=${employeeId}`;
+  };
+
+  /**
+   * Lấy icon sắp xếp cho từng cột theo chiều ASC/DESC.
+   */
+  const getSortIcon = (field: SortField) => {
+    if (sortOrders[field] === SORT_ORDER.ASC) {
+      return SORT_ICONS.ASC;
+    }
+    return SORT_ICONS.DESC;
   };
 
   return (
@@ -76,9 +83,7 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
             onClick={() => onSort(SORT_FIELDS.EMPLOYEE_NAME)}
             title="氏名で並び替え"
           >
-            氏名 {sortOrders.ord_employee_name === SORT_ORDER.ASC
-              ? SORT_ICONS.ASC
-              : SORT_ICONS.DESC}
+            氏名 {getSortIcon(SORT_FIELDS.EMPLOYEE_NAME)}
           </div>
           <div>生年月日</div>
           <div>グループ</div>
@@ -89,36 +94,36 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
             onClick={() => onSort(SORT_FIELDS.CERTIFICATION_NAME)}
             title="日本語能力で並び替え"
           >
-            日本語能力 {sortOrders.ord_certification_name === SORT_ORDER.ASC
-              ? SORT_ICONS.ASC
-              : SORT_ICONS.DESC}
+            日本語能力 {getSortIcon(SORT_FIELDS.CERTIFICATION_NAME)}
           </div>
           <div
             style={{ cursor: 'pointer', userSelect: 'none' }}
             onClick={() => onSort(SORT_FIELDS.END_DATE)}
             title="失効日で並び替え"
           >
-            失効日 {sortOrders.ord_end_date === SORT_ORDER.ASC
-              ? SORT_ICONS.ASC
-              : SORT_ICONS.DESC}
+            失効日 {getSortIcon(SORT_FIELDS.END_DATE)}
           </div>
           <div>点数</div>
         </div>
 
         {/* Body bảng dữ liệu */}
         <div className="css-grid-table-body">
-          {/* Trường hợp đang tải dữ liệu */}
-          {loading ? (
+          {/* 1. Trường hợp đang tải dữ liệu */}
+          {loading && (
             <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '20px' }}>
               {SYSTEM_MESSAGES.LOADING}
             </div>
-          ) : /* Trường hợp không tìm thấy bản ghi nào */
-          employees.length === 0 ? (
+          )}
+
+          {/* 2. Trường hợp không có dữ liệu */}
+          {!loading && employees.length === 0 && (
             <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '20px' }}>
               {SYSTEM_MESSAGES.MSG005}
             </div>
-          ) : (
-            /* Render danh sách từng nhân viên */
+          )}
+
+          {/* 3. Render danh sách từng nhân viên */}
+          {!loading &&
             employees.map((emp) => (
               <React.Fragment key={emp.employeeId}>
                 <div className="bor-l-none text-center">
@@ -126,7 +131,6 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
                     {emp.employeeId}
                   </Link>
                 </div>
-
                 <div title={emp.employeeName}>
                   {truncateText(emp.employeeName)}
                 </div>
@@ -152,8 +156,7 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
                   {emp.score !== null && emp.score !== undefined ? emp.score : ''}
                 </div>
               </React.Fragment>
-            ))
-          )}
+            ))}
         </div>
 
         {/* Thanh phân trang */}

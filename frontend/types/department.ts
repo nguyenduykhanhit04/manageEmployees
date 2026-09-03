@@ -1,10 +1,4 @@
 /**
- * Copyright(C) 2026 Luvina Software Company
- *
- * department.ts, 25/8/2026 nguyenduykhanh2
- */
-
-/**
  * Thông tin chi tiết một phòng ban.
  */
 export interface DepartmentItem {

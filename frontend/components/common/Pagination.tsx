@@ -1,8 +1,3 @@
-/**
- * Copyright(C) 2026 Luvina Software Company
- *
- * Pagination.tsx, 25/8/2026 nguyenduykhanh2
- */
 'use client';
 
 import React from 'react';

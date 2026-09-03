@@ -1,10 +1,4 @@
 /**
- * Copyright(C) 2026 Luvina Software Company
- *
- * messages.ts, 22/8/2026 nguyenduykhanh2
- */
-
-/**
  * Định nghĩa các mẫu thông báo thành công (MSG001 - MSG003)
  */
 export const SUCCESS_MESSAGES: Record<string, string> = {

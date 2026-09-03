@@ -51,7 +51,7 @@ public interface EmployeeRepository extends CrudRepository<EmployeeEntity, Long>
             and (:employeeName is null or :employeeName = '' or e.employee_name like binary concat('%', :employeeName, '%') escape '\\\\')
             and (:departmentId is null or e.department_id = :departmentId)
             """, nativeQuery = true)
-    long countDisplayEmployees(
+    long countEmployees(
             @Param("employeeName") String employeeName,
             @Param("departmentId") Long departmentId);
 }

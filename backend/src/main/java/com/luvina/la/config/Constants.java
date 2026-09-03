@@ -66,9 +66,6 @@ public class Constants {
     // Key sắp xếp theo tên chứng chỉ tiếng Nhật (theo chuẩn TKAPI).
     public static final String ORDER_KEY_CERTIFICATION_NAME = "ord_certification_name";
 
-    // Key sắp xếp theo trình độ chứng chỉ.
-    public static final String ORDER_KEY_CERTIFICATION_LEVEL = "ord_certification_level";
-
     // Key sắp xếp theo ngày hết hạn chứng chỉ.
     public static final String ORDER_KEY_END_DATE = "ord_end_date";
 
