@@ -85,7 +85,7 @@ function parseSortFromParams(params: {
 /**
  * Custom Hook quản lý toàn bộ nghiệp vụ cho màn hình danh sách nhân viên (ADM002):
  * lấy danh sách nhân viên, danh sách phòng ban, tìm kiếm, sắp xếp đa cột ưu tiên,
- * phân trang và điều hướng sang màn hình thêm mới (ADM003).
+ * phân trang và điều hướng sang màn hình thêm mới.
  *
  * @author nguyenduykhanh2
  * @return Các state và hàm handler phục vụ cho màn hình ADM002
@@ -330,7 +330,7 @@ export function useAdm002() {
    * Xử lý điều hướng sang màn hình thêm mới nhân viên kèm đường dẫn quay lại.
    */
   const handleAddNew = useCallback(() => {
-    const targetUrl = `${ROUTES.EMPLOYEE_ADD}?${QUERY_PARAMS.RETURN_TO}=${encodeURIComponent(currentReturnUrl)}`;
+    const targetUrl = `${ROUTES.EMPLOYEE_ADD}?mode=add&${QUERY_PARAMS.RETURN_TO}=${encodeURIComponent(currentReturnUrl)}`;
     router.push(targetUrl);
   }, [currentReturnUrl, router]);
 

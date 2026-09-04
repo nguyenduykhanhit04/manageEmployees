@@ -26,13 +26,14 @@ export const ERROR_MESSAGES: Record<string, string> = {
   ER004: '{0}は存在していません。',
   ER005: '{0}を正しい書式で入力してください。',
   ER006: '{0}を{1}文字以下で入力してください。',
-  ER007: '{0}を{1}桁で入力してください。',
+  ER007: '{0}を{1}桁以上{2}桁以下で入力してください。',
   ER008: '{0}は半角英数を入力してください。',
   ER009: '{0}はカタカナで入力してください。',
   ER012: '{0}は{1}より後の日付を入力してください。',
   ER013: '該当するユーザは存在しません。',
   ER014: '該当するユーザは存在しません。',
   ER015: 'システムエラーが発生しました。',
+  ER017: 'パスワードが一致しません。',
   ER018: '{0}は半角英数を入力してください。',
   ER019: '{0}を正しい書式で入力してください。',
   ER021: '{0}のソート順が不正です。',
@@ -51,6 +52,7 @@ export const FIELD_LABELS: Record<string, string> = {
   employeeEmail: 'メールアドレス',
   employeeTelephone: '電話番号',
   employeeLoginPassword: 'パスワード',
+  employeeLoginPasswordConfirm: 'パスワード（確認）',
   certificationId: '資格',
   startDate: '資格交付日',
   endDate: '失効日',
@@ -58,3 +60,18 @@ export const FIELD_LABELS: Record<string, string> = {
   offset: 'オフセット',
   limit: 'リミット',
 };
+
+/**
+ * Format chuỗi thông báo lỗi theo mã lỗi và danh sách tham số.
+ *
+ * @param code mã lỗi (ví dụ ER001, ER006)
+ * @param params danh sách tham số thay thế vào template {0}, {1}...
+ * @return chuỗi thông báo lỗi tiếng Nhật hoàn chỉnh
+ */
+export function formatErrorMessage(code: string, params: (string | number)[] = []): string {
+  let template = ERROR_MESSAGES[code] || code;
+  params.forEach((param, index) => {
+    template = template.replace(new RegExp(`\\{${index}\\}`, 'g'), String(param));
+  });
+  return template;
+}

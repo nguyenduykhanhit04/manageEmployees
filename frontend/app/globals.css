@@ -872,8 +872,17 @@ select {
   width: 100%;
   font-size: 12px;
   color: #e10020;
-  position: absolute;
-  bottom: -18px;
+  margin-top: 4px;
+}
+
+.invalid-feedback.d-block,
+.d-block {
+  display: block !important;
+}
+
+.form-control.is-invalid,
+.is-invalid {
+  border-color: #c00 !important;
 }
 
 .was-validated :invalid~.invalid-feedback {
