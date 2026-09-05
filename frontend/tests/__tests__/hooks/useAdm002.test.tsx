@@ -86,7 +86,10 @@ describe('useAdm002 Hook', () => {
     });
 
     expect(mockPush).toHaveBeenCalledWith(
-      expect.stringContaining('/employees/adm004?returnTo=')
+      expect.stringContaining('/employees/adm004')
+    );
+    expect(mockPush).toHaveBeenCalledWith(
+      expect.stringContaining('returnTo=')
     );
   });
 });

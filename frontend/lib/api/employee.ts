@@ -45,3 +45,26 @@ export const getEmployees = async (params: {
   });
   return response.data;
 };
+
+/**
+ * Gọi API thêm mới nhân viên (POST /employee).
+ *
+ * @param payload dữ liệu nhân viên cần tạo mới
+ * @return kết quả phản hồi từ backend
+ */
+export const createEmployee = async (payload: any): Promise<any> => {
+  const response = await apiClient.post('/employee', payload);
+  return response.data;
+};
+
+/**
+ * Gọi API cập nhật thông tin nhân viên (PUT /employee/{id}).
+ *
+ * @param employeeId mã nhân viên cần cập nhật
+ * @param payload dữ liệu nhân viên cần cập nhật
+ * @return kết quả phản hồi từ backend
+ */
+export const updateEmployee = async (employeeId: number | string, payload: any): Promise<any> => {
+  const response = await apiClient.put(`/employee/${employeeId}`, payload);
+  return response.data;
+};
