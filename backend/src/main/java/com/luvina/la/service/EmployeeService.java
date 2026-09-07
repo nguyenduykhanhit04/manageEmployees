@@ -6,6 +6,7 @@
 package com.luvina.la.service;
 
 import com.luvina.la.dto.EmployeeDTO;
+import com.luvina.la.payload.request.EmployeeSaveRequest;
 import java.util.Map;
 import org.springframework.data.domain.Page;
 
@@ -32,4 +33,12 @@ public interface EmployeeService {
             Map<String, String> orderParams,
             int offset,
             int limit);
+
+    /**
+     * Thêm mới một nhân viên vào cơ sở dữ liệu (kèm chứng chỉ tiếng Nhật nếu có).
+     *
+     * @param request đối tượng chứa thông tin nhân viên cần thêm mới
+     * @return mã định danh employeeId của nhân viên vừa được tạo
+     */
+    Long createEmployee(EmployeeSaveRequest request);
 }

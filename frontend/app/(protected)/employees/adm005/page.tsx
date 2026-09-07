@@ -19,6 +19,7 @@ function EmployeeConfirmContent() {
     departmentName,
     certificationName,
     isLoading,
+    isSubmitting,
     errorMessage,
     handleOk,
     handleBack,
@@ -126,13 +127,15 @@ function EmployeeConfirmContent() {
               <button
                 type="button"
                 onClick={handleOk}
+                disabled={isSubmitting}
                 className="btn btn-primary btn-sm"
               >
-                OK
+                {isSubmitting ? '処理中...' : 'OK'}
               </button>
               <button
                 type="button"
                 onClick={handleBack}
+                disabled={isSubmitting}
                 className="btn btn-secondary btn-sm"
               >
                 戻る

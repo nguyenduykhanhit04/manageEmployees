@@ -6,8 +6,15 @@
 package com.luvina.la.service.impl;
 
 import com.luvina.la.dto.EmployeeDTO;
+import com.luvina.la.entity.EmployeeEntity;
+import com.luvina.la.entity.EmployeesCertificationEntity;
+import com.luvina.la.mapper.EmployeeMapper;
+import com.luvina.la.payload.request.EmployeeSaveRequest;
 import com.luvina.la.repository.EmployeeRepository;
+import com.luvina.la.repository.EmployeesCertificationRepository;
 import com.luvina.la.service.EmployeeService;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,14 +35,29 @@ import org.springframework.transaction.annotation.Transactional;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final EmployeesCertificationRepository employeesCertificationRepository;
+    private final EmployeeMapper employeeMapper;
+    private final PasswordEncoder passwordEncoder;
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
     /**
-     * Khởi tạo EmployeeServiceImpl với EmployeeRepository.
+     * Khởi tạo EmployeeServiceImpl với các dependencies cần thiết.
      *
      * @param employeeRepository repository thao tác với dữ liệu nhân viên
+     * @param employeesCertificationRepository repository thao tác với chứng chỉ nhân viên
+     * @param employeeMapper mapper chuyển đổi đối tượng
+     * @param passwordEncoder encoder mã hóa mật khẩu
      */
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+    public EmployeeServiceImpl(
+            EmployeeRepository employeeRepository,
+            EmployeesCertificationRepository employeesCertificationRepository,
+            EmployeeMapper employeeMapper,
+            PasswordEncoder passwordEncoder) {
         this.employeeRepository = employeeRepository;
+        this.employeesCertificationRepository = employeesCertificationRepository;
+        this.employeeMapper = employeeMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -82,6 +105,50 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         // 4. Trả về kết quả phân trang chuẩn của Spring Data
         return new PageImpl<>(employees, pageable, totalRecords);
+    }
+
+    /**
+     * Thêm mới một nhân viên vào cơ sở dữ liệu (kèm chứng chỉ tiếng Nhật nếu có).
+     * Toàn bộ thao tác thêm nhân viên và chứng chỉ được quản lý trong cùng một Transaction.
+     *
+     * @param request đối tượng chứa thông tin nhân viên cần thêm mới
+     * @return mã định danh employeeId của nhân viên vừa được tạo
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long createEmployee(EmployeeSaveRequest request) {
+        // 1. Chuyển đổi từ Request sang EmployeeEntity
+        EmployeeEntity employeeEntity = employeeMapper.toEntity(request);
+
+        // 2. Mã hóa mật khẩu đăng nhập
+        if (request.getEmployeeLoginPassword() != null && !request.getEmployeeLoginPassword().isEmpty()) {
+            employeeEntity.setEmployeeLoginPassword(passwordEncoder.encode(request.getEmployeeLoginPassword()));
+        }
+
+        // 3. Mặc định role = 1 (User)
+        employeeEntity.setEmployeeRole(1);
+
+        // 4. Lưu thông tin nhân viên vào bảng employees -> Tự sinh employee_id
+        EmployeeEntity savedEmployee = employeeRepository.save(employeeEntity);
+
+        // 5. Nếu có chọn chứng chỉ tiếng Nhật -> Lưu thông tin vào bảng employees_certifications
+        if (request.getCertificationId() != null && request.getCertificationId() > 0) {
+            LocalDate startDate = LocalDate.parse(request.getCertificationStartDate(), DATE_FORMATTER);
+            LocalDate endDate = LocalDate.parse(request.getCertificationEndDate(), DATE_FORMATTER);
+
+            EmployeesCertificationEntity certEntity = new EmployeesCertificationEntity(
+                    savedEmployee.getEmployeeId(),
+                    request.getCertificationId(),
+                    startDate,
+                    endDate,
+                    request.getEmployeeCertificationScore()
+            );
+
+            employeesCertificationRepository.save(certEntity);
+        }
+
+        // 6. Trả về employeeId vừa được tạo
+        return savedEmployee.getEmployeeId();
     }
 
     /**

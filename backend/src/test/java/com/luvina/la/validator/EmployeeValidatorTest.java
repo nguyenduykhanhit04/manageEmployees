@@ -8,9 +8,13 @@ package com.luvina.la.validator;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 import com.luvina.la.config.Constants;
 import com.luvina.la.exception.BusinessException;
+import com.luvina.la.repository.CertificationRepository;
+import com.luvina.la.repository.DepartmentRepository;
+import com.luvina.la.repository.EmployeeRepository;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,10 +27,16 @@ import org.junit.jupiter.api.Test;
 class EmployeeValidatorTest {
 
     private EmployeeValidator employeeValidator;
+    private EmployeeRepository employeeRepository;
+    private DepartmentRepository departmentRepository;
+    private CertificationRepository certificationRepository;
 
     @BeforeEach
     void setUp() {
-        employeeValidator = new EmployeeValidator();
+        employeeRepository = mock(EmployeeRepository.class);
+        departmentRepository = mock(DepartmentRepository.class);
+        certificationRepository = mock(CertificationRepository.class);
+        employeeValidator = new EmployeeValidator(employeeRepository, departmentRepository, certificationRepository);
     }
 
     @Test

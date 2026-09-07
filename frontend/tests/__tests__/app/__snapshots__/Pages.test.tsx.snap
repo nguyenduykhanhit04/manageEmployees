@@ -407,7 +407,7 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
                 >
                   <input
                     class="form-control "
-                    placeholder="2026/09/05"
+                    placeholder="2026/09/07"
                     type="text"
                     value=""
                   />
@@ -590,7 +590,7 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
                   <input
                     class="form-control"
                     disabled=""
-                    placeholder="2026/09/05"
+                    placeholder="2026/09/07"
                     type="text"
                     value=""
                   />
@@ -629,7 +629,7 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
                   <input
                     class="form-control "
                     disabled=""
-                    placeholder="2026/09/05"
+                    placeholder="2026/09/07"
                     type="text"
                     value=""
                   />

@@ -7,6 +7,8 @@ package com.luvina.la.controller;
 
 import com.luvina.la.config.Constants;
 import com.luvina.la.dto.EmployeeDTO;
+import com.luvina.la.payload.request.EmployeeSaveRequest;
+import com.luvina.la.payload.response.ApiResponse;
 import com.luvina.la.payload.response.EmployeeListResponse;
 import com.luvina.la.service.EmployeeService;
 import com.luvina.la.validator.EmployeeValidator;
@@ -78,6 +80,25 @@ public class EmployeeController {
                 employeePage.getTotalElements(),
                 employeePage.getContent());
 
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Thêm mới một nhân viên vào hệ thống.
+     *
+     * @param request đối tượng chứa thông tin nhân viên cần thêm mới
+     * @return thông tin phản hồi chứa mã response thành công
+     */
+    @PostMapping("/employee")
+    public ResponseEntity<ApiResponse> createEmployee(@RequestBody EmployeeSaveRequest request) {
+        // 1. Kiểm tra tính hợp lệ của dữ liệu đầu vào
+        employeeValidator.validateAddEmployee(request);
+
+        // 2. Thực hiện thêm mới nhân viên qua Service
+        employeeService.createEmployee(request);
+
+        // 3. Trả về phản hồi thành công mã 200
+        ApiResponse response = new ApiResponse(Constants.CODE_SUCCESS);
         return ResponseEntity.ok(response);
     }
 }
