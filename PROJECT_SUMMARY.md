@@ -49,6 +49,7 @@ Toàn bộ tài liệu kỹ thuật, đặc tả API và quy chuẩn được l�
 | └── `TKAPI_ListCertifications.md` | API Lấy danh sách trình độ chứng chỉ tiếng Nhật (`GET /certifications`) |
 | **`docs/db/`** | **Tài liệu thiết kế Database** |
 | └── `TKDB.md` | Cấu trúc các bảng (`employees`, `departments`, `certifications`, `employees_certifications`) |
+| **`docs/ERROR_CODES_WIKI.md`** | **WIKI toàn bộ hệ thống mã lỗi (`ER001-ER023`), thông báo thành công & nhãn trường** |
 | **`docs/guidelines/`** | **Quy chuẩn lập trình & Checklist nghiệm thu** |
 | └── `ManageUser_Checklist.md` | Coding rules Java (Javadoc 100%, 3-tier), Next.js (Custom Hooks, Zod, SoC) & Checklist |
 

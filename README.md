@@ -132,5 +132,6 @@ npm run dev
 ## 📖 Tài Liệu Tham Khảo
 
 - Chi tiết kiến trúc và luồng xử lý: [PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md)
+- **WIKI Hệ thống mã lỗi & Thông báo:** [docs/ERROR_CODES_WIKI.md](./docs/ERROR_CODES_WIKI.md)
 - Đặc tả API và Database: Thư mục [docs/](./docs/)
 - Quy chuẩn coding và checklist: [docs/guidelines/ManageUser_Checklist.md](./docs/guidelines/ManageUser_Checklist.md)
