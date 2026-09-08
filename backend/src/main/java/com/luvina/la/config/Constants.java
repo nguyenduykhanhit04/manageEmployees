@@ -193,7 +193,7 @@ public class Constants {
     public static final String LABEL_SCORE = "点数";
 
     // Nhãn mã định danh.
-    public static final String LABEL_ID = "ID";
+    public static final String LABEL_ID = "ＩＤ";
 
     // Nhãn tham số offset dùng cho phân trang.
     public static final String OFFSET_PARAM_LABEL = "オフセット";

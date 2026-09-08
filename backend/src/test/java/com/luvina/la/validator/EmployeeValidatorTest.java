@@ -97,4 +97,33 @@ class EmployeeValidatorTest {
 
         assertEquals(Constants.ERROR_CODE_INVALID_SORT, ex.getErrorCode());
     }
+
+    @Test
+    void testValidateGetEmployee_Success() {
+        assertDoesNotThrow(() -> employeeValidator.validateGetEmployee(1L));
+    }
+
+    @Test
+    void testValidateGetEmployee_NullId() {
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> employeeValidator.validateGetEmployee(null));
+
+        assertEquals(Constants.ER001, ex.getErrorCode());
+        assertEquals(Constants.LABEL_ID, ex.getParams().get(0));
+    }
+
+    @Test
+    void testValidateGetEmployee_InvalidIdZeroOrNegative() {
+        BusinessException exZero = assertThrows(
+                BusinessException.class,
+                () -> employeeValidator.validateGetEmployee(0L));
+        assertEquals(Constants.ER001, exZero.getErrorCode());
+
+        BusinessException exNegative = assertThrows(
+                BusinessException.class,
+                () -> employeeValidator.validateGetEmployee(-5L));
+        assertEquals(Constants.ER001, exNegative.getErrorCode());
+    }
 }
+

@@ -121,3 +121,53 @@ export interface EmployeeUpdateRequest {
   /** Tên tài khoản đăng nhập */
   employeeLoginId: string;
 }
+
+/**
+ * Chi tiết một chứng chỉ tiếng Nhật trong phản hồi chi tiết nhân viên (ADM003).
+ */
+export interface EmployeeCertificationDetail {
+  /** Mã định danh chứng chỉ */
+  certificationId: number;
+  /** Tên chứng chỉ tiếng Nhật */
+  certificationName: string;
+  /** Ngày cấp chứng chỉ (YYYY/MM/DD) */
+  startDate: string;
+  /** Ngày hết hạn chứng chỉ (YYYY/MM/DD) */
+  endDate: string;
+  /** Điểm số đạt được */
+  score: number;
+}
+
+/**
+ * Cấu trúc dữ liệu phản hồi từ API lấy chi tiết thông tin một nhân viên (ADM003).
+ */
+export interface EmployeeDetailResponse {
+  /** Mã trạng thái phản hồi HTTP */
+  code: number;
+  /** Mã định danh nhân viên */
+  employeeId: number;
+  /** Tên đầy đủ của nhân viên */
+  employeeName: string;
+  /** Ngày sinh của nhân viên (YYYY/MM/DD) */
+  employeeBirthDate: string | null;
+  /** Mã phòng ban trực thuộc */
+  departmentId: number;
+  /** Tên phòng ban trực thuộc */
+  departmentName: string;
+  /** Địa chỉ email của nhân viên */
+  employeeEmail: string;
+  /** Số điện thoại liên hệ */
+  employeeTelephone: string | null;
+  /** Tên Katakana của nhân viên */
+  employeeNameKana: string | null;
+  /** Tên tài khoản đăng nhập của nhân viên */
+  employeeLoginId: string;
+  /** Danh sách chứng chỉ tiếng Nhật của nhân viên */
+  certifications?: EmployeeCertificationDetail[];
+  /** Thông báo lỗi từ API nếu có */
+  message?: {
+    code: string;
+    params?: string[];
+  };
+}
+

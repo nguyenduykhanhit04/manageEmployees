@@ -58,6 +58,18 @@ public class EmployeeValidator {
     }
 
     /**
+     * Kiểm tra tính hợp lệ của mã định danh nhân viên khi lấy thông tin chi tiết.
+     *
+     * @param employeeId mã định danh của nhân viên
+     * @throws BusinessException nếu employeeId null hoặc không hợp lệ (ER001)
+     */
+    public void validateGetEmployee(Long employeeId) {
+        if (employeeId == null || employeeId <= 0) {
+            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_ID));
+        }
+    }
+
+    /**
      * Kiểm tra tính hợp lệ của các tham số tìm kiếm, phân trang và sắp xếp danh sách nhân viên.
      *
      * @param employeeName tên nhân viên cần tìm kiếm
