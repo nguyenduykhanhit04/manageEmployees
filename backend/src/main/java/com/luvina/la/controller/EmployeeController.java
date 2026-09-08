@@ -7,6 +7,9 @@ package com.luvina.la.controller;
 
 import com.luvina.la.config.Constants;
 import com.luvina.la.dto.EmployeeDTO;
+import com.luvina.la.payload.request.EmployeeSaveRequest;
+import com.luvina.la.payload.response.ApiResponse;
+import com.luvina.la.payload.response.EmployeeDetailResponse;
 import com.luvina.la.payload.response.EmployeeListResponse;
 import com.luvina.la.service.EmployeeService;
 import com.luvina.la.validator.EmployeeValidator;
@@ -80,4 +83,42 @@ public class EmployeeController {
 
         return ResponseEntity.ok(response);
     }
+
+    /**
+     * Lấy thông tin chi tiết một nhân viên theo mã định danh employeeId.
+     *
+     * @param employeeId mã định danh của nhân viên cần lấy thông tin
+     * @return thông tin chi tiết nhân viên và mã phản hồi 200
+     */
+    @GetMapping("/employee/{employeeId}")
+    public ResponseEntity<EmployeeDetailResponse> getEmployeeDetail(@PathVariable("employeeId") Long employeeId) {
+        // 1. Kiểm tra tính hợp lệ của tham số employeeId qua Validator (bắt lỗi ER001)
+        employeeValidator.validateGetEmployee(employeeId);
+
+        // 2. Gọi Service để lấy thông tin chi tiết nhân viên (bắt lỗi ER013 nếu không tìm thấy)
+        EmployeeDetailResponse response = employeeService.getEmployeeDetail(employeeId);
+
+        // 3. Trả về phản hồi thành công mã 200
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Thêm mới một nhân viên vào hệ thống.
+     *
+     * @param request đối tượng chứa thông tin nhân viên cần thêm mới
+     * @return thông tin phản hồi chứa mã response thành công
+     */
+    @PostMapping("/employee")
+    public ResponseEntity<ApiResponse> createEmployee(@RequestBody EmployeeSaveRequest request) {
+        // 1. Kiểm tra tính hợp lệ của dữ liệu đầu vào
+        employeeValidator.validateAddEmployee(request);
+
+        // 2. Thực hiện thêm mới nhân viên qua Service
+        employeeService.createEmployee(request);
+
+        // 3. Trả về phản hồi thành công mã 200
+        ApiResponse response = new ApiResponse(Constants.CODE_SUCCESS);
+        return ResponseEntity.ok(response);
+    }
 }
+

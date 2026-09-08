@@ -19,6 +19,7 @@ function EmployeeConfirmContent() {
     departmentName,
     certificationName,
     isLoading,
+    isSubmitting,
     errorMessage,
     handleOk,
     handleBack,
@@ -32,13 +33,8 @@ function EmployeeConfirmContent() {
     );
   }
 
-  const isCertSelected = Boolean(
-    formData.certificationId &&
-      formData.certificationId !== '' &&
-      formData.certificationId !== '0'
-  );
-
   return (
+
     <div className="row">
       <form className="c-form box-shadow">
         <ul className="show-data">
@@ -95,30 +91,27 @@ function EmployeeConfirmContent() {
             <div className="col-sm col-sm-10">{formData.employeeTelephone}</div>
           </li>
 
-          {/* Khối thông tin chứng chỉ tiếng Nhật (chỉ hiển thị khi có chọn chứng chỉ) */}
-          {isCertSelected && (
-            <>
-              <li className="title mt-12">
-                <a href="#!">日本語能力</a>
-              </li>
-              <li className="form-group row d-flex">
-                <label className="col-form-label col-sm-2">資格</label>
-                <div className="col-sm col-sm-10">{certificationName}</div>
-              </li>
-              <li className="form-group row d-flex">
-                <label className="col-form-label col-sm-2">資格交付日</label>
-                <div className="col-sm col-sm-10">{formData.certificationStartDate}</div>
-              </li>
-              <li className="form-group row d-flex">
-                <label className="col-form-label col-sm-2">失効日</label>
-                <div className="col-sm col-sm-10">{formData.certificationEndDate}</div>
-              </li>
-              <li className="form-group row d-flex">
-                <label className="col-form-label col-sm-2">点数</label>
-                <div className="col-sm col-sm-10">{formData.employeeCertificationScore}</div>
-              </li>
-            </>
-          )}
+          {/* Khối thông tin chứng chỉ tiếng Nhật (luôn hiển thị, nếu không có thì để trống) */}
+          <li className="title mt-12">
+            <a href="#!">日本語能力</a>
+          </li>
+          <li className="form-group row d-flex">
+            <label className="col-form-label col-sm-2">資格</label>
+            <div className="col-sm col-sm-10">{certificationName || ''}</div>
+          </li>
+          <li className="form-group row d-flex">
+            <label className="col-form-label col-sm-2">資格交付日</label>
+            <div className="col-sm col-sm-10">{formData.certificationStartDate || ''}</div>
+          </li>
+          <li className="form-group row d-flex">
+            <label className="col-form-label col-sm-2">失効日</label>
+            <div className="col-sm col-sm-10">{formData.certificationEndDate || ''}</div>
+          </li>
+          <li className="form-group row d-flex bor-none">
+            <label className="col-form-label col-sm-2">点数</label>
+            <div className="col-sm col-sm-10">{formData.employeeCertificationScore || ''}</div>
+          </li>
+
 
           {/* Nút bấm OK và 戻る */}
           <li className="form-group row d-flex">
@@ -126,13 +119,15 @@ function EmployeeConfirmContent() {
               <button
                 type="button"
                 onClick={handleOk}
+                disabled={isSubmitting}
                 className="btn btn-primary btn-sm"
               >
-                OK
+                {isSubmitting ? '処理中...' : 'OK'}
               </button>
               <button
                 type="button"
                 onClick={handleBack}
+                disabled={isSubmitting}
                 className="btn btn-secondary btn-sm"
               >
                 戻る

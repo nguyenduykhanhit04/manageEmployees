@@ -6,14 +6,18 @@
 package com.luvina.la.repository.impl;
 
 import com.luvina.la.config.Constants;
+import com.luvina.la.dto.EmployeeCertificationDetailDTO;
 import com.luvina.la.dto.EmployeeDTO;
+import com.luvina.la.payload.response.EmployeeDetailResponse;
 import com.luvina.la.repository.EmployeeRepositoryCustom;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -140,4 +144,105 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
 
         return result;
     }
+
+    /**
+     * Lấy thông tin chi tiết một nhân viên bao gồm phòng ban và danh sách chứng chỉ tiếng Nhật.
+     *
+     * @param employeeId mã định danh của nhân viên
+     * @return đối tượng EmployeeDetailResponse chứa đầy đủ thông tin chi tiết
+     */
+    @Override
+    public Optional<EmployeeDetailResponse> getEmployeeDetail(Long employeeId) {
+        if (employeeId == null || employeeId <= 0) {
+            return Optional.empty();
+        }
+
+        String sql = """
+            select
+                e.employee_id,
+                e.employee_name,
+                e.employee_birth_date,
+                d.department_id,
+                d.department_name,
+                e.employee_email,
+                e.employee_telephone,
+                e.employee_name_kana,
+                e.employee_login_id,
+                c.certification_id,
+                c.certification_name,
+                ec.start_date,
+                ec.end_date,
+                ec.score
+            from employees e
+            inner join departments d on d.department_id = e.department_id
+            left join employees_certifications ec on ec.employee_id = e.employee_id
+            left join certifications c on c.certification_id = ec.certification_id
+            where e.employee_id = :employeeId
+            order by c.certification_level asc
+        """;
+
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter("employeeId", employeeId);
+
+        @SuppressWarnings("unchecked")
+        List<Object[]> rows = query.getResultList();
+
+        if (rows == null || rows.isEmpty()) {
+            return Optional.empty();
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        EmployeeDetailResponse response = null;
+        List<EmployeeCertificationDetailDTO> certifications = new ArrayList<>();
+
+        for (Object[] row : rows) {
+            if (response == null) {
+                Long empId = row[0] != null ? ((Number) row[0]).longValue() : null;
+                String name = (String) row[1];
+                LocalDate birthDate = row[2] != null ? ((Date) row[2]).toLocalDate() : null;
+                Long deptId = row[3] != null ? ((Number) row[3]).longValue() : null;
+                String deptName = (String) row[4];
+                String email = (String) row[5];
+                String tel = (String) row[6];
+                String nameKana = (String) row[7];
+                String loginId = (String) row[8];
+
+                response = new EmployeeDetailResponse();
+                response.setCode(Constants.CODE_SUCCESS);
+                response.setEmployeeId(empId);
+                response.setEmployeeName(name);
+                response.setEmployeeBirthDate(birthDate != null ? birthDate.format(formatter) : null);
+                response.setDepartmentId(deptId);
+                response.setDepartmentName(deptName);
+                response.setEmployeeEmail(email);
+                response.setEmployeeTelephone(tel);
+                response.setEmployeeNameKana(nameKana);
+                response.setEmployeeLoginId(loginId);
+            }
+
+            Long certId = row[9] != null ? ((Number) row[9]).longValue() : null;
+            if (certId != null) {
+                String certName = (String) row[10];
+                LocalDate startDate = row[11] != null ? ((Date) row[11]).toLocalDate() : null;
+                LocalDate endDate = row[12] != null ? ((Date) row[12]).toLocalDate() : null;
+                BigDecimal score = row[13] != null ? (BigDecimal) row[13] : null;
+
+                EmployeeCertificationDetailDTO certDto = new EmployeeCertificationDetailDTO(
+                        certId,
+                        certName,
+                        startDate != null ? startDate.format(formatter) : null,
+                        endDate != null ? endDate.format(formatter) : null,
+                        score
+                );
+                certifications.add(certDto);
+            }
+        }
+
+        if (response != null) {
+            response.setCertifications(certifications);
+        }
+
+        return Optional.ofNullable(response);
+    }
 }
+

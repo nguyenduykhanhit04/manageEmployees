@@ -8,9 +8,13 @@ package com.luvina.la.validator;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 import com.luvina.la.config.Constants;
 import com.luvina.la.exception.BusinessException;
+import com.luvina.la.repository.CertificationRepository;
+import com.luvina.la.repository.DepartmentRepository;
+import com.luvina.la.repository.EmployeeRepository;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,10 +27,16 @@ import org.junit.jupiter.api.Test;
 class EmployeeValidatorTest {
 
     private EmployeeValidator employeeValidator;
+    private EmployeeRepository employeeRepository;
+    private DepartmentRepository departmentRepository;
+    private CertificationRepository certificationRepository;
 
     @BeforeEach
     void setUp() {
-        employeeValidator = new EmployeeValidator();
+        employeeRepository = mock(EmployeeRepository.class);
+        departmentRepository = mock(DepartmentRepository.class);
+        certificationRepository = mock(CertificationRepository.class);
+        employeeValidator = new EmployeeValidator(employeeRepository, departmentRepository, certificationRepository);
     }
 
     @Test
@@ -87,4 +97,33 @@ class EmployeeValidatorTest {
 
         assertEquals(Constants.ERROR_CODE_INVALID_SORT, ex.getErrorCode());
     }
+
+    @Test
+    void testValidateGetEmployee_Success() {
+        assertDoesNotThrow(() -> employeeValidator.validateGetEmployee(1L));
+    }
+
+    @Test
+    void testValidateGetEmployee_NullId() {
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> employeeValidator.validateGetEmployee(null));
+
+        assertEquals(Constants.ER001, ex.getErrorCode());
+        assertEquals(Constants.LABEL_ID, ex.getParams().get(0));
+    }
+
+    @Test
+    void testValidateGetEmployee_InvalidIdZeroOrNegative() {
+        BusinessException exZero = assertThrows(
+                BusinessException.class,
+                () -> employeeValidator.validateGetEmployee(0L));
+        assertEquals(Constants.ER001, exZero.getErrorCode());
+
+        BusinessException exNegative = assertThrows(
+                BusinessException.class,
+                () -> employeeValidator.validateGetEmployee(-5L));
+        assertEquals(Constants.ER001, exNegative.getErrorCode());
+    }
 }
+
