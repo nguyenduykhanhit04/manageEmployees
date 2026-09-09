@@ -125,5 +125,35 @@ class EmployeeValidatorTest {
                 () -> employeeValidator.validateGetEmployee(-5L));
         assertEquals(Constants.ER001, exNegative.getErrorCode());
     }
+
+    @Test
+    void testValidateDeleteEmployee_Success() {
+        org.mockito.Mockito.when(employeeRepository.existsById(1L)).thenReturn(true);
+        assertDoesNotThrow(() -> employeeValidator.validateDeleteEmployee(1L));
+    }
+
+    @Test
+    void testValidateDeleteEmployee_NullOrInvalidId() {
+        BusinessException exNull = assertThrows(
+                BusinessException.class,
+                () -> employeeValidator.validateDeleteEmployee(null));
+        assertEquals(Constants.ER001, exNull.getErrorCode());
+        assertEquals(Constants.LABEL_ID, exNull.getParams().get(0));
+
+        BusinessException exZero = assertThrows(
+                BusinessException.class,
+                () -> employeeValidator.validateDeleteEmployee(0L));
+        assertEquals(Constants.ER001, exZero.getErrorCode());
+    }
+
+    @Test
+    void testValidateDeleteEmployee_NotFound() {
+        org.mockito.Mockito.when(employeeRepository.existsById(999L)).thenReturn(false);
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> employeeValidator.validateDeleteEmployee(999L));
+        assertEquals(Constants.ER014, ex.getErrorCode());
+        assertEquals(Constants.LABEL_ID, ex.getParams().get(0));
+    }
 }
 

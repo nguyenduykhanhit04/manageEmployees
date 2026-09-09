@@ -25,6 +25,10 @@ public class Constants {
     public static final String JWT_SECRET = "Luvina-Academe";
     public static final long JWT_EXPIRATION = 160 * 60 * 60; // 7 days
 
+    // Phân quyền người dùng (Role)
+    public static final int ROLE_ADMIN = 0;
+    public static final int ROLE_USER = 1;
+
     // Config endpoints public (không cần authenticate)
     public static final String[] ENDPOINTS_PUBLIC = new String[] {
             "/",

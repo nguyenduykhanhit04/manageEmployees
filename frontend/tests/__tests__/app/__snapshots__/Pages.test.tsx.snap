@@ -11,7 +11,7 @@ exports[`Page Snapshots renders EmployeeCompletePage unchanged 1`] = `
       <h1
         class="msg-title"
       >
-        ユーザの登録が完了しました。 or ユーザの更新が完了しました。 or ユーザの削除が完了しました。
+        ユーザの登録が完了しました。
       </h1>
       <div
         class="notification-box-btn"
@@ -225,7 +225,7 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
                 >
                   <input
                     class="form-control "
-                    placeholder="2026/09/08"
+                    placeholder="2026/09/09"
                     type="text"
                     value=""
                   />
@@ -408,7 +408,7 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
                   <input
                     class="form-control"
                     disabled=""
-                    placeholder="2026/09/08"
+                    placeholder="2026/09/09"
                     type="text"
                     value=""
                   />
@@ -447,7 +447,7 @@ exports[`Page Snapshots renders EmployeeEditPage unchanged 1`] = `
                   <input
                     class="form-control "
                     disabled=""
-                    placeholder="2026/09/08"
+                    placeholder="2026/09/09"
                     type="text"
                     value=""
                   />

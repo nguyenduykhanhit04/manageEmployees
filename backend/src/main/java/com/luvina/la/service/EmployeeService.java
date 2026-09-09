@@ -50,5 +50,13 @@ public interface EmployeeService {
      * @return đối tượng EmployeeDetailResponse chứa toàn bộ thông tin chi tiết nhân viên
      */
     EmployeeDetailResponse getEmployeeDetail(Long employeeId);
+
+    /**
+     * Xóa thông tin một nhân viên và các chứng chỉ liên quan khỏi hệ thống.
+     *
+     * @param employeeId mã định danh của nhân viên cần xóa
+     * @return mã định danh employeeId của nhân viên đã xóa
+     */
+    Long deleteEmployee(Long employeeId);
 }
 

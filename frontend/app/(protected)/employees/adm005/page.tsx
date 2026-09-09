@@ -15,6 +15,7 @@ function EmployeeConfirmContent() {
   useAuth();
 
   const {
+    mode,
     formData,
     departmentName,
     certificationName,
@@ -40,7 +41,11 @@ function EmployeeConfirmContent() {
         <ul className="show-data">
           <li className="title">
             <p>情報確認</p>
-            <p>入力された情報をＯＫボタンクリックでＤＢへ保存してください</p>
+            <p>
+              {mode === 'delete'
+                ? '以下の情報を削除します。よろしいですか？'
+                : '入力された情報をＯＫボタンクリックでＤＢへ保存してください'}
+            </p>
           </li>
 
           {errorMessage && (
