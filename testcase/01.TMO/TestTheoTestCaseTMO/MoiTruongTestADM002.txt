@@ -1,0 +1,18 @@
+
+1.REDMINE: https://academy.redmine.luvina.net/
+Account login vào Redmine:
+Dùng account account SVN LA
+
+2.Link test: https://test.la.luvina.net/
+Account đăng nhâp: 
+UserName: adimn
+Pass: adminadmin
+
+3. Môi trường DB
+IP: 192.168.69.8 
+port: 3306
+user: usermng
+pass: 106qDwWKoA0G698
+
+4. TestCase:
+Dùng testcase màn hình ADM002 các bạn viết
