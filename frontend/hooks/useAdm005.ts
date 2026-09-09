@@ -6,7 +6,7 @@ import { useDepartments } from '@/hooks/useDepartments';
 import { useCertifications } from '@/hooks/useCertifications';
 import { ROUTES } from '@/lib/constants';
 import { ADM004_STORAGE_KEY } from '@/hooks/useAdm004';
-import { createEmployee } from '@/lib/api/employee';
+import { createEmployee } from '@/lib/api/employee.api';
 import { formatErrorMessage, ERROR_MESSAGES } from '@/lib/constants/messages';
 
 /**

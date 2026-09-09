@@ -1,11 +1,11 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useAdm002 } from '@/hooks/useAdm002';
-import * as employeeApi from '@/lib/api/employee';
-import * as departmentApi from '@/lib/api/department';
+import * as employeeApi from '@/lib/api/employee.api';
+import * as departmentApi from '@/lib/api/department.api';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
-jest.mock('@/lib/api/employee');
-jest.mock('@/lib/api/department');
+jest.mock('@/lib/api/employee.api');
+jest.mock('@/lib/api/department.api');
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn(),
   usePathname: jest.fn(),

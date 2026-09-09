@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { EmployeeDetailResponse } from '@/types/employee';
-import { getEmployee } from '@/lib/api/employee';
+import { getEmployee } from '@/lib/api/employee.api';
 import { ROUTES } from '@/lib/constants';
 import { formatErrorMessage, ERROR_MESSAGES } from '@/lib/constants/messages';
 

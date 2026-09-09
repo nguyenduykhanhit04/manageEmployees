@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { getEmployees } from '@/lib/api/employee';
-import { getDepartments } from '@/lib/api/department';
+import { getEmployees } from '@/lib/api/employee.api';
+import { getDepartments } from '@/lib/api/department.api';
 import { EmployeeItem, SortField, SortDirection, SortOrders } from '@/types/employee';
 import { DepartmentItem } from '@/types/department';
 import {
