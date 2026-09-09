@@ -35,6 +35,8 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
     @PersistenceContext
     private EntityManager entityManager;
 
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+
     /**
      * Lấy danh sách nhân viên với thứ tự sắp xếp được xây dựng động theo thứ tự click từ Frontend.
      *
@@ -132,14 +134,14 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
             Long empId = row[0] != null ? ((Number) row[0]).longValue() : null;
             String name = (String) row[1];
             LocalDate birthDate = row[2] != null ? ((Date) row[2]).toLocalDate() : null;
-            String deptName = (String) row[3];
-            String email = (String) row[4];
-            String tel = (String) row[5];
-            String certName = (String) row[6];
+            String departmentName = (String) row[3];
+            String employeeEmail = (String) row[4];
+            String employeeTelephone = (String) row[5];
+            String certificationName = (String) row[6];
             LocalDate endDate = row[7] != null ? ((Date) row[7]).toLocalDate() : null;
             BigDecimal score = row[8] != null ? (BigDecimal) row[8] : null;
 
-            result.add(new EmployeeDTO(empId, name, birthDate, deptName, email, tel, certName, endDate, score));
+            result.add(new EmployeeDTO(empId, name, birthDate, departmentName, employeeEmail, employeeTelephone, certificationName, endDate, score));
         }
 
         return result;
@@ -149,14 +151,16 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
      * Lấy thông tin chi tiết một nhân viên bao gồm phòng ban và danh sách chứng chỉ tiếng Nhật.
      *
      * @param employeeId mã định danh của nhân viên
-     * @return đối tượng EmployeeDetailResponse chứa đầy đủ thông tin chi tiết
+     * @return đối tượng EmployeeDetailResponse chứa đầy đủ thông tin chi tiết nếu tồn tại
      */
     @Override
     public Optional<EmployeeDetailResponse> getEmployeeDetail(Long employeeId) {
+        // 1. Kiểm tra tham số đầu vào employeeId hợp lệ
         if (employeeId == null || employeeId <= 0) {
             return Optional.empty();
         }
 
+        // 2. Khởi tạo câu truy vấn SQL Native lấy thông tin nhân viên, phòng ban và chứng chỉ
         String sql = """
             select
                 e.employee_id,
@@ -184,65 +188,71 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
         Query query = entityManager.createNativeQuery(sql);
         query.setParameter("employeeId", employeeId);
 
+        // 3. Thực thi truy vấn và lấy danh sách kết quả thô
         @SuppressWarnings("unchecked")
         List<Object[]> rows = query.getResultList();
 
+        // 4. Nếu không tìm thấy bản ghi nào thì trả về rỗng
         if (rows == null || rows.isEmpty()) {
             return Optional.empty();
         }
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        EmployeeDetailResponse response = null;
-        List<EmployeeCertificationDetailDTO> certifications = new ArrayList<>();
+        // 5. Khởi tạo đối tượng response và danh sách chứng chỉ
+        EmployeeDetailResponse employeeDetailResponse = null;
+        List<EmployeeCertificationDetailDTO> certificationList = new ArrayList<>();
 
+        // 6. Duyệt qua các dòng kết quả để ánh xạ dữ liệu
         for (Object[] row : rows) {
-            if (response == null) {
+            // 6.1 Ánh xạ thông tin cơ bản của nhân viên ở dòng đầu tiên
+            if (employeeDetailResponse == null) {
                 Long empId = row[0] != null ? ((Number) row[0]).longValue() : null;
-                String name = (String) row[1];
-                LocalDate birthDate = row[2] != null ? ((Date) row[2]).toLocalDate() : null;
-                Long deptId = row[3] != null ? ((Number) row[3]).longValue() : null;
-                String deptName = (String) row[4];
-                String email = (String) row[5];
-                String tel = (String) row[6];
-                String nameKana = (String) row[7];
-                String loginId = (String) row[8];
+                String employeeName = (String) row[1];
+                LocalDate employeeBirthDate = row[2] != null ? ((Date) row[2]).toLocalDate() : null;
+                Long departmentId = row[3] != null ? ((Number) row[3]).longValue() : null;
+                String departmentName = (String) row[4];
+                String employeeEmail = (String) row[5];
+                String employeeTelephone = (String) row[6];
+                String employeeNameKana = (String) row[7];
+                String employeeLoginId = (String) row[8];
 
-                response = new EmployeeDetailResponse();
-                response.setCode(Constants.CODE_SUCCESS);
-                response.setEmployeeId(empId);
-                response.setEmployeeName(name);
-                response.setEmployeeBirthDate(birthDate != null ? birthDate.format(formatter) : null);
-                response.setDepartmentId(deptId);
-                response.setDepartmentName(deptName);
-                response.setEmployeeEmail(email);
-                response.setEmployeeTelephone(tel);
-                response.setEmployeeNameKana(nameKana);
-                response.setEmployeeLoginId(loginId);
+                employeeDetailResponse = new EmployeeDetailResponse();
+                employeeDetailResponse.setCode(Constants.CODE_SUCCESS);
+                employeeDetailResponse.setEmployeeId(empId);
+                employeeDetailResponse.setEmployeeName(employeeName);
+                employeeDetailResponse.setEmployeeBirthDate(employeeBirthDate != null ? employeeBirthDate.format(DATE_FORMATTER) : null);
+                employeeDetailResponse.setDepartmentId(departmentId);
+                employeeDetailResponse.setDepartmentName(departmentName);
+                employeeDetailResponse.setEmployeeEmail(employeeEmail);
+                employeeDetailResponse.setEmployeeTelephone(employeeTelephone);
+                employeeDetailResponse.setEmployeeNameKana(employeeNameKana);
+                employeeDetailResponse.setEmployeeLoginId(employeeLoginId);
             }
 
-            Long certId = row[9] != null ? ((Number) row[9]).longValue() : null;
-            if (certId != null) {
-                String certName = (String) row[10];
+            // 6.2 Ánh xạ thông tin chứng chỉ tiếng Nhật nếu nhân viên có chứng chỉ
+            Long certificationId = row[9] != null ? ((Number) row[9]).longValue() : null;
+            if (certificationId != null) {
+                String certificationName = (String) row[10];
                 LocalDate startDate = row[11] != null ? ((Date) row[11]).toLocalDate() : null;
                 LocalDate endDate = row[12] != null ? ((Date) row[12]).toLocalDate() : null;
                 BigDecimal score = row[13] != null ? (BigDecimal) row[13] : null;
 
-                EmployeeCertificationDetailDTO certDto = new EmployeeCertificationDetailDTO(
-                        certId,
-                        certName,
-                        startDate != null ? startDate.format(formatter) : null,
-                        endDate != null ? endDate.format(formatter) : null,
+                EmployeeCertificationDetailDTO certificationDetailDTO = new EmployeeCertificationDetailDTO(
+                        certificationId,
+                        certificationName,
+                        startDate != null ? startDate.format(DATE_FORMATTER) : null,
+                        endDate != null ? endDate.format(DATE_FORMATTER) : null,
                         score
                 );
-                certifications.add(certDto);
+                certificationList.add(certificationDetailDTO);
             }
         }
 
-        if (response != null) {
-            response.setCertifications(certifications);
+        // 7. Gán danh sách chứng chỉ vào response
+        if (employeeDetailResponse != null) {
+            employeeDetailResponse.setCertifications(certificationList);
         }
 
-        return Optional.ofNullable(response);
+        return Optional.ofNullable(employeeDetailResponse);
     }
 }
 

@@ -70,6 +70,24 @@ public class EmployeeValidator {
     }
 
     /**
+     * Kiểm tra tính hợp lệ của mã định danh nhân viên khi xóa.
+     *
+     * @param employeeId mã định danh của nhân viên cần xóa
+     * @throws BusinessException nếu employeeId không hợp lệ (ER001) hoặc không tồn tại trong DB (ER014)
+     */
+    public void validateDeleteEmployee(Long employeeId) {
+        // 1. Kiểm tra tham số employeeId bắt buộc
+        if (employeeId == null || employeeId <= 0) {
+            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_ID));
+        }
+
+        // 2. Kiểm tra sự tồn tại của nhân viên trong cơ sở dữ liệu
+        if (!employeeRepository.existsById(employeeId)) {
+            throw new BusinessException(Constants.ER014, List.of(Constants.LABEL_ID));
+        }
+    }
+
+    /**
      * Kiểm tra tính hợp lệ của các tham số tìm kiếm, phân trang và sắp xếp danh sách nhân viên.
      *
      * @param employeeName tên nhân viên cần tìm kiếm

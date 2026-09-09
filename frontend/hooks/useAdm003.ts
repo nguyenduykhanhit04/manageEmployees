@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { EmployeeDetailResponse } from '@/types/employee';
-import { getEmployee } from '@/lib/api/employee.api';
+import { getEmployee, deleteEmployee } from '@/lib/api/employee.api';
 import { ROUTES } from '@/lib/constants';
 import { formatErrorMessage, ERROR_MESSAGES } from '@/lib/constants/messages';
 
@@ -71,11 +71,41 @@ export function useAdm003() {
     router.push(editUrl);
   }, [employeeId, returnTo, router]);
 
-  // 7. Xử lý khi nhấn nút "Xóa" (削除) -> Chuyển sang ADM005 (mode=delete)
-  const handleDelete = useCallback(() => {
+  // 7. Xử lý khi nhấn nút "Xóa" (削除) -> Hiển thị popup xác nhận xóa (window.confirm)
+  const handleDelete = useCallback(async () => {
     if (!employeeId) return;
-    const deleteUrl = `${ROUTES.EMPLOYEE_CONFIRM}?mode=delete&id=${employeeId}&returnTo=${encodeURIComponent(returnTo)}`;
-    router.push(deleteUrl);
+
+    // 7.1 Hiển thị hộp thoại xác nhận của trình duyệt
+    const isConfirmed = window.confirm('削除しますが、よろしいですか。');
+    if (!isConfirmed) {
+      return;
+    }
+
+    // 7.2 Gọi API xóa nhân viên khi người dùng xác nhận OK
+    setIsLoading(true);
+    setErrorMessage('');
+    setIsSystemError(false);
+
+    try {
+      const response = await deleteEmployee(employeeId);
+      if (response && response.code === 200) {
+        // 7.2.1 Điều hướng sang màn hình Hoàn thành ADM006 kèm mode=delete
+        router.push(`${ROUTES.EMPLOYEE_COMPLETE}?mode=delete&returnTo=${encodeURIComponent(returnTo)}`);
+      } else {
+        setIsSystemError(true);
+        setErrorMessage(ERROR_MESSAGES.ER015);
+      }
+    } catch (error: any) {
+      setIsSystemError(true);
+      const errorData = error.response?.data;
+      if (errorData?.message?.code) {
+        setErrorMessage(formatErrorMessage(errorData.message.code, errorData.message.params || []));
+      } else {
+        setErrorMessage(ERROR_MESSAGES.ER015);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   }, [employeeId, returnTo, router]);
 
   return {

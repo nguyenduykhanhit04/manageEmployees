@@ -79,3 +79,14 @@ export const getEmployee = async (employeeId: number | string): Promise<Employee
   const response = await apiClient.get<EmployeeDetailResponse>(`/employee/${employeeId}`);
   return response.data;
 };
+
+/**
+ * Gọi API xóa một nhân viên theo mã định danh (DELETE /employee/{id}).
+ *
+ * @param employeeId mã định danh của nhân viên cần xóa
+ * @return kết quả phản hồi từ backend
+ */
+export const deleteEmployee = async (employeeId: number | string): Promise<any> => {
+  const response = await apiClient.delete(`/employee/${employeeId}`);
+  return response.data;
+};

@@ -128,8 +128,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             employeeEntity.setEmployeeLoginPassword(passwordEncoder.encode(request.getEmployeeLoginPassword()));
         }
 
-        // 3. Mặc định role = 1 (User)
-        employeeEntity.setEmployeeRole(1);
+        // 3. Mặc định gán quyền người dùng thông thường (ROLE_USER = 1)
+        employeeEntity.setEmployeeRole(Constants.ROLE_USER);
 
         // 4. Lưu thông tin nhân viên vào bảng employees -> Tự sinh employee_id
         EmployeeEntity savedEmployee = employeeRepository.save(employeeEntity);
@@ -166,6 +166,26 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeDetailResponse getEmployeeDetail(Long employeeId) {
         return employeeRepository.getEmployeeDetail(employeeId)
                 .orElseThrow(() -> new BusinessException(Constants.ER013, List.of(Constants.LABEL_ID)));
+    }
+
+    /**
+     * Xóa thông tin nhân viên và các chứng chỉ tiếng Nhật liên quan.
+     * Toàn bộ thao tác xóa được quản lý trong cùng một Transaction (rollback nếu có lỗi).
+     *
+     * @param employeeId mã định danh của nhân viên cần xóa
+     * @return mã định danh employeeId của nhân viên đã được xóa
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long deleteEmployee(Long employeeId) {
+        // 1. Xóa thông tin chứng chỉ tiếng Nhật của nhân viên trong bảng employees_certifications
+        employeesCertificationRepository.deleteByEmployeeId(employeeId);
+
+        // 2. Xóa thông tin nhân viên trong bảng employees
+        employeeRepository.deleteById(employeeId);
+
+        // 3. Trả về employeeId đã xóa thành công
+        return employeeId;
     }
 
     /**

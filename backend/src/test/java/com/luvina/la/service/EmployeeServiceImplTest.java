@@ -80,4 +80,15 @@ class EmployeeServiceImplTest {
         assertEquals(Constants.ER013, ex.getErrorCode());
         assertEquals(Constants.LABEL_ID, ex.getParams().get(0));
     }
+
+    @Test
+    void testDeleteEmployee_Success() {
+        Long employeeId = 1L;
+
+        Long result = employeeService.deleteEmployee(employeeId);
+
+        assertEquals(employeeId, result);
+        org.mockito.Mockito.verify(employeesCertificationRepository, org.mockito.Mockito.times(1)).deleteByEmployeeId(employeeId);
+        org.mockito.Mockito.verify(employeeRepository, org.mockito.Mockito.times(1)).deleteById(employeeId);
+    }
 }

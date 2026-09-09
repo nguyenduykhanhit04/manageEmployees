@@ -8,11 +8,14 @@ package com.luvina.la.controller;
 import com.luvina.la.config.Constants;
 import com.luvina.la.dto.EmployeeDTO;
 import com.luvina.la.payload.request.EmployeeSaveRequest;
+import com.luvina.la.payload.response.ApiErrorMessage;
 import com.luvina.la.payload.response.ApiResponse;
+import com.luvina.la.payload.response.EmployeeDeleteResponse;
 import com.luvina.la.payload.response.EmployeeDetailResponse;
 import com.luvina.la.payload.response.EmployeeListResponse;
 import com.luvina.la.service.EmployeeService;
 import com.luvina.la.validator.EmployeeValidator;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.data.domain.Page;
@@ -118,6 +121,30 @@ public class EmployeeController {
 
         // 3. Trả về phản hồi thành công mã 200
         ApiResponse response = new ApiResponse(Constants.CODE_SUCCESS);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Xóa một nhân viên và chứng chỉ liên quan khỏi hệ thống theo employeeId.
+     *
+     * @param employeeId mã định danh của nhân viên cần xóa
+     * @return thông tin phản hồi chứa mã response thành công 200 và message MSG003
+     */
+    @DeleteMapping("/employee/{employeeId}")
+    public ResponseEntity<EmployeeDeleteResponse> deleteEmployee(@PathVariable("employeeId") Long employeeId) {
+        // 1. Kiểm tra tính hợp lệ của tham số employeeId qua Validator (bắt lỗi ER001 và ER014)
+        employeeValidator.validateDeleteEmployee(employeeId);
+
+        // 2. Thực hiện xóa nhân viên qua Service
+        Long deletedId = employeeService.deleteEmployee(employeeId);
+
+        // 3. Đóng gói Response và trả về
+        EmployeeDeleteResponse response = new EmployeeDeleteResponse(
+                Constants.CODE_SUCCESS,
+                deletedId,
+                new ApiErrorMessage(Constants.MSG_DELETE_SUCCESS, Collections.emptyList())
+        );
+
         return ResponseEntity.ok(response);
     }
 }

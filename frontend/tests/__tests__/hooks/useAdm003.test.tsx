@@ -1,6 +1,6 @@
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { useAdm003 } from '@/hooks/useAdm003';
-import { getEmployee } from '@/lib/api/employee.api';
+import { getEmployee, deleteEmployee } from '@/lib/api/employee.api';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ROUTES } from '@/lib/constants';
 
@@ -17,6 +17,7 @@ const mockPush = jest.fn();
 });
 
 const mockedGetEmployee = getEmployee as jest.Mock;
+const mockedDeleteEmployee = deleteEmployee as jest.Mock;
 const mockedUseSearchParams = useSearchParams as jest.Mock;
 
 describe('useAdm003 Hook', () => {
@@ -147,12 +148,27 @@ describe('useAdm003 Hook', () => {
       `${ROUTES.EMPLOYEE_EDIT}?mode=edit&id=1&returnTo=${encodeURIComponent('/employees/adm002?employee_name=test')}`
     );
 
-    // Test handleDelete
-    act(() => {
-      result.current.handleDelete();
+    // Test handleDelete khi user cancel
+    const confirmSpy = jest.spyOn(window, 'confirm');
+    confirmSpy.mockReturnValue(false);
+
+    await act(async () => {
+      await result.current.handleDelete();
     });
+    expect(mockedDeleteEmployee).not.toHaveBeenCalled();
+
+    // Test handleDelete khi user OK
+    confirmSpy.mockReturnValue(true);
+    mockedDeleteEmployee.mockResolvedValue({ code: 200, employeeId: 1 });
+
+    await act(async () => {
+      await result.current.handleDelete();
+    });
+    expect(mockedDeleteEmployee).toHaveBeenCalledWith('1');
     expect(mockPush).toHaveBeenCalledWith(
-      `${ROUTES.EMPLOYEE_CONFIRM}?mode=delete&id=1&returnTo=${encodeURIComponent('/employees/adm002?employee_name=test')}`
+      `${ROUTES.EMPLOYEE_COMPLETE}?mode=delete&returnTo=${encodeURIComponent('/employees/adm002?employee_name=test')}`
     );
+
+    confirmSpy.mockRestore();
   });
 });

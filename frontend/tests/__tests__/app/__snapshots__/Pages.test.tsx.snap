@@ -11,7 +11,7 @@ exports[`Page Snapshots renders EmployeeCompletePage unchanged 1`] = `
       <h1
         class="msg-title"
       >
-        ユーザの登録が完了しました。 or ユーザの更新が完了しました。 or ユーザの削除が完了しました。
+        ユーザの登録が完了しました。
       </h1>
       <div
         class="notification-box-btn"
