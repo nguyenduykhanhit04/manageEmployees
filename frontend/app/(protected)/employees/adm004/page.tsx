@@ -19,6 +19,8 @@ function EmployeeEditContent() {
     mode,
     departments,
     certifications,
+    isLoading,
+    isSystemError,
     errorMessage,
     handleConfirm,
     handleBack,
@@ -31,16 +33,26 @@ function EmployeeEditContent() {
     formState: { errors },
   } = form;
 
+  // Tham chiếu đến các component DatePicker để hỗ trợ focus khi click icon lịch
   const birthDateRef = useRef<DatePicker>(null);
   const certificationStartDateRef = useRef<DatePicker>(null);
   const certificationEndDateRef = useRef<DatePicker>(null);
 
+  // Chuỗi ngày hiện tại dùng làm placeholder mặc định
   const todayStr = getTodayString();
 
-  // Theo dõi xem người dùng có chọn chứng chỉ không
+  // Theo dõi xem người dùng có chọn chứng chỉ không để enable/disable các input chứng chỉ
   const selectedCertId = watch('certificationId');
-  const isCertificationSelected = Boolean(selectedCertId && selectedCertId !== '' && selectedCertId !== '0');
+  const isCertificationSelected = Boolean(
+    selectedCertId && selectedCertId !== '' && selectedCertId !== '0'
+  );
 
+  /**
+   * Chuyển đổi đối tượng Date sang chuỗi định dạng yyyy/MM/dd.
+   *
+   * @param date đối tượng ngày cần format
+   * @return chuỗi định dạng yyyy/MM/dd hoặc rỗng nếu date null
+   */
   const formatDateToString = (date: Date | null): string => {
     if (!date) return '';
     const year = date.getFullYear();
@@ -49,6 +61,12 @@ function EmployeeEditContent() {
     return `${year}/${month}/${day}`;
   };
 
+  /**
+   * Parse chuỗi ngày yyyy/MM/dd hoặc ISO sang đối tượng Date cho DatePicker.
+   *
+   * @param dateStr chuỗi ngày đầu vào
+   * @return đối tượng Date hợp lệ hoặc null nếu không thể parse
+   */
   const parseStringToDate = (dateStr?: string): Date | null => {
     if (!dateStr) return null;
     const parts = dateStr.split('/');
@@ -61,6 +79,31 @@ function EmployeeEditContent() {
     const d = new Date(dateStr);
     return isNaN(d.getTime()) ? null : d;
   };
+
+  // 1. Trạng thái đang tải dữ liệu
+  if (isLoading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '40px' }}>
+        {SYSTEM_MESSAGES.LOADING}
+      </div>
+    );
+  }
+
+  // 2. Trạng thái lỗi hệ thống
+  if (isSystemError) {
+    return (
+      <div className="box-shadow">
+        <div className="notification-box">
+          <h1 className="msg-title">システムエラーが発生しました。</h1>
+          <div className="notification-box-btn">
+            <button type="button" onClick={handleBack} className="btn btn-primary btn-sm">
+              OK
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="row">
