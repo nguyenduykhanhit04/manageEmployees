@@ -35,7 +35,7 @@ public class EmployeeValidator {
     private final CertificationRepository certificationRepository;
 
     // Regex patterns
-    private static final Pattern KATAKANA_PATTERN = Pattern.compile("^[ァ-ヶー\\s]+$");
+    private static final Pattern KATAKANA_PATTERN = Pattern.compile("^[\\u30A0-\\u30FF\\uFF65-\\uFF9F\\s\\u3000]+$");
     private static final Pattern HALF_SIZE_LOGIN_ID_PATTERN = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*$");
     private static final Pattern TELEPHONE_PATTERN = Pattern.compile("^[0-9-+()]+$");
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
@@ -237,7 +237,7 @@ public class EmployeeValidator {
             throw new BusinessException(Constants.ER006, List.of(Constants.LABEL_EMAIL, "125"));
         }
         if (!EMAIL_PATTERN.matcher(email).matches()) {
-            throw new BusinessException(Constants.ER005, List.of(Constants.LABEL_EMAIL));
+            throw new BusinessException(Constants.ER005, List.of(Constants.LABEL_EMAIL, "email"));
         }
         if (employeeRepository.existsByEmployeeEmail(email)) {
             throw new BusinessException(Constants.ER003, List.of(Constants.LABEL_EMAIL));
@@ -265,6 +265,152 @@ public class EmployeeValidator {
         }
 
         // 9. Chứng chỉ tiếng Nhật (nếu có)
+        Long certId = request.getCertificationId();
+        if (certId != null && certId > 0) {
+            if (!certificationRepository.existsById(certId)) {
+                throw new BusinessException(Constants.ER004, List.of(Constants.LABEL_CERTIFICATION));
+            }
+
+            // 資格交付日
+            String startDateStr = request.getCertificationStartDate();
+            if (startDateStr == null || startDateStr.trim().isEmpty()) {
+                throw new BusinessException(Constants.ER002, List.of(Constants.LABEL_CERT_START_DATE));
+            }
+            LocalDate startDate = parseAndValidateDate(startDateStr, Constants.LABEL_CERT_START_DATE);
+
+            // 失効日
+            String endDateStr = request.getCertificationEndDate();
+            if (endDateStr == null || endDateStr.trim().isEmpty()) {
+                throw new BusinessException(Constants.ER002, List.of(Constants.LABEL_CERT_END_DATE));
+            }
+            LocalDate endDate = parseAndValidateDate(endDateStr, Constants.LABEL_CERT_END_DATE);
+
+            // 失効日 >= 資格交付日 (ER012)
+            if (endDate.isBefore(startDate)) {
+                throw new BusinessException(Constants.ER012, List.of(Constants.LABEL_CERT_END_DATE, Constants.LABEL_CERT_START_DATE));
+            }
+
+            // 点数
+            BigDecimal score = request.getEmployeeCertificationScore();
+            if (score == null) {
+                throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_SCORE));
+            }
+            if (score.compareTo(BigDecimal.ZERO) < 0) {
+                throw new BusinessException(Constants.ER018, List.of(Constants.LABEL_SCORE));
+            }
+        }
+    }
+
+    /**
+     * Kiểm tra tính hợp lệ của request cập nhật thông tin nhân viên (Mode EDIT).
+     *
+     * @param employeeId mã định danh của nhân viên cần cập nhật
+     * @param request đối tượng EmployeeSaveRequest chứa dữ liệu cập nhật
+     * @throws BusinessException nếu có lỗi vi phạm validation theo TKAPI_UpdateEmployee
+     */
+    public void validateUpdateEmployee(Long employeeId, EmployeeSaveRequest request) {
+        // 1. Kiểm tra employeeId
+        if (employeeId == null) {
+            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_ID));
+        }
+        if (!employeeRepository.existsById(employeeId)) {
+            throw new BusinessException(Constants.ER013, List.of(Constants.LABEL_ID));
+        }
+
+        if (request == null) {
+            throw new BusinessException(Constants.ER015, List.of());
+        }
+
+        // 2. アカウント名 (employeeLoginId)
+        String loginId = request.getEmployeeLoginId();
+        if (loginId == null || loginId.trim().isEmpty()) {
+            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_ACCOUNT_NAME));
+        }
+        if (loginId.length() > 50) {
+            throw new BusinessException(Constants.ER006, List.of(Constants.LABEL_ACCOUNT_NAME, "50"));
+        }
+        if (!HALF_SIZE_LOGIN_ID_PATTERN.matcher(loginId).matches()) {
+            throw new BusinessException(Constants.ER019, List.of(Constants.LABEL_ACCOUNT_NAME));
+        }
+        // Kiểm tra trùng loginId với nhân viên KHÁC
+        if (employeeRepository.existsByEmployeeLoginIdAndEmployeeIdNot(loginId, employeeId)) {
+            throw new BusinessException(Constants.ER003, List.of(Constants.LABEL_ACCOUNT_NAME));
+        }
+
+        // 3. グループ (departmentId)
+        Long deptId = request.getDepartmentId();
+        if (deptId == null || deptId <= 0) {
+            throw new BusinessException(Constants.ER002, List.of(Constants.LABEL_GROUP));
+        }
+        if (!departmentRepository.existsById(deptId)) {
+            throw new BusinessException(Constants.ER004, List.of(Constants.LABEL_GROUP));
+        }
+
+        // 4. 氏名 (employeeName)
+        String name = request.getEmployeeName();
+        if (name == null || name.trim().isEmpty()) {
+            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_EMPLOYEE_NAME));
+        }
+        if (name.length() > 125) {
+            throw new BusinessException(Constants.ER006, List.of(Constants.LABEL_EMPLOYEE_NAME, "125"));
+        }
+
+        // 5. カタカナ氏名 (employeeNameKana)
+        String nameKana = request.getEmployeeNameKana();
+        if (nameKana == null || nameKana.trim().isEmpty()) {
+            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_EMPLOYEE_NAME_KANA));
+        }
+        if (nameKana.length() > 125) {
+            throw new BusinessException(Constants.ER006, List.of(Constants.LABEL_EMPLOYEE_NAME_KANA, "125"));
+        }
+        if (!KATAKANA_PATTERN.matcher(nameKana).matches()) {
+            throw new BusinessException(Constants.ER009, List.of(Constants.LABEL_EMPLOYEE_NAME_KANA));
+        }
+
+        // 6. 生年月日 (employeeBirthDate)
+        String birthDateStr = request.getEmployeeBirthDate();
+        if (birthDateStr == null || birthDateStr.trim().isEmpty()) {
+            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_BIRTH_DATE));
+        }
+        parseAndValidateDate(birthDateStr, Constants.LABEL_BIRTH_DATE);
+
+        // 7. メールアドレス (employeeEmail)
+        String email = request.getEmployeeEmail();
+        if (email == null || email.trim().isEmpty()) {
+            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_EMAIL));
+        }
+        if (email.length() > 125) {
+            throw new BusinessException(Constants.ER006, List.of(Constants.LABEL_EMAIL, "125"));
+        }
+        if (!EMAIL_PATTERN.matcher(email).matches()) {
+            throw new BusinessException(Constants.ER005, List.of(Constants.LABEL_EMAIL, "email"));
+        }
+        // Kiểm tra trùng email với nhân viên KHÁC
+        if (employeeRepository.existsByEmployeeEmailAndEmployeeIdNot(email, employeeId)) {
+            throw new BusinessException(Constants.ER003, List.of(Constants.LABEL_EMAIL));
+        }
+
+        // 8. 電話番号 (employeeTelephone)
+        String phone = request.getEmployeeTelephone();
+        if (phone == null || phone.trim().isEmpty()) {
+            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_TELEPHONE));
+        }
+        if (phone.length() > 50) {
+            throw new BusinessException(Constants.ER006, List.of(Constants.LABEL_TELEPHONE, "50"));
+        }
+        if (!TELEPHONE_PATTERN.matcher(phone).matches()) {
+            throw new BusinessException(Constants.ER008, List.of(Constants.LABEL_TELEPHONE));
+        }
+
+        // 9. パスワード (employeeLoginPassword): Nếu có nhập thì mới validate độ dài 8-50
+        String password = request.getEmployeeLoginPassword();
+        if (password != null && !password.trim().isEmpty()) {
+            if (password.length() < 8 || password.length() > 50) {
+                throw new BusinessException(Constants.ER007, List.of(Constants.LABEL_PASSWORD, "8", "50"));
+            }
+        }
+
+        // 10. Chứng chỉ tiếng Nhật (nếu có chọn)
         Long certId = request.getCertificationId();
         if (certId != null && certId > 0) {
             if (!certificationRepository.existsById(certId)) {

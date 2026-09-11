@@ -37,12 +37,30 @@ public interface EmployeeRepository extends CrudRepository<EmployeeEntity, Long>
     boolean existsByEmployeeLoginId(String employeeLoginId);
 
     /**
+     * Kiểm tra tồn tại mã đăng nhập thuộc nhân viên khác (dùng khi cập nhật).
+     *
+     * @param employeeLoginId mã đăng nhập của nhân viên
+     * @param employeeId mã nhân viên hiện tại
+     * @return true nếu đã tồn tại ở nhân viên khác, ngược lại false
+     */
+    boolean existsByEmployeeLoginIdAndEmployeeIdNot(String employeeLoginId, Long employeeId);
+
+    /**
      * Kiểm tra tồn tại nhân viên theo email.
      *
      * @param employeeEmail email của nhân viên
      * @return true nếu đã tồn tại, ngược lại false
      */
     boolean existsByEmployeeEmail(String employeeEmail);
+
+    /**
+     * Kiểm tra tồn tại email thuộc nhân viên khác (dùng khi cập nhật).
+     *
+     * @param employeeEmail email của nhân viên
+     * @param employeeId mã nhân viên hiện tại
+     * @return true nếu đã tồn tại ở nhân viên khác, ngược lại false
+     */
+    boolean existsByEmployeeEmailAndEmployeeIdNot(String employeeEmail, Long employeeId);
 
     /**
      * Tìm nhân viên theo mã định danh nhân viên.

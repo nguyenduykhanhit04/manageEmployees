@@ -60,4 +60,63 @@ public class EmployeeSaveRequest {
 
     @JsonProperty("employeeCertificationScore")
     private BigDecimal employeeCertificationScore;
+
+    /**
+     * Hỗ trợ nhận object certifications lồng nhau theo chuẩn đặc tả TKAPI_UpdateEmployee.
+     *
+     * @param cert thông tin chứng chỉ lồng nhau
+     */
+    @JsonProperty("certifications")
+    public void setCertifications(CertificationRequest cert) {
+        if (cert != null) {
+            if (cert.getCertificationId() != null) {
+                this.certificationId = cert.getCertificationId();
+            }
+            if (cert.getStartDate() != null && !cert.getStartDate().isEmpty()) {
+                this.certificationStartDate = cert.getStartDate();
+            } else if (cert.getCertificationStartDate() != null && !cert.getCertificationStartDate().isEmpty()) {
+                this.certificationStartDate = cert.getCertificationStartDate();
+            }
+            if (cert.getEndDate() != null && !cert.getEndDate().isEmpty()) {
+                this.certificationEndDate = cert.getEndDate();
+            } else if (cert.getCertificationEndDate() != null && !cert.getCertificationEndDate().isEmpty()) {
+                this.certificationEndDate = cert.getCertificationEndDate();
+            }
+            if (cert.getScore() != null) {
+                this.employeeCertificationScore = cert.getScore();
+            } else if (cert.getEmployeeCertificationScore() != null) {
+                this.employeeCertificationScore = cert.getEmployeeCertificationScore();
+            }
+        }
+    }
+
+    /**
+     * DTO đại diện cho đối tượng chứng chỉ tiếng Nhật trong request.
+     */
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CertificationRequest {
+
+        @JsonProperty("certificationId")
+        private Long certificationId;
+
+        @JsonProperty("startDate")
+        private String startDate;
+
+        @JsonProperty("certificationStartDate")
+        private String certificationStartDate;
+
+        @JsonProperty("endDate")
+        private String endDate;
+
+        @JsonProperty("certificationEndDate")
+        private String certificationEndDate;
+
+        @JsonProperty("score")
+        private BigDecimal score;
+
+        @JsonProperty("employeeCertificationScore")
+        private BigDecimal employeeCertificationScore;
+    }
 }

@@ -1,4 +1,14 @@
 /**
+ * Cấu trúc phản hồi chung từ API.
+ */
+export interface ApiResponse {
+  /** Mã HTTP status từ backend */
+  code: number;
+  /** Thông điệp từ backend */
+  message?: string;
+}
+
+/**
  * Thông tin lỗi phản hồi từ API.
  */
 export interface ApiError {

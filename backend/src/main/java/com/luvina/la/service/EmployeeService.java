@@ -52,11 +52,28 @@ public interface EmployeeService {
     EmployeeDetailResponse getEmployeeDetail(Long employeeId);
 
     /**
+     * Cập nhật thông tin một nhân viên và chứng chỉ tiếng Nhật trong cơ sở dữ liệu.
+     *
+     * @param employeeId mã định danh của nhân viên cần cập nhật
+     * @param request đối tượng chứa thông tin cập nhật
+     * @return mã định danh employeeId của nhân viên đã được cập nhật
+     */
+    Long updateEmployee(Long employeeId, EmployeeSaveRequest request);
+
+    /**
      * Xóa thông tin một nhân viên và các chứng chỉ liên quan khỏi hệ thống.
      *
      * @param employeeId mã định danh của nhân viên cần xóa
      * @return mã định danh employeeId của nhân viên đã xóa
      */
     Long deleteEmployee(Long employeeId);
+
+    /**
+     * Kiểm tra xem nhân viên có tồn tại trong hệ thống hay không.
+     * Nếu không tồn tại sẽ ném ngoại lệ BusinessException(ER013).
+     *
+     * @param employeeId mã định danh của nhân viên cần kiểm tra
+     */
+    void checkEmployeeExist(Long employeeId);
 }
 

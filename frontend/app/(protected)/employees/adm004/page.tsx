@@ -16,20 +16,22 @@ function EmployeeEditContent() {
 
   const {
     form,
+    formRef,
     mode,
     departments,
     certifications,
+    isCertificationSelected,
     isLoading,
     isSystemError,
     errorMessage,
     handleConfirm,
     handleBack,
+    handleKeyDown,
   } = useAdm004();
 
   const {
     register,
     control,
-    watch,
     formState: { errors },
   } = form;
 
@@ -40,12 +42,6 @@ function EmployeeEditContent() {
 
   // Chuỗi ngày hiện tại dùng làm placeholder mặc định
   const todayStr = getTodayString();
-
-  // Theo dõi xem người dùng có chọn chứng chỉ không để enable/disable các input chứng chỉ
-  const selectedCertId = watch('certificationId');
-  const isCertificationSelected = Boolean(
-    selectedCertId && selectedCertId !== '' && selectedCertId !== '0'
-  );
 
   /**
    * Chuyển đổi đối tượng Date sang chuỗi định dạng yyyy/MM/dd.
@@ -107,7 +103,12 @@ function EmployeeEditContent() {
 
   return (
     <div className="row">
-      <form className="c-form box-shadow" onSubmit={handleConfirm}>
+      <form
+        className="c-form box-shadow"
+        ref={formRef}
+        onKeyDown={handleKeyDown}
+        onSubmit={handleConfirm}
+      >
         <ul>
           <li className="title">{mode === 'edit' ? '会員情報編集' : '会員情報追加'}</li>
 
@@ -206,7 +207,7 @@ function EmployeeEditContent() {
                 生年月日:<span className="note-red">*</span>
               </i>
             </label>
-            <div className="col-sm col-sm-10 d-flex flex-column">
+            <div className="col-sm col-sm-10">
               <div className="datepicker-wrapper">
                 <Controller
                   control={control}
@@ -231,6 +232,7 @@ function EmployeeEditContent() {
                 />
                 <span
                   className="glyphicon glyphicon-calendar"
+                  tabIndex={-1}
                   onClick={() => birthDateRef.current?.setFocus()}
                 ></span>
               </div>
@@ -345,7 +347,7 @@ function EmployeeEditContent() {
                 資格交付日:{isCertificationSelected && <span className="note-red">*</span>}
               </i>
             </label>
-            <div className="col-sm col-sm-10 d-flex flex-column">
+            <div className="col-sm col-sm-10">
               <div className="datepicker-wrapper">
                 <Controller
                   control={control}
@@ -364,12 +366,13 @@ function EmployeeEditContent() {
                       dropdownMode="select"
                       scrollableYearDropdown
                       yearDropdownItemNumber={30}
-                      className="form-control"
+                      className={`form-control ${errors.certificationStartDate ? 'is-invalid' : ''}`}
                     />
                   )}
                 />
                 <span
                   className="glyphicon glyphicon-calendar"
+                  tabIndex={-1}
                   onClick={() => {
                     if (isCertificationSelected) {
                       certificationStartDateRef.current?.setFocus();
@@ -390,7 +393,7 @@ function EmployeeEditContent() {
                 失効日:{isCertificationSelected && <span className="note-red">*</span>}
               </i>
             </label>
-            <div className="col-sm col-sm-10 d-flex flex-column">
+            <div className="col-sm col-sm-10">
               <div className="datepicker-wrapper">
                 <Controller
                   control={control}
@@ -415,6 +418,7 @@ function EmployeeEditContent() {
                 />
                 <span
                   className="glyphicon glyphicon-calendar"
+                  tabIndex={-1}
                   onClick={() => {
                     if (isCertificationSelected) {
                       certificationEndDateRef.current?.setFocus();
@@ -438,6 +442,7 @@ function EmployeeEditContent() {
                 type="text"
                 className={`form-control ${errors.employeeCertificationScore ? 'is-invalid' : ''}`}
                 disabled={!isCertificationSelected}
+                tabIndex={!isCertificationSelected ? -1 : 0}
                 {...register('employeeCertificationScore')}
               />
               {errors.employeeCertificationScore && (

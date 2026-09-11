@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,7 +11,7 @@ import {
 } from '@/lib/validation/employee';
 import { useDepartments } from '@/hooks/useDepartments';
 import { useCertifications } from '@/hooks/useCertifications';
-import { getEmployee } from '@/lib/api/employee.api';
+import { getEmployee, checkEmployeeExist } from '@/lib/api/employee.api';
 import { ROUTES } from '@/lib/constants';
 import { ERROR_MESSAGES } from '@/lib/constants/messages';
 
@@ -54,28 +54,51 @@ export function useAdm004() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // 1. Đọc mode, employeeId và returnTo từ URL
-  const mode = (searchParams.get('mode') || 'add').toLowerCase(); // 'add' | 'edit' | 'back'
+  // 1. Lấy mode, employeeId và returnTo trực tiếp từ URL
+  const mode = searchParams.get('mode') || 'add';
   const employeeId = searchParams.get('id');
   const returnTo = searchParams.get('returnTo') || ROUTES.EMPLOYEE_LIST;
+
+  // Có employeeId hoặc mode=edit -> là mode Chỉnh sửa
+  const isEditMode = mode === 'edit' || Boolean(employeeId);
 
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isSystemError, setIsSystemError] = useState<boolean>(false);
   const [isLoadingEmployee, setIsLoadingEmployee] = useState<boolean>(false);
 
-  // 2. Lấy danh mục phòng ban và chứng chỉ tiếng Nhật dùng chung
+  // 2. Master Data phòng ban và chứng chỉ tiếng Nhật
   const { departments, isLoading: isLoadingDept } = useDepartments();
   const { certifications, isLoading: isLoadingCert } = useCertifications();
 
-  // 3. Khởi tạo React Hook Form với Schema động theo mode (chạy validate realtime onChange)
-  const currentSchema = mode === 'edit' ? editEmployeeSchema : addEmployeeSchema;
+  // 3. Khởi tạo form với Schema tương ứng theo mode (edit: không bắt buộc pass, add: bắt buộc pass)
+  const currentSchema = isEditMode ? editEmployeeSchema : addEmployeeSchema;
   const form = useForm<AddEmployeeFormData>({
     resolver: zodResolver(currentSchema) as any,
     defaultValues: getDefaultFormValues(),
-    mode: 'onChange', // Validate tức thì khi người dùng gõ phím hoặc thay đổi giá trị
+    mode: 'onChange',
   });
 
-  const { reset, handleSubmit } = form;
+  const { reset, handleSubmit, watch, setValue, clearErrors } = form;
+
+  // Theo dõi trạng thái chọn chứng chỉ tiếng Nhật
+  const selectedCertId = watch('certificationId');
+  const isCertificationSelected = Boolean(
+    selectedCertId && selectedCertId !== '' && selectedCertId !== '0'
+  );
+
+  // Tự động clear dữ liệu & lỗi của 3 trường chứng chỉ khi người dùng chọn "Không có chứng chỉ"
+  useEffect(() => {
+    if (!isCertificationSelected) {
+      setValue('certificationStartDate', '');
+      setValue('certificationEndDate', '');
+      setValue('employeeCertificationScore', '');
+      clearErrors([
+        'certificationStartDate',
+        'certificationEndDate',
+        'employeeCertificationScore',
+      ]);
+    }
+  }, [isCertificationSelected, setValue, clearErrors]);
 
   // 4. Xử lý khởi tạo dữ liệu form theo từng Mode (add, edit, back)
   useEffect(() => {
@@ -96,9 +119,9 @@ export function useAdm004() {
           }
         }
       }
-      // 4.2. Trường hợp Chỉnh sửa thông tin nhân viên (mode=edit)
-      else if (mode === 'edit') {
-        // Kiểm tra tính hợp lệ của tham số employeeId trên URL
+      // 4.2. Trường hợp Chỉnh sửa thông tin nhân viên (mode=edit hoặc có employeeId)
+      else if (isEditMode) {
+        // Kiểm tra tính hợp lệ của tham số employeeId
         if (!employeeId) {
           setIsSystemError(true);
           setErrorMessage(ERROR_MESSAGES.ER015);
@@ -179,18 +202,41 @@ export function useAdm004() {
     return () => {
       isMounted = false;
     };
-  }, [mode, employeeId, reset]);
+  }, [mode, isEditMode, employeeId, reset]);
 
   // 5. Xử lý khi nhấn nút "Xác nhận" (確認)
-  const handleConfirm = handleSubmit((data) => {
+  const handleConfirm = handleSubmit(async (data) => {
     setErrorMessage('');
-    // Lưu dữ liệu vào sessionStorage
+    const effectiveMode = isEditMode ? 'edit' : 'add';
+
+    // 5.1 Nếu là mode Edit: Kiểm tra xem nhân viên có còn tồn tại trong DB không qua API chuyên biệt
+    if (isEditMode && employeeId) {
+      try {
+        const checkRes = await checkEmployeeExist(employeeId);
+        if (!checkRes || checkRes.code !== 200) {
+          setIsSystemError(true);
+          setErrorMessage(ERROR_MESSAGES.ER015);
+          return;
+        }
+      } catch (error: any) {
+        // Nếu nhân viên đã bị xóa khỏi DB -> Báo lỗi hệ thống ngay tại ADM004
+        setIsSystemError(true);
+        setErrorMessage(ERROR_MESSAGES.ER015);
+        return;
+      }
+    }
+
+    // 5.2 Lưu dữ liệu vào sessionStorage
     sessionStorage.setItem(
       ADM004_STORAGE_KEY,
-      JSON.stringify({ ...data, mode, employeeId, returnTo })
+      JSON.stringify({ ...data, mode: effectiveMode, employeeId, returnTo })
     );
-    // Chuyển hướng sang màn hình Xác nhận (ADM005)
-    router.push(`${ROUTES.EMPLOYEE_CONFIRM}?returnTo=${encodeURIComponent(returnTo)}`);
+
+    // 5.3 Chuyển hướng sang màn hình Xác nhận (ADM005) kèm đầy đủ mode và id
+    const confirmUrl = `${ROUTES.EMPLOYEE_CONFIRM}?mode=${effectiveMode}${
+      employeeId ? `&id=${employeeId}` : ''
+    }&returnTo=${encodeURIComponent(returnTo)}`;
+    router.push(confirmUrl);
   });
 
   // 6. Xử lý khi nhấn nút "Quay lại" (戻る)
@@ -199,18 +245,73 @@ export function useAdm004() {
     router.push(returnTo);
   }, [returnTo, router]);
 
+  // 7. Quản lý Focus & Vòng lặp Tab (Focus Trap / Tab Loop)
+  const formRef = useRef<HTMLFormElement>(null);
+  const isLoading = isLoadingDept || isLoadingCert || isLoadingEmployee;
+
+  /**
+   * Tự động focus vào phần tử input đầu tiên khi load xong form
+   */
+  useEffect(() => {
+    if (!isLoading && !isSystemError && formRef.current) {
+      const focusableSelector =
+        'input:not([disabled]):not([tabindex="-1"]):not([type="hidden"]), select:not([disabled]):not([tabindex="-1"]), textarea:not([disabled]):not([tabindex="-1"]), button:not([disabled]):not([tabindex="-1"])';
+      const firstInput = formRef.current.querySelector<HTMLElement>(focusableSelector);
+      if (firstInput) {
+        firstInput.focus();
+      }
+    }
+  }, [isLoading, isSystemError]);
+
+  /**
+   * Xử lý di chuyển Focus bằng phím Tab (Focus Trap / Tab Loop)
+   * 1. Chỉ các hạng mục input như textbox, pulldown, checkbox, button... nhận focus.
+   * 2. Các hạng mục không cho nhập/chọn như text, label, hạng mục disable không nhận focus.
+   * 3. Khi ở hạng mục cuối cùng nhấn Tab -> Quay lại hạng mục input đầu tiên.
+   * 4. Khi ở hạng mục đầu tiên nhấn Shift+Tab -> Chuyển đến hạng mục cuối cùng.
+   */
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === 'Tab' && formRef.current) {
+      const focusableSelector =
+        'input:not([disabled]):not([tabindex="-1"]):not([type="hidden"]), select:not([disabled]):not([tabindex="-1"]), textarea:not([disabled]):not([tabindex="-1"]), button:not([disabled]):not([tabindex="-1"])';
+      const focusableElements = Array.from(
+        formRef.current.querySelectorAll<HTMLElement>(focusableSelector)
+      ).filter((el) => el.offsetParent !== null && !el.hasAttribute('disabled'));
+
+      if (focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    }
+  }, []);
+
   return {
     form,
-    mode,
+    formRef,
+    mode: isEditMode ? 'edit' : 'add',
     employeeId,
     returnTo,
     departments,
     certifications,
-    isLoading: isLoadingDept || isLoadingCert || isLoadingEmployee,
+    isCertificationSelected,
+    isLoading,
     isSystemError,
     errorMessage,
     setErrorMessage,
     handleConfirm,
     handleBack,
+    handleKeyDown,
   };
 }

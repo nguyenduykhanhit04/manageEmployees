@@ -15,6 +15,7 @@ import com.luvina.la.config.Constants;
 import com.luvina.la.exception.BusinessException;
 import com.luvina.la.mapper.EmployeeMapper;
 import com.luvina.la.payload.response.EmployeeDetailResponse;
+import com.luvina.la.repository.DepartmentRepository;
 import com.luvina.la.repository.EmployeeRepository;
 import com.luvina.la.repository.EmployeesCertificationRepository;
 import com.luvina.la.service.impl.EmployeeServiceImpl;
@@ -32,6 +33,7 @@ class EmployeeServiceImplTest {
 
     private EmployeeServiceImpl employeeService;
     private EmployeeRepository employeeRepository;
+    private DepartmentRepository departmentRepository;
     private EmployeesCertificationRepository employeesCertificationRepository;
     private EmployeeMapper employeeMapper;
     private PasswordEncoder passwordEncoder;
@@ -39,12 +41,14 @@ class EmployeeServiceImplTest {
     @BeforeEach
     void setUp() {
         employeeRepository = mock(EmployeeRepository.class);
+        departmentRepository = mock(DepartmentRepository.class);
         employeesCertificationRepository = mock(EmployeesCertificationRepository.class);
         employeeMapper = mock(EmployeeMapper.class);
         passwordEncoder = mock(PasswordEncoder.class);
 
         employeeService = new EmployeeServiceImpl(
                 employeeRepository,
+                departmentRepository,
                 employeesCertificationRepository,
                 employeeMapper,
                 passwordEncoder
@@ -90,5 +94,29 @@ class EmployeeServiceImplTest {
         assertEquals(employeeId, result);
         org.mockito.Mockito.verify(employeesCertificationRepository, org.mockito.Mockito.times(1)).deleteByEmployeeId(employeeId);
         org.mockito.Mockito.verify(employeeRepository, org.mockito.Mockito.times(1)).deleteById(employeeId);
+    }
+
+    @Test
+    void testCheckEmployeeExist_Success() {
+        Long employeeId = 1L;
+        when(employeeRepository.existsById(employeeId)).thenReturn(true);
+
+        // Should not throw exception
+        employeeService.checkEmployeeExist(employeeId);
+
+        org.mockito.Mockito.verify(employeeRepository, org.mockito.Mockito.times(1)).existsById(employeeId);
+    }
+
+    @Test
+    void testCheckEmployeeExist_NotFound_ThrowsER013() {
+        Long employeeId = 999L;
+        when(employeeRepository.existsById(employeeId)).thenReturn(false);
+
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> employeeService.checkEmployeeExist(employeeId)
+        );
+
+        assertEquals(Constants.ER013, ex.getErrorCode());
     }
 }

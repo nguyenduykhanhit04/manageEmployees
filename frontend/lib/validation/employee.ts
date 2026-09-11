@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { formatErrorMessage, FIELD_LABELS } from '@/lib/constants/messages';
 
-// Regex kiểm tra Katakana (toàn bộ là ký tự Katakana full-width)
-const KATAKANA_REGEX = /^[ァ-ヶー\s]+$/;
+// Regex kiểm tra Katakana (bao gồm cả Katakana toàn giác 全角 và bán giác 半角, dấu trường âm và khoảng trắng)
+const KATAKANA_REGEX = /^[\u30A0-\u30FF\uFF65-\uFF9F\s\u3000]+$/;
 
 // Regex kiểm tra half-size alphanumeric và dấu gạch dưới, không bắt đầu bằng số
 const HALF_SIZE_REGEX = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
@@ -65,10 +65,13 @@ export const baseEmployeeSchema = z.object({
     .max(125, formatErrorMessage('ER006', [FIELD_LABELS.employeeNameKana, 125]))
     .regex(KATAKANA_REGEX, formatErrorMessage('ER009', [FIELD_LABELS.employeeNameKana])),
 
-  // 5. 生年月日: ER001, ER011
+  // 5. 生年月日: ER001, ER005, ER011
   employeeBirthDate: z
     .string()
     .min(1, formatErrorMessage('ER001', [FIELD_LABELS.employeeBirthDate]))
+    .refine((val) => !val || val.trim() === '' || /^\d{4}\/\d{2}\/\d{2}$/.test(val), {
+      message: formatErrorMessage('ER005', [FIELD_LABELS.employeeBirthDate, 'yyyy/MM/dd']),
+    })
     .refine(isValidDateString, {
       message: formatErrorMessage('ER011', [FIELD_LABELS.employeeBirthDate]),
     }),
@@ -77,9 +80,9 @@ export const baseEmployeeSchema = z.object({
   employeeEmail: z
     .string()
     .min(1, formatErrorMessage('ER001', [FIELD_LABELS.employeeEmail]))
+    .email(formatErrorMessage('ER005', [FIELD_LABELS.employeeEmail, 'email']))
     .max(125, formatErrorMessage('ER006', [FIELD_LABELS.employeeEmail, 125]))
-    .regex(HALF_SIZE_ASCII_REGEX, formatErrorMessage('ER008', [FIELD_LABELS.employeeEmail]))
-    .email(formatErrorMessage('ER005', [FIELD_LABELS.employeeEmail])),
+    .regex(HALF_SIZE_ASCII_REGEX, formatErrorMessage('ER008', [FIELD_LABELS.employeeEmail])),
 
   // 7. 電話番号: ER001, ER006, ER008
   employeeTelephone: z
@@ -140,11 +143,17 @@ export const addEmployeeSchema = baseEmployeeSchema
       data.certificationId && data.certificationId !== '' && data.certificationId !== '0'
     );
     if (isCertSelected) {
-      // 10. 資格交付日: ER002 (bắt buộc chọn), ER011 (ngày hợp lệ)
+      // 10. 資格交付日: ER002 (bắt buộc chọn), ER005 (đúng format yyyy/MM/dd), ER011 (ngày hợp lệ)
       if (!data.certificationStartDate || data.certificationStartDate.trim() === '') {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: formatErrorMessage('ER002', [FIELD_LABELS.startDate]),
+          path: ['certificationStartDate'],
+        });
+      } else if (!/^\d{4}\/\d{2}\/\d{2}$/.test(data.certificationStartDate)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: formatErrorMessage('ER005', [FIELD_LABELS.startDate, 'yyyy/MM/dd']),
           path: ['certificationStartDate'],
         });
       } else if (!isValidDateString(data.certificationStartDate)) {
@@ -155,11 +164,17 @@ export const addEmployeeSchema = baseEmployeeSchema
         });
       }
 
-      // 11. 失効日: ER002 (bắt buộc chọn), ER011 (ngày hợp lệ)
+      // 11. 失効日: ER002 (bắt buộc chọn), ER005 (đúng format yyyy/MM/dd), ER011 (ngày hợp lệ)
       if (!data.certificationEndDate || data.certificationEndDate.trim() === '') {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: formatErrorMessage('ER002', [FIELD_LABELS.endDate]),
+          path: ['certificationEndDate'],
+        });
+      } else if (!/^\d{4}\/\d{2}\/\d{2}$/.test(data.certificationEndDate)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: formatErrorMessage('ER005', [FIELD_LABELS.endDate, 'yyyy/MM/dd']),
           path: ['certificationEndDate'],
         });
       } else if (!isValidDateString(data.certificationEndDate)) {
@@ -209,16 +224,36 @@ export const editEmployeeSchema = baseEmployeeSchema
     employeeLoginPasswordConfirm: z.string().optional(),
   })
   .superRefine((data, ctx) => {
-    // 1. Kiểm tra mật khẩu nếu người dùng nhập thay đổi
-    if (data.employeeLoginPassword && data.employeeLoginPassword.length > 0) {
-      if (data.employeeLoginPassword.length < 8 || data.employeeLoginPassword.length > 50) {
+    // 1. Kiểm tra mật khẩu nếu người dùng nhập thay đổi (có nhập Mật khẩu HOẶC Xác nhận mật khẩu)
+    const hasPassword = Boolean(data.employeeLoginPassword && data.employeeLoginPassword.length > 0);
+    const hasConfirmPassword = Boolean(
+      data.employeeLoginPasswordConfirm && data.employeeLoginPasswordConfirm.length > 0
+    );
+
+    if (hasPassword || hasConfirmPassword) {
+      // 1.1 Kiểm tra ô Mật khẩu
+      if (!hasPassword) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: formatErrorMessage('ER001', [FIELD_LABELS.employeeLoginPassword]),
+          path: ['employeeLoginPassword'],
+        });
+      } else if (data.employeeLoginPassword!.length < 8 || data.employeeLoginPassword!.length > 50) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: formatErrorMessage('ER007', [FIELD_LABELS.employeeLoginPassword, 8, 50]),
           path: ['employeeLoginPassword'],
         });
       }
-      if (data.employeeLoginPassword !== data.employeeLoginPasswordConfirm) {
+
+      // 1.2 Kiểm tra ô Xác nhận mật khẩu
+      if (!hasConfirmPassword) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: formatErrorMessage('ER001', [FIELD_LABELS.employeeLoginPasswordConfirm]),
+          path: ['employeeLoginPasswordConfirm'],
+        });
+      } else if (data.employeeLoginPassword !== data.employeeLoginPasswordConfirm) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: formatErrorMessage('ER017'),
@@ -232,11 +267,17 @@ export const editEmployeeSchema = baseEmployeeSchema
       data.certificationId && data.certificationId !== '' && data.certificationId !== '0'
     );
     if (isCertSelected) {
-      // 10. 資格交付日: ER002 (bắt buộc chọn), ER011 (ngày hợp lệ)
+      // 10. 資格交付日: ER002 (bắt buộc chọn), ER005 (đúng format yyyy/MM/dd), ER011 (ngày hợp lệ)
       if (!data.certificationStartDate || data.certificationStartDate.trim() === '') {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: formatErrorMessage('ER002', [FIELD_LABELS.startDate]),
+          path: ['certificationStartDate'],
+        });
+      } else if (!/^\d{4}\/\d{2}\/\d{2}$/.test(data.certificationStartDate)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: formatErrorMessage('ER005', [FIELD_LABELS.startDate, 'yyyy/MM/dd']),
           path: ['certificationStartDate'],
         });
       } else if (!isValidDateString(data.certificationStartDate)) {
@@ -247,11 +288,17 @@ export const editEmployeeSchema = baseEmployeeSchema
         });
       }
 
-      // 11. 失効日: ER002 (bắt buộc chọn), ER011 (ngày hợp lệ)
+      // 11. 失効日: ER002 (bắt buộc chọn), ER005 (đúng format yyyy/MM/dd), ER011 (ngày hợp lệ)
       if (!data.certificationEndDate || data.certificationEndDate.trim() === '') {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: formatErrorMessage('ER002', [FIELD_LABELS.endDate]),
+          path: ['certificationEndDate'],
+        });
+      } else if (!/^\d{4}\/\d{2}\/\d{2}$/.test(data.certificationEndDate)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: formatErrorMessage('ER005', [FIELD_LABELS.endDate, 'yyyy/MM/dd']),
           path: ['certificationEndDate'],
         });
       } else if (!isValidDateString(data.certificationEndDate)) {
