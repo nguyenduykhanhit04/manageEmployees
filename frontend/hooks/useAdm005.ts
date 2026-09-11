@@ -6,7 +6,7 @@ import { useDepartments } from '@/hooks/useDepartments';
 import { useCertifications } from '@/hooks/useCertifications';
 import { ROUTES } from '@/lib/constants';
 import { ADM004_STORAGE_KEY } from '@/hooks/useAdm004';
-import { createEmployee, getEmployee, deleteEmployee } from '@/lib/api/employee.api';
+import { createEmployee, getEmployee, deleteEmployee, updateEmployee } from '@/lib/api/employee.api';
 import { formatErrorMessage, ERROR_MESSAGES } from '@/lib/constants/messages';
 
 /**
@@ -30,10 +30,10 @@ export function useAdm005() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // 1. Đọc query params (mode, employeeId, returnTo)
-  const mode = searchParams.get('mode') || 'add';
+  // 1. Đọc query params từ URL
+  const mode = (searchParams.get('mode') || 'add').toLowerCase(); // 'add' | 'edit' | 'delete'
   const employeeId = searchParams.get('id') || searchParams.get('employeeId');
-  const returnToParam = searchParams.get('returnTo');
+  const returnTo = searchParams.get('returnTo') || ROUTES.EMPLOYEE_LIST;
 
   // 2. Khai báo các state quản lý
   const [formData, setFormData] = useState<any>(null);
@@ -71,7 +71,7 @@ export function useAdm005() {
               certificationStartDate: cert?.startDate ? cert.startDate.replaceAll('-', '/') : '',
               certificationEndDate: cert?.endDate ? cert.endDate.replaceAll('-', '/') : '',
               employeeCertificationScore: cert?.score !== null && cert?.score !== undefined ? String(cert.score) : '',
-              returnTo: returnToParam || ROUTES.EMPLOYEE_LIST,
+              returnTo,
             });
           } else {
             setErrorMessage(ERROR_MESSAGES.ER015);
@@ -99,7 +99,7 @@ export function useAdm005() {
       return;
     }
     setFormData(data);
-  }, [mode, employeeId, returnToParam, router]);
+  }, [mode, employeeId, returnTo, router]);
 
   // 5. Map ID sang Tên hiển thị (Department Name & Certification Name)
   const departmentName =
@@ -110,7 +110,7 @@ export function useAdm005() {
     certifications.find((c) => String(c.certificationId) === String(formData?.certificationId))
       ?.certificationName || '';
 
-  // 6. Xử lý khi nhấn nút "OK" -> Thực hiện Thêm mới hoặc Xóa
+  // 6. Xử lý khi nhấn nút "OK" -> Thực hiện Thêm mới, Chỉnh sửa hoặc Xóa
   const handleOk = useCallback(async () => {
     if (!formData || isSubmitting) return;
 
@@ -122,13 +122,47 @@ export function useAdm005() {
       if (mode === 'delete' && employeeId) {
         const deleteResponse = await deleteEmployee(employeeId);
         if (deleteResponse && deleteResponse.code === 200) {
-          const returnTo = returnToParam || formData?.returnTo || ROUTES.EMPLOYEE_LIST;
           router.push(`${ROUTES.EMPLOYEE_COMPLETE}?mode=delete&returnTo=${encodeURIComponent(returnTo)}`);
         }
         return;
       }
 
-      // 6.2 Xử lý khi xác nhận THÊM MỚI nhân viên
+      // 6.2 Xử lý khi xác nhận CHỈNH SỬA thông tin nhân viên
+      if (mode === 'edit' && employeeId) {
+        const updatePayload: any = {
+          employeeId: Number(employeeId),
+          employeeName: formData.employeeName,
+          employeeBirthDate: formData.employeeBirthDate,
+          employeeEmail: formData.employeeEmail,
+          employeeTelephone: formData.employeeTelephone,
+          employeeNameKana: formData.employeeNameKana,
+          employeeLoginId: formData.employeeLoginId,
+          departmentId: Number(formData.departmentId),
+          certifications:
+            formData.certificationId && formData.certificationId !== '' && formData.certificationId !== '0'
+              ? {
+                  certificationId: Number(formData.certificationId),
+                  startDate: formData.certificationStartDate,
+                  endDate: formData.certificationEndDate,
+                  score: Number(formData.employeeCertificationScore),
+                }
+              : null,
+        };
+
+        // Chỉ gửi password nếu người dùng có nhập mật khẩu mới
+        if (formData.employeeLoginPassword && formData.employeeLoginPassword.trim() !== '') {
+          updatePayload.employeeLoginPassword = formData.employeeLoginPassword;
+        }
+
+        const updateResponse = await updateEmployee(employeeId, updatePayload);
+        if (updateResponse && updateResponse.code === 200) {
+          sessionStorage.removeItem(ADM004_STORAGE_KEY);
+          router.push(`${ROUTES.EMPLOYEE_COMPLETE}?mode=edit&returnTo=${encodeURIComponent(returnTo)}`);
+        }
+        return;
+      }
+
+      // 6.3 Xử lý khi xác nhận THÊM MỚI nhân viên
       const payload = {
         employeeLoginId: formData.employeeLoginId,
         departmentId: Number(formData.departmentId),
@@ -154,7 +188,7 @@ export function useAdm005() {
 
       if (response && response.code === 200) {
         sessionStorage.removeItem(ADM004_STORAGE_KEY);
-        router.push(`${ROUTES.EMPLOYEE_COMPLETE}?mode=add`);
+        router.push(`${ROUTES.EMPLOYEE_COMPLETE}?mode=add&returnTo=${encodeURIComponent(returnTo)}`);
       }
     } catch (error: any) {
       const errorData = error.response?.data;
@@ -168,21 +202,29 @@ export function useAdm005() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [formData, isSubmitting, mode, employeeId, returnToParam, router]);
+  }, [formData, isSubmitting, mode, employeeId, returnTo, router]);
 
   // 7. Xử lý khi nhấn nút "Quay lại" (戻る)
   const handleBack = useCallback(() => {
-    const returnTo = returnToParam || formData?.returnTo || ROUTES.EMPLOYEE_LIST;
-
     // 7.1 Nếu đang ở mode delete -> Quay lại màn hình chi tiết ADM003
     if (mode === 'delete' && employeeId) {
       router.push(`${ROUTES.EMPLOYEE_DETAIL}?id=${employeeId}&returnTo=${encodeURIComponent(returnTo)}`);
       return;
     }
 
-    // 7.2 Nếu đang ở mode add/edit -> Quay về ADM004 kèm mode=back
+    // 7.2 Nếu đang ở mode edit -> Quay về ADM004 kèm mode=back&id=...
+    if (mode === 'edit') {
+      router.push(
+        `${ROUTES.EMPLOYEE_EDIT}?mode=back${
+          employeeId ? `&id=${employeeId}` : ''
+        }&returnTo=${encodeURIComponent(returnTo)}`
+      );
+      return;
+    }
+
+    // 7.3 Nếu đang ở mode add -> Quay về ADM004 kèm mode=back
     router.push(`${ROUTES.EMPLOYEE_EDIT}?mode=back&returnTo=${encodeURIComponent(returnTo)}`);
-  }, [mode, employeeId, returnToParam, formData, router]);
+  }, [mode, employeeId, returnTo, router]);
 
   return {
     mode,

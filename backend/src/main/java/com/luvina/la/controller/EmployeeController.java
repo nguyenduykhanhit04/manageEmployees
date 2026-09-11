@@ -13,6 +13,7 @@ import com.luvina.la.payload.response.ApiResponse;
 import com.luvina.la.payload.response.EmployeeDeleteResponse;
 import com.luvina.la.payload.response.EmployeeDetailResponse;
 import com.luvina.la.payload.response.EmployeeListResponse;
+import com.luvina.la.payload.response.EmployeeUpdateResponse;
 import com.luvina.la.service.EmployeeService;
 import com.luvina.la.validator.EmployeeValidator;
 import java.util.Collections;
@@ -106,6 +107,24 @@ public class EmployeeController {
     }
 
     /**
+     * Kiểm tra sự tồn tại của nhân viên trong hệ thống theo mã định danh employeeId.
+     *
+     * @param employeeId mã định danh của nhân viên cần kiểm tra
+     * @return mã phản hồi thành công 200 nếu nhân viên tồn tại
+     */
+    @GetMapping("/employee/{employeeId}/check-exist")
+    public ResponseEntity<ApiResponse> checkEmployeeExist(@PathVariable("employeeId") Long employeeId) {
+        // 1. Kiểm tra tính hợp lệ của tham số employeeId qua Validator (bắt lỗi ER001)
+        employeeValidator.validateGetEmployee(employeeId);
+
+        // 2. Kiểm tra tồn tại trong Service (ném lỗi ER013 nếu không tồn tại)
+        employeeService.checkEmployeeExist(employeeId);
+
+        // 3. Trả về phản hồi thành công mã 200
+        return ResponseEntity.ok(new ApiResponse(Constants.CODE_SUCCESS));
+    }
+
+    /**
      * Thêm mới một nhân viên vào hệ thống.
      *
      * @param request đối tượng chứa thông tin nhân viên cần thêm mới
@@ -121,6 +140,33 @@ public class EmployeeController {
 
         // 3. Trả về phản hồi thành công mã 200
         ApiResponse response = new ApiResponse(Constants.CODE_SUCCESS);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Cập nhật thông tin nhân viên và chứng chỉ tiếng Nhật theo employeeId.
+     *
+     * @param employeeId mã định danh của nhân viên cần cập nhật
+     * @param request đối tượng chứa thông tin cập nhật
+     * @return thông tin phản hồi chứa mã response thành công 200 và message MSG002
+     */
+    @PutMapping("/employee/{employeeId}")
+    public ResponseEntity<EmployeeUpdateResponse> updateEmployee(
+            @PathVariable("employeeId") Long employeeId,
+            @RequestBody EmployeeSaveRequest request) {
+        // 1. Kiểm tra tính hợp lệ của dữ liệu đầu vào qua Validator
+        employeeValidator.validateUpdateEmployee(employeeId, request);
+
+        // 2. Thực hiện cập nhật nhân viên qua Service
+        Long updatedId = employeeService.updateEmployee(employeeId, request);
+
+        // 3. Đóng gói Response và trả về
+        EmployeeUpdateResponse response = new EmployeeUpdateResponse(
+                Constants.CODE_SUCCESS,
+                updatedId,
+                new ApiErrorMessage(Constants.MSG_EDIT_SUCCESS, Collections.emptyList())
+        );
+
         return ResponseEntity.ok(response);
     }
 

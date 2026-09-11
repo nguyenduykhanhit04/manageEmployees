@@ -59,7 +59,7 @@ Hệ thống áp dụng cơ chế xử lý lỗi **Template-based Parametric Err
 | **`ER015`** | `システムエラーが発生しました。` | Lỗi hệ thống nghiêm trọng / Lỗi cơ sở dữ liệu / 500 | *(Không có tham số)* | `システムエラーが発生しました。` *(Đã xảy ra lỗi hệ thống)* | GlobalExceptionHandler, Controller |
 | **`ER017`** | `パスワードが一致しません。` | Mật khẩu xác nhận không khớp | *(Không có tham số)* | `パスワードが一致しません。` *(Mật khẩu không khớp)* | Frontend Zod Schema (ADM003) |
 | **`ER018`** | `{0}は半角英数を入力してください。` | Tham số phân trang (`offset`/`limit`) hoặc điểm (`score`) không hợp lệ | `{0}`: Nhãn trường | `オフセットは半角英数を入力してください。` | Controller, GlobalException, Validator |
-| **`ER019`** | `{0}を正しい書式で入力してください。` | Tên tài khoản (Login ID) chứa ký tự không hợp lệ (ngoài a-z, A-Z, 0-9, _) | `{0}`: Nhãn trường | `アカウント名を正しい書式で入力してください。` | EmployeeValidator (Login ID) |
+| **`ER019`** | `{0}は(a-z, A-Z, 0-9 と _)の桁のみです。最初の桁は数字ではない。` | Tên tài khoản (Login ID) chứa ký tự không hợp lệ hoặc bắt đầu bằng chữ số | `{0}`: Nhãn trường | `アカウント名は(a-z, A-Z, 0-9 と _)の桁のみです。最初の桁は数字ではない。` | EmployeeValidator (Login ID) |
 | **`ER021`** | `{0}のソート順が不正です。` | Tham số sắp xếp (`ord_*`) không phải `ASC` hoặc `DESC` | `{0}`: Tên cột sắp xếp | `ord_employee_nameのソート順が不正です。` | Controller / Service |
 | **`ER023`** | `システムエラーが発生しました。` | Lỗi khi truy vấn danh sách phòng ban hoặc chứng chỉ | *(Không có tham số)* | `システムエラーが発生しました。` | DepartmentController, CertificationController |
 

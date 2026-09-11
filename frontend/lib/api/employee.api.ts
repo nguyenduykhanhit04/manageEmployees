@@ -1,4 +1,5 @@
 import { EmployeeListApiResponse, EmployeeDetailResponse } from "@/types/employee";
+import { ApiResponse } from "@/types/api";
 import { apiClient } from "@/lib/api/client";
 
 /**
@@ -88,5 +89,16 @@ export const getEmployee = async (employeeId: number | string): Promise<Employee
  */
 export const deleteEmployee = async (employeeId: number | string): Promise<any> => {
   const response = await apiClient.delete(`/employee/${employeeId}`);
+  return response.data;
+};
+
+/**
+ * Gọi API kiểm tra xem nhân viên có tồn tại trong hệ thống không (GET /employee/{id}/check-exist).
+ *
+ * @param employeeId mã định danh của nhân viên cần kiểm tra
+ * @return kết quả phản hồi mã 200 nếu tồn tại
+ */
+export const checkEmployeeExist = async (employeeId: number | string): Promise<ApiResponse> => {
+  const response = await apiClient.get<ApiResponse>(`/employee/${employeeId}/check-exist`);
   return response.data;
 };
