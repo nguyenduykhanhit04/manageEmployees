@@ -7,7 +7,6 @@ package com.luvina.la.controller;
 
 import com.luvina.la.config.jwt.AuthUserDetails;
 import com.luvina.la.config.jwt.JwtTokenProvider;
-import com.luvina.la.config.jwt.UserDetailsServiceImpl;
 import com.luvina.la.payload.request.LoginRequest;
 import com.luvina.la.payload.response.LoginResponse;
 import java.util.HashMap;
@@ -40,22 +39,18 @@ public class AuthController {
 
     private final JwtTokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
-    private final UserDetailsServiceImpl userDetailsService;
 
     /**
      * Khởi tạo AuthController với các dependency xác thực.
      *
      * @param authenticationManager trình quản lý xác thực của Spring Security
      * @param jwtTokenProvider trình tạo và xác thực JWT token
-     * @param userDetailsService service tải thông tin người dùng
      */
     public AuthController(
             AuthenticationManager authenticationManager,
-            JwtTokenProvider jwtTokenProvider,
-            UserDetailsServiceImpl userDetailsService) {
+            JwtTokenProvider jwtTokenProvider) {
         this.authenticationManager = authenticationManager;
         this.tokenProvider = jwtTokenProvider;
-        this.userDetailsService = userDetailsService;
     }
 
     /**
