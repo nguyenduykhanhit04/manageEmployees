@@ -1,40 +1,18 @@
-/**
- * Copyright(C) 2026 Luvina Software Company
- *
- * EmployeeMapper.java, 25/08/2026 nguyenduykhanh2
- */
 package com.luvina.la.mapper;
 
-import com.luvina.la.dto.EmployeeDTO;
 import com.luvina.la.entity.EmployeeEntity;
 import com.luvina.la.payload.request.EmployeeSaveRequest;
-import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 /**
- * Interface Mapper chuyển đổi dữ liệu giữa EmployeeEntity, EmployeeDTO và EmployeeSaveRequest.
+ * Interface Mapper chuyển đổi dữ liệu từ EmployeeSaveRequest sang EmployeeEntity.
  *
  * @author nguyenduykhanh2
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface EmployeeMapper {
-
-    /**
-     * Chuyển đổi từ EmployeeEntity sang EmployeeDTO.
-     *
-     * @param entity đối tượng EmployeeEntity từ cơ sở dữ liệu
-     * @return đối tượng EmployeeDTO
-     */
-    EmployeeDTO toDto(EmployeeEntity entity);
-
-    /**
-     * Chuyển đổi từ EmployeeDTO sang EmployeeEntity.
-     *
-     * @param dto đối tượng EmployeeDTO
-     * @return đối tượng EmployeeEntity
-     */
-    EmployeeEntity toEntity(EmployeeDTO dto);
 
     /**
      * Chuyển đổi từ EmployeeSaveRequest sang EmployeeEntity.
@@ -45,12 +23,5 @@ public interface EmployeeMapper {
     @Mapping(target = "department.departmentId", source = "departmentId")
     @Mapping(target = "employeeBirthDate", source = "employeeBirthDate", dateFormat = "yyyy/MM/dd")
     EmployeeEntity toEntity(EmployeeSaveRequest request);
-
-    /**
-     * Chuyển đổi danh sách EmployeeEntity sang danh sách EmployeeDTO.
-     *
-     * @param entities danh sách entity nhân viên
-     * @return danh sách DTO nhân viên
-     */
-    List<EmployeeDTO> toDtoList(List<EmployeeEntity> entities);
 }
+
