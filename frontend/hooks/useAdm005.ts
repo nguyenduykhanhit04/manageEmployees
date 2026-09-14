@@ -192,13 +192,23 @@ export function useAdm005() {
       }
     } catch (error: any) {
       const errorData = error.response?.data;
-      if (errorData?.message?.code) {
-        setErrorMessage(
-          formatErrorMessage(errorData.message.code, errorData.message.params || [])
-        );
-      } else {
-        setErrorMessage(ERROR_MESSAGES.ER015);
+      const msg = errorData?.message?.code
+        ? formatErrorMessage(errorData.message.code, errorData.message.params || [])
+        : ERROR_MESSAGES.ER015;
+
+      // Nếu là Mode Add hoặc Edit: Lưu lỗi và điều hướng về ADM004
+      if (mode === 'add' || mode === 'edit') {
+        sessionStorage.setItem('ADM004_ERROR_MESSAGE', msg);
+        const backUrl =
+          mode === 'edit' && employeeId
+            ? `${ROUTES.EMPLOYEE_EDIT}?mode=back&id=${employeeId}&returnTo=${encodeURIComponent(returnTo)}`
+            : `${ROUTES.EMPLOYEE_EDIT}?mode=back&returnTo=${encodeURIComponent(returnTo)}`;
+        router.push(backUrl);
+        return;
       }
+
+      // Nếu là Mode Delete: Hiển thị lỗi tại ADM005
+      setErrorMessage(msg);
     } finally {
       setIsSubmitting(false);
     }

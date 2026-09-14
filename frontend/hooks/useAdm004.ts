@@ -105,6 +105,13 @@ export function useAdm004() {
     let isMounted = true;
 
     const initFormData = async () => {
+      // 4.0. Đọc và hiển thị thông báo lỗi chuyển tiếp từ màn hình ADM005 (nếu có)
+      const serverError = sessionStorage.getItem('ADM004_ERROR_MESSAGE');
+      if (serverError) {
+        setErrorMessage(serverError);
+        sessionStorage.removeItem('ADM004_ERROR_MESSAGE');
+      }
+
       // 4.1. Trường hợp quay lại từ màn hình Xác nhận ADM005 (mode=back)
       if (mode === 'back') {
         const savedData = sessionStorage.getItem(ADM004_STORAGE_KEY);

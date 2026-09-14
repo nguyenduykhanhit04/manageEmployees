@@ -239,9 +239,6 @@ public class EmployeeValidator {
         if (!EMAIL_PATTERN.matcher(email).matches()) {
             throw new BusinessException(Constants.ER005, List.of(Constants.LABEL_EMAIL, "email"));
         }
-        if (employeeRepository.existsByEmployeeEmail(email)) {
-            throw new BusinessException(Constants.ER003, List.of(Constants.LABEL_EMAIL));
-        }
 
         // 7. 電話番号 (employeeTelephone)
         String phone = request.getEmployeeTelephone();
@@ -384,10 +381,6 @@ public class EmployeeValidator {
         }
         if (!EMAIL_PATTERN.matcher(email).matches()) {
             throw new BusinessException(Constants.ER005, List.of(Constants.LABEL_EMAIL, "email"));
-        }
-        // Kiểm tra trùng email với nhân viên KHÁC
-        if (employeeRepository.existsByEmployeeEmailAndEmployeeIdNot(email, employeeId)) {
-            throw new BusinessException(Constants.ER003, List.of(Constants.LABEL_EMAIL));
         }
 
         // 8. 電話番号 (employeeTelephone)
