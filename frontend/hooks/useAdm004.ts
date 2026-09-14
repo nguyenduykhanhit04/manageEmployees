@@ -250,8 +250,16 @@ export function useAdm004() {
   // 6. Xử lý khi nhấn nút "Quay lại" (戻る)
   const handleBack = useCallback(() => {
     sessionStorage.removeItem(ADM004_STORAGE_KEY);
+    // Nếu là mode edit: Quay lại màn hình chi tiết nhân viên ADM003 kèm returnTo gốc
+    if (isEditMode && employeeId) {
+      router.push(
+        `${ROUTES.EMPLOYEE_DETAIL}?id=${employeeId}&returnTo=${encodeURIComponent(returnTo)}`
+      );
+      return;
+    }
+    // Nếu là mode add: Quay lại màn hình danh sách ADM002
     router.push(returnTo);
-  }, [returnTo, router]);
+  }, [isEditMode, employeeId, returnTo, router]);
 
   // 7. Quản lý Focus & Vòng lặp Tab (Focus Trap / Tab Loop)
   const formRef = useRef<HTMLFormElement>(null);

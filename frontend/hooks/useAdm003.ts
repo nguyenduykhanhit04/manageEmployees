@@ -65,11 +65,10 @@ export function useAdm003() {
     router.push(returnTo);
   }, [returnTo, router]);
 
-  // 6. Xử lý khi nhấn nút "Chỉnh sửa" (編集) -> Chuyển sang ADM004 (mode=edit) với returnTo trỏ về màn hình chi tiết ADM003
+  // 6. Xử lý khi nhấn nút "Chỉnh sửa" (編集) -> Chuyển sang ADM004 (mode=edit) kèm returnTo phẳng của ADM002
   const handleEdit = useCallback(() => {
     if (!employeeId) return;
-    const currentDetailUrl = `${ROUTES.EMPLOYEE_DETAIL}?id=${employeeId}&returnTo=${encodeURIComponent(returnTo)}`;
-    const editUrl = `${ROUTES.EMPLOYEE_EDIT}?mode=edit&id=${employeeId}&returnTo=${encodeURIComponent(currentDetailUrl)}`;
+    const editUrl = `${ROUTES.EMPLOYEE_EDIT}?mode=edit&id=${employeeId}&returnTo=${encodeURIComponent(returnTo)}`;
     router.push(editUrl);
   }, [employeeId, returnTo, router]);
 
