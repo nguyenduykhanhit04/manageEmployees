@@ -41,9 +41,9 @@ Toàn bộ tài liệu kỹ thuật, đặc tả API và quy chuẩn được l�
 | :--- | :--- |
 | **`docs/api/`** | **Tài liệu thiết kế chi tiết các REST API** |
 | ├── `TKAPI_ListEmployee.md` | API Tìm kiếm, lọc & phân trang danh sách nhân viên (`GET /employee`) |
-| ├── `TKAPI_AddEmployee.md` | API Thêm mới nhân viên (`POST /employee`) — Màn hình ADM003 |
-| ├── `TKAPI_GetEmployee.md` | API Lấy chi tiết nhân viên theo ID (`GET /employee/{id}`) — Màn hình ADM006 |
-| ├── `TKAPI_UpdateEmployee.md` | API Cập nhật thông tin nhân viên (`PUT /employee/{id}`) — Màn hình ADM003 |
+| ├── `TKAPI_AddEmployee.md` | API Thêm mới nhân viên (`POST /employee`) — Màn hình ADM004 |
+| ├── `TKAPI_GetEmployee.md` | API Lấy chi tiết nhân viên theo ID (`GET /employee/{id}`) — Màn hình ADM003 |
+| ├── `TKAPI_UpdateEmployee.md` | API Cập nhật thông tin nhân viên (`PUT /employee/{id}`) — Màn hình ADM004 |
 | ├── `TKAPI_DeleteEmployee.md` | API Xóa nhân viên (`DELETE /employee/{id}`) |
 | ├── `TKAPI_ListDepartments.md` | API Lấy danh sách phòng ban cho dropdown (`GET /departments`) |
 | └── `TKAPI_ListCertifications.md` | API Lấy danh sách trình độ chứng chỉ tiếng Nhật (`GET /certifications`) |
@@ -69,21 +69,26 @@ Toàn bộ tài liệu kỹ thuật, đặc tả API và quy chuẩn được l�
               │
               ▼
 [ ADM002: Danh sách nhân viên (/employees/adm002) ]
-       │                │                       │
-       │ (Nút Thêm)    │ (Click Tên)           │ (Nút Sửa / Xóa)
-       ▼                ▼                       ▼
-[ ADM003: Thêm mới ] [ ADM006: Chi tiết ]   [ ADM003: Chỉnh sửa ]
-       │                                        │
-       └───────────────────┬────────────────────┘
-                           │ (Bấm Xác nhận)
-                           ▼
-             [ ADM004: Xác nhận thông tin (/employees/adm004) ]
-                           │ (Bấm OK / Lưu)
-                           ▼
-             [ ADM005: Hoàn tất thao tác (/employees/adm005) ]
-                           │ (Bấm OK)
-                           ▼
-             [ Trở về ADM002: Danh sách nhân viên ]
+       │                                     │
+       │ (Bấm 新規追加)                     │ (Click Tên nhân viên)
+       ▼                                     ▼
+[ ADM004: Thêm mới (mode=add) ]       [ ADM003: Chi tiết nhân viên (/employees/adm003) ]
+       │                                     │
+       │                                     │ (Bấm 編集)
+       │                                     ▼
+       └─────────────────────────────> [ ADM004: Chỉnh sửa (mode=edit) ]
+                                             │
+                                             │ (Bấm 確認)
+                                             ▼
+                               [ ADM005: Xác nhận thông tin (/employees/adm005) ]
+                                             │
+                                             │ (Bấm OK - Lưu vào DB)
+                                             ▼
+                               [ ADM006: Hoàn tất thao tác (/employees/adm006) ]
+                                             │
+                                             │ (Bấm OK)
+                                             ▼
+                               [ Trở về ADM002: Danh sách nhân viên ]
 ```
 
 ---
@@ -95,15 +100,16 @@ Tuân thủ nghiêm ngặt mô hình **3-Tier Layered Architecture**:
 
 ```
 com.luvina.la
-├── config/                  # Cấu hình CORS, Security, WebMvc, JWT, Constants
+├── config/                  # Cấu hình CORS, Security, WebMvc, JWT, Constants (ER001 - ER023)
 ├── controller/              # REST Controllers (AuthController, EmployeeController, DepartmentController, CertificationController)
 ├── service/                 # Tầng nghiệp vụ (Service Interfaces)
 │   └── impl/                # Service Implementations (@Service, @Transactional)
+├── validator/               # Tầng kiểm tra nghiệp vụ độc lập (EmployeeValidator - kiểm tra định dạng, tồn tại, chặn xóa Admin ER020)
 ├── repository/              # Tầng truy xuất dữ liệu Spring Data JPA
 │   ├── EmployeeRepository.java
 │   ├── EmployeeRepositoryCustom.java
 │   └── impl/
-│       └── EmployeeRepositoryCustomImpl.java  # Custom Native Query (sắp xếp đa cột, collate tiếng Việt, DTO projection)
+│       └── EmployeeRepositoryCustomImpl.java  # Custom Native Query (sắp xếp đa cột, collate tiếng Nhật/Việt, DTO projection)
 ├── entity/                  # JPA Entities (EmployeeEntity, DepartmentEntity, CertificationEntity, EmployeeCertificationEntity)
 ├── dto/                     # Data Transfer Objects
 ├── payload/                 # Request/Response payloads (EmployeeRequest, EmployeeResponse, EmployeeDetailResponse...)
@@ -112,26 +118,30 @@ com.luvina.la
 ```
 
 ### 4.2. Frontend (`frontend/`)
-Tuân thủ nguyên tắc **Separation of Concerns (SoC)** (Component chỉ lo UI, Logic chuyển vào Custom Hook, Data fetch chuyển vào API Client):
+Tuân thủ nghiêm ngặt nguyên tắc **Separation of Concerns (SoC)** (Page chỉ là Route Entry Point bọc `<Suspense>`, UI View tách thành Components, Logic chuyển vào Custom Hooks, Constants phân tách theo công năng):
 
 ```
 frontend/
 ├── app/
 │   ├── (auth)/
-│   │   └── login/                 # Màn hình Đăng nhập (ADM001)
+│   │   └── login/                 # ADM001: Màn hình Đăng nhập (Page Route Entry Point)
 │   ├── (protected)/
 │   │   └── employees/
-│   │       ├── adm002/            # Màn hình Danh sách nhân viên (ADM002)
-│   │       ├── adm003/            # Màn hình Thêm mới / Chỉnh sửa nhân viên (ADM003)
-│   │       ├── adm004/            # Màn hình Xác nhận thông tin (ADM004)
-│   │       ├── adm005/            # Màn hình Thông báo hoàn tất (ADM005)
-│   │       └── adm006/            # Màn hình Xem chi tiết nhân viên (ADM006)
+│   │       ├── adm002/            # ADM002: Danh sách nhân viên (Page Route Entry Point)
+│   │       ├── adm003/            # ADM003: Chi tiết nhân viên (Page Route Entry Point)
+│   │       ├── adm004/            # ADM004: Thêm mới / Chỉnh sửa nhân viên (Page Route Entry Point)
+│   │       ├── adm005/            # ADM005: Xác nhận thông tin (Page Route Entry Point)
+│   │       └── adm006/            # ADM006: Thông báo hoàn tất (Page Route Entry Point)
 │   ├── globals.css                # Style toàn cục & Design System
 │   └── layout.tsx                 # Root layout
-├── components/                    # UI Components dùng chung (Header, Footer, Layout, Pagination, Modal...)
-├── hooks/                         # Custom React Hooks (useAuth, useAdm002, useEmployees...)
+├── components/                    # UI Presentation Components
+│   ├── auth/                      # LoginForm...
+│   ├── common/                    # Button, Input, Select, DatePicker, Modal, Header, Footer, Pagination...
+│   └── employees/                 # Adm002, Adm003, Adm004, Adm005, Adm006, EmployeeTable, EmployeeSearchForm...
+├── hooks/                         # Custom React Hooks (useAuth, useAdm002, useAdm003, useAdm004, useAdm005, useAdm006...)
 ├── lib/
 │   ├── api/                       # API Services (employee.ts, department.ts, certification.ts, auth.ts, client.ts)
+│   ├── constants/                 # Constants phân tách (routes.ts, http.ts, table.ts, messages.ts)
 │   └── validation/                # Zod schemas validate form
 ├── tests/                         # Unit tests & Integration tests (Jest & Testing Library)
 └── types/                         # TypeScript interfaces & types định nghĩa dữ liệu

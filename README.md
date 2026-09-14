@@ -122,10 +122,10 @@ npm run dev
 | :--- | :--- | :--- |
 | **ADM001** | `/login` | Đăng nhập hệ thống |
 | **ADM002** | `/employees/adm002` | Danh sách nhân viên (Tìm kiếm, Sắp xếp đa cột, Phân trang) |
-| **ADM003** | `/employees/adm003` | Thêm mới / Chỉnh sửa thông tin nhân viên |
-| **ADM004** | `/employees/adm004` | Xác nhận thông tin trước khi lưu |
-| **ADM005** | `/employees/adm005` | Thông báo hoàn tất thêm/sửa/xóa |
-| **ADM006** | `/employees/adm006` | Xem chi tiết thông tin nhân viên & chứng chỉ |
+| **ADM003** | `/employees/adm003` | Xem chi tiết thông tin nhân viên & chứng chỉ |
+| **ADM004** | `/employees/adm004` | Thêm mới / Chỉnh sửa thông tin nhân viên |
+| **ADM005** | `/employees/adm005` | Xác nhận thông tin trước khi lưu/xóa |
+| **ADM006** | `/employees/adm006` | Thông báo hoàn tất thêm/sửa/xóa |
 
 ---
 

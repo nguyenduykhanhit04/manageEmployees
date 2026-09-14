@@ -545,9 +545,25 @@ Toàn bộ quy tắc kiểm tra dữ liệu nghiệp vụ được tập trung t
 | **`ER015`** | Lỗi hệ thống hoặc lỗi tổng quát (`システムエラーが発生しました。`) | Ngoại lệ chưa kiểm soát, null request payload | Catch tổng quát trong Handler |
 | **`ER018`** | Tham số phân trang hoặc điểm số âm không hợp lệ | `offset < 0`, `limit <= 0`, `score < 0` | `score.compareTo(BigDecimal.ZERO) < 0` |
 | **`ER019`** | Tên đăng nhập sai quy cách (bắt đầu bằng chữ cái/gạch dưới) | `employeeLoginId` bắt đầu bằng chữ số | `!HALF_SIZE_LOGIN_ID_PATTERN.matcher(loginId).matches()` |
+| **`ER020`** | Không thể xóa tài khoản Quản trị viên (`管理者ユーザを削除することはできません。`) | Thao tác xóa nhân viên có vai trò Admin (`employeeRole == 0`) | `EmployeeValidator.validateDeleteEmployee` kiểm tra `employee.getEmployeeRole() == Constants.ROLE_ADMIN` |
 | **`ER021`** | Tên cột sắp xếp hoặc hướng sắp xếp không nằm trong whitelist | Tham số `ord_*` không hợp lệ hoặc khác `ASC`/`DESC` | `!VALID_ORDER_KEYS.contains(key)` |
 
-### 9.2 Biểu thức chính quy (Regex) được định nghĩa trong Validator
+### 9.2 Phương thức kiểm tra xóa nhân viên (`validateDeleteEmployee`)
+
+Trong `EmployeeValidator.java`, nghiệp vụ xóa nhân viên được kiểm soát chặt chẽ nhằm bảo vệ tài khoản Quản trị viên (Admin):
+
+```java
+public void validateDeleteEmployee(EmployeeEntity employee) {
+    if (employee == null) {
+        throw new BusinessException(Constants.ER014, List.of(Constants.PARAM_EMPLOYEE_ID));
+    }
+    if (employee.getEmployeeRole() != null && employee.getEmployeeRole() == Constants.ROLE_ADMIN) {
+        throw new BusinessException(Constants.ER020, List.of());
+    }
+}
+```
+
+### 9.3 Biểu thức chính quy (Regex) được định nghĩa trong Validator
 
 ```java
 // Kiểm tra Katakana toàn giác và bán giác (kèm khoảng trắng)
@@ -944,8 +960,9 @@ Dự án triển khai bộ Unit Test toàn diện kiểm thử độc lập từ
    - Kiểm thử các kịch bản: Thêm nhân viên thành công, Thêm có chứng chỉ, Cập nhật không đổi mật khẩu, Rollback khi lỗi.
 3. **`EmployeeValidatorTest.java` (Validation Logic Test):**
    - Kiểm thử toàn diện 100% các case Regex: Katakana hợp lệ/không hợp lệ, Tên quá 125 ký tự, Email sai format, Ngày hết hạn < Ngày cấp, Trùng Login ID trong DB.
+   - Kiểm thử bảo vệ tài khoản Admin: Xóa nhân viên có `employeeRole = 0` (Admin) phải ném `BusinessException` với mã lỗi `ER020`.
 4. **`GlobalExceptionHandlerTest.java` (Exception Handling Test):**
-   - Đảm bảo khi ném `BusinessException("ER003", params)` thì Response nhận được luôn có HTTP 500 kèm đúng cấu trúc `{code: 500, message: {code: "ER003", params: [...]}}`.
+   - Đảm bảo khi ném `BusinessException("ER003", params)` hoặc `BusinessException("ER020", List.of())` thì Response nhận được luôn có HTTP 500 kèm đúng cấu trúc `{code: 500, message: {code: "ERxxx", params: [...]}}`.
 
 ---
 

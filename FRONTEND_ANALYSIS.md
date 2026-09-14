@@ -111,36 +111,46 @@ Dựa trên file `package.json` thực tế:
 
 ```text
 frontend/
-├── app/                              # Next.js App Router (Định tuyến & Trang)
+├── app/                              # Next.js App Router (Định tuyến & Route Entry Points)
 │   ├── (auth)/                       # Route Group: Các trang xác thực
-│   │   ├── login/page.tsx            # ADM001: Màn hình Đăng nhập
+│   │   ├── login/page.tsx            # ADM001: Màn hình Đăng nhập (Page Route Entry Point)
 │   │   └── logout/page.tsx           # Xử lý Đăng xuất & Xóa Token
 │   ├── (protected)/                  # Route Group: Các trang nghiệp vụ được bảo vệ
 │   │   └── employees/
-│   │       ├── adm002/page.tsx       # ADM002: Danh sách nhân viên (Tìm kiếm, Sắp xếp, Phân trang)
-│   │       ├── adm003/page.tsx       # ADM003: Chi tiết thông tin nhân viên
-│   │       ├── adm004/page.tsx       # ADM004: Thêm mới / Chỉnh sửa nhân viên (Form)
-│   │       ├── adm005/page.tsx       # ADM005: Xác nhận thông tin (Confirm)
-│   │       └── adm006/page.tsx       # ADM006: Hoàn thành thao tác (Complete)
+│   │       ├── adm002/page.tsx       # ADM002: Danh sách nhân viên (Page Route Entry Point)
+│   │       ├── adm003/page.tsx       # ADM003: Chi tiết thông tin nhân viên (Page Route Entry Point)
+│   │       ├── adm004/page.tsx       # ADM004: Thêm mới / Chỉnh sửa nhân viên (Page Route Entry Point)
+│   │       ├── adm005/page.tsx       # ADM005: Xác nhận thông tin (Page Route Entry Point)
+│   │       └── adm006/page.tsx       # ADM006: Hoàn thành thao tác (Page Route Entry Point)
 │   ├── globals.css                   # Toàn bộ CSS dùng chung của hệ thống
 │   ├── layout.tsx                    # Root Layout chứa Header, Footer, Container chung
 │   └── page.tsx                      # Trang Home mặc định
-├── components/                       # Tầng hiển thị (Presentation Layer)
+├── components/                       # Tầng hiển thị giao diện (Presentation Layer)
 │   ├── auth/
 │   │   └── LoginForm.tsx             # Component Form Đăng nhập
-│   ├── common/
-│   │   └── Pagination.tsx            # Component Phân trang tái sử dụng (Sliding Window)
-│   ├── employees/
-│   │   ├── EmployeeSearchForm.tsx    # Form tìm kiếm nhân viên (Tên, Phòng ban)
-│   │   └── EmployeeTable.tsx         # Bảng hiển thị nhân viên (CSS Grid, Sort Header)
-│   └── layout/
-│       ├── Header.tsx                # Thanh điều hướng trên cùng (Logo, Logout, Top)
-│       └── Footer.tsx                # Chân trang bản quyền
+│   ├── common/                       # Các component UI tái sử dụng
+│   │   ├── Button.tsx                # Nút bấm chung
+│   │   ├── DatePicker.tsx            # Ô chọn ngày tháng (Calendar Picker)
+│   │   ├── Footer.tsx                # Chân trang bản quyền
+│   │   ├── Header.tsx                # Thanh điều hướng trên cùng (Logo, Logout)
+│   │   ├── Input.tsx                 # Ô nhập liệu text/password
+│   │   ├── Modal.tsx                 # Hộp thoại Modal thông báo / xác nhận
+│   │   ├── Pagination.tsx            # Phân trang tái sử dụng (Sliding Window)
+│   │   └── Select.tsx                # Dropdown lựa chọn
+│   └── employees/                    # UI Components nghiệp vụ nhân viên
+│       ├── Adm002.tsx                # Component giao diện Danh sách nhân viên (ADM002)
+│       ├── Adm003.tsx                # Component giao diện Chi tiết nhân viên (ADM003)
+│       ├── Adm004.tsx                # Component giao diện Thêm mới / Chỉnh sửa (ADM004)
+│       ├── Adm005.tsx                # Component giao diện Xác nhận thông tin (ADM005)
+│       ├── Adm006.tsx                # Component giao diện Thông báo hoàn tất (ADM006)
+│       ├── EmployeeSearchForm.tsx    # Form tìm kiếm nhân viên (Tên, Phòng ban)
+│       └── EmployeeTable.tsx         # Bảng hiển thị nhân viên (CSS Grid, Sort Header)
 ├── hooks/                            # Tầng Business Logic (Custom Hooks)
 │   ├── useAdm002.ts                  # Logic màn hình ADM002 (Search, Multi-sort, Pagination, URL Sync)
-│   ├── useAdm003.ts                  # Logic màn hình ADM003 (Fetch Detail, Delete Confirm, Back)
-│   ├── useAdm004.ts                  # Logic màn hình ADM004 (Form Add/Edit, Tab Trap, Auto Focus)
-│   ├── useAdm005.ts                  # Logic màn hình ADM005 (Submit API, Session Restore, Delete API)
+│   ├── useAdm003.ts                  # Logic màn hình ADM003 (Fetch Detail, Delete Confirm, System Error, Back)
+│   ├── useAdm004.ts                  # Logic màn hình ADM004 (Form Add/Edit, Tab Trap, Check Exist, Auto Focus)
+│   ├── useAdm005.ts                  # Logic màn hình ADM005 (Submit API, Session Restore, System Error, Delete API)
+│   ├── useAdm006.ts                  # Logic màn hình ADM006 (Message Display, Back to List)
 │   ├── useAuth.ts                    # Hook bảo vệ Route (`useAuth` và `useGuest`)
 │   ├── useCertifications.ts          # Hook tải Master Data danh sách chứng chỉ tiếng Nhật
 │   ├── useDepartments.ts             # Hook tải Master Data danh sách phòng ban
@@ -153,9 +163,11 @@ frontend/
 │   │   └── certification.api.ts      # API lấy danh sách chứng chỉ (/certifications)
 │   ├── auth/
 │   │   └── token.ts                  # Quản lý lưu trữ/kiểm tra JWT (localStorage/sessionStorage, parse JWT)
-│   ├── constants/
-│   │   ├── index.ts                  # Cấu hình hằng số (PAGING, SORT_ORDER, ROUTES, QUERY_PARAMS)
-│   │   └── messages.ts               # Bộ thông báo chuẩn Nhật ngữ (ER001-ER023, MSG001-MSG005, FIELD_LABELS)
+│   ├── constants/                    # Hệ thống hằng số phân tách theo công năng
+│   │   ├── routes.ts                 # Định nghĩa các Route paths (`ROUTES`)
+│   │   ├── http.ts                   # Định nghĩa mã trạng thái HTTP, Content Types
+│   │   ├── table.ts                  # Cấu hình phân trang, thứ tự sort (`PAGING`, `SORT_ORDER`, `QUERY_PARAMS`)
+│   │   └── messages.ts               # Bộ thông báo chuẩn Nhật ngữ (ER001-ER023, MSG001-MSG005, FIELD_LABELS, API_ERROR_MESSAGES)
 │   ├── utils/
 │   │   ├── format.ts                 # Xử lý format văn bản (truncateText cắt 22 ký tự)
 │   │   └── messageHelper.ts          # Trình biên dịch thông báo lỗi có tham số động
@@ -412,19 +424,20 @@ export default function LogoutPage() {
 * **Cơ chế Đồng bộ URL:** Mọi trạng thái lọc (`employee_name`, `department_id`), phân trang (`offset`), và sắp xếp (`ord_employee_name`, `ord_certification_name`, `ord_end_date`) đều được đồng bộ hai chiều lên URL Search Params.
 
 #### 3. Các file liên quan
-* [page.tsx](file:///d:/Project/manageEmployees/frontend/app/(protected)/employees/adm002/page.tsx): Khung chứa Suspense, gọi `useAdm002()`.
-* [useAdm002.ts](file:///d:/Project/manageEmployees/frontend/hooks/useAdm002.ts): Custom Hook cốt lõi quản lý toàn bộ nghiệp vụ ADM002.
-* [EmployeeSearchForm.tsx](file:///d:/Project/manageEmployees/frontend/components/employees/EmployeeSearchForm.tsx): Form nhập tiêu chí tìm kiếm.
-* [EmployeeTable.tsx](file:///d:/Project/manageEmployees/frontend/components/employees/EmployeeTable.tsx): Render bảng dữ liệu bằng CSS Grid.
-* [Pagination.tsx](file:///d:/Project/manageEmployees/frontend/components/common/Pagination.tsx): Component phân trang tái sử dụng.
-* [employee.api.ts](file:///d:/Project/manageEmployees/frontend/lib/api/employee.api.ts): Hàm `getEmployees(params)`.
-* [department.api.ts](file:///d:/Project/manageEmployees/frontend/lib/api/department.api.ts): Hàm `getDepartments()`.
+* [page.tsx](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/app/(protected)/employees/adm002/page.tsx): Route Entry Point, bọc `<Suspense>` và render `<Adm002 />`.
+* [Adm002.tsx](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/components/employees/Adm002.tsx): Component giao diện chính của ADM002, kết nối với `useAdm002()`.
+* [useAdm002.ts](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/hooks/useAdm002.ts): Custom Hook cốt lõi quản lý toàn bộ nghiệp vụ ADM002.
+* [EmployeeSearchForm.tsx](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/components/employees/EmployeeSearchForm.tsx): Form nhập tiêu chí tìm kiếm.
+* [EmployeeTable.tsx](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/components/employees/EmployeeTable.tsx): Render bảng dữ liệu bằng CSS Grid.
+* [Pagination.tsx](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/components/common/Pagination.tsx): Component phân trang tái sử dụng.
+* [employee.api.ts](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/lib/api/employee.api.ts): Hàm `getEmployees(params)`.
+* [department.api.ts](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/lib/api/department.api.ts): Hàm `getDepartments()`.
 
 #### 4. Component Tree
 ```text
 EmployeeListPage (app/(protected)/employees/adm002/page.tsx)
 └── Suspense (fallback: LOADING)
-    └── EmployeeListContent
+    └── Adm002 (components/employees/Adm002.tsx)
         ├── Error Box (errorMessage nếu có)
         ├── EmployeeSearchForm (components/employees/EmployeeSearchForm.tsx)
         │   ├── Input Tên nhân viên (氏名)
@@ -465,9 +478,10 @@ Hiển thị toàn bộ thông tin chi tiết của một nhân viên cụ thể
   - `returnTo`: URL lưu giữ toàn bộ điều kiện tìm kiếm/phân trang/sắp xếp của màn hình ADM002 trước đó.
 
 #### 3. Các file liên quan
-* [page.tsx](file:///d:/Project/manageEmployees/frontend/app/(protected)/employees/adm003/page.tsx): Render giao diện xem chi tiết hoặc hiển thị thông báo "Lỗi hệ thống" (System Error Box) nếu nhân viên không tồn tại.
-* [useAdm003.ts](file:///d:/Project/manageEmployees/frontend/hooks/useAdm003.ts): Xử lý fetch chi tiết nhân viên và gọi API xóa trực tiếp kèm popup xác nhận `window.confirm`.
-* [employee.api.ts](file:///d:/Project/manageEmployees/frontend/lib/api/employee.api.ts): Hàm `getEmployee(id)` và `deleteEmployee(id)`.
+* [page.tsx](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/app/(protected)/employees/adm003/page.tsx): Route Entry Point, bọc `<Suspense>` và render `<Adm003 />`.
+* [Adm003.tsx](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/components/employees/Adm003.tsx): Component giao diện hiển thị chi tiết, Modal xác nhận xóa, và Modal báo lỗi hệ thống.
+* [useAdm003.ts](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/hooks/useAdm003.ts): Xử lý fetch chi tiết nhân viên, xóa nhân viên, quản lý cờ lỗi hệ thống `isSystemError` và hàm `handleSystemErrorOk`.
+* [employee.api.ts](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/lib/api/employee.api.ts): Hàm `getEmployee(id)` và `deleteEmployee(id)`.
 
 #### 4. User Interaction & Code Flow
 
@@ -475,7 +489,7 @@ Hiển thị toàn bộ thông tin chi tiết của một nhân viên cụ thể
 sequenceDiagram
     autonumber
     actor User as Người dùng
-    participant ADM003 as ADM003 Page (useAdm003)
+    participant ADM003 as Adm003 (useAdm003)
     participant API as employee.api.ts
     participant Backend as Backend Server
 
@@ -485,24 +499,41 @@ sequenceDiagram
     alt Nhân viên tồn tại (200 OK)
         Backend-->>API: Trả về EmployeeDetailResponse
         API-->>ADM003: Cập nhật state `employee`
-        ADM003-->>User: Hiển thị form chi tiết nhân viên
-    else Không tìm thấy / Lỗi (404/500)
+        ADM003-->>User: Hiển thị thông tin chi tiết nhân viên
+    else Không tìm thấy / Lỗi (404/500/ER015)
         Backend-->>API: Báo lỗi ER015 / 404
         API-->>ADM003: Bật cờ `isSystemError = true`
-        ADM003-->>User: Hiển thị hộp thông báo "システムエラーが発生しました。" kèm nút OK
+        ADM003-->>User: Hiển thị Modal "システムエラーが発生しました。" kèm duy nhất nút [OK]
+        User->>ADM003: Click [OK] (handleSystemErrorOk)
+        ADM003->>User: Điều hướng an toàn về ADM002 (returnTo)
+    end
+
+    opt Người dùng bấm [編集 (Chỉnh sửa)]
+        User->>ADM003: Click nút [編集]
+        ADM003->>User: router.push('/employees/adm004?mode=edit&id=5&returnTo=...')
     end
 
     opt Người dùng bấm [削除 (Xóa)]
         User->>ADM003: Click nút [削除]
-        ADM003->>User: Hiển thị confirm popup: "削除しますが、よろしいですか。"
+        ADM003->>User: Hiển thị Modal xác nhận xóa (MSG004: "削除しますが、よろしいですか。")
         alt Người dùng chọn OK
             ADM003->>API: deleteEmployee(5)
             API->>Backend: DELETE /employee/5
-            Backend-->>API: 200 OK
-            ADM003->>User: router.push('/employees/adm006?mode=delete&returnTo=...')
+            alt Xóa thành công (200 OK)
+                Backend-->>API: 200 OK
+                ADM003->>User: router.push('/employees/adm006?mode=delete&returnTo=...')
+            else Thất bại do nhân viên là Admin (ER020)
+                Backend-->>API: 400 Bad Request (ER020)
+                ADM003->>User: Hiển thị lỗi nghiệp vụ "管理者ユーザを削除することはできません。"
+            end
         else Người dùng chọn Cancel
             ADM003-->>User: Đóng popup, giữ nguyên màn hình
         end
+    end
+
+    opt Người dùng bấm [戻る (Quay lại)]
+        User->>ADM003: Click nút [戻る]
+        ADM003->>User: router.push(returnTo) -> Quay lại ADM002 đúng bộ lọc và phân trang
     end
 ```
 
@@ -520,40 +551,24 @@ sequenceDiagram
 * **URL:**
   - Thêm mới: `/employees/adm004?mode=add&returnTo=...`
   - Chỉnh sửa: `/employees/adm004?mode=edit&id=5&returnTo=...`
-  - Quay lại từ ADM005: `/employees/adm004?mode=back&returnTo=...`
+  - Quay lại từ ADM005: `/employees/adm004?mode=back&returnTo=...` (mode add) hoặc `mode=back&id=5&returnTo=...` (mode edit)
 
 #### 3. Các file liên quan
-* [page.tsx](file:///d:/Project/manageEmployees/frontend/app/(protected)/employees/adm004/page.tsx): Giao diện form nhập liệu, tích hợp DatePicker qua `Controller` của React Hook Form.
-* [useAdm004.ts](file:///d:/Project/manageEmployees/frontend/hooks/useAdm004.ts): Hook quản lý trạng thái form, khôi phục dữ liệu từ `sessionStorage`, kiểm tra nhân viên tồn tại trước khi confirm bằng `checkEmployeeExist()`.
-* [employee.ts (validation)](file:///d:/Project/manageEmployees/frontend/lib/validation/employee.ts): Định nghĩa `addEmployeeSchema`, `editEmployeeSchema`.
-* [useDepartments.ts](file:///d:/Project/manageEmployees/frontend/hooks/useDepartments.ts): Lấy danh sách phòng ban cho Select box.
-* [useCertifications.ts](file:///d:/Project/manageEmployees/frontend/hooks/useCertifications.ts): Lấy danh sách chứng chỉ tiếng Nhật.
+* [page.tsx](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/app/(protected)/employees/adm004/page.tsx): Route Entry Point, bọc `<Suspense>` và render `<Adm004 />`.
+* [Adm004.tsx](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/components/employees/Adm004.tsx): Component giao diện form nhập liệu, tích hợp DatePicker qua `Controller` của React Hook Form, hỗ trợ Tab Loop và Modal Lỗi hệ thống.
+* [useAdm004.ts](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/hooks/useAdm004.ts): Hook quản lý trạng thái form, khôi phục dữ liệu từ `sessionStorage`, kiểm tra nhân viên tồn tại trước khi confirm bằng `checkEmployeeExist()`, xử lý `handleBack` và `handleSystemErrorOk`.
+* [employee.ts (validation)](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/lib/validation/employee.ts): Định nghĩa `addEmployeeSchema`, `editEmployeeSchema`.
+* [useDepartments.ts](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/hooks/useDepartments.ts): Lấy danh sách phòng ban cho Select box.
+* [useCertifications.ts](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/hooks/useCertifications.ts): Lấy danh sách chứng chỉ tiếng Nhật.
 
-#### 4. Logic đồng bộ dữ liệu chứng chỉ tiếng Nhật (Dynamic Validation Clearing)
-Mã nguồn thực tế trong `useAdm004.ts`:
-
-```typescript
-const selectedCertId = watch('certificationId');
-const isCertificationSelected = Boolean(
-  selectedCertId && selectedCertId !== '' && selectedCertId !== '0'
-);
-
-// Tự động clear dữ liệu & lỗi của 3 trường chứng chỉ khi người dùng chọn "Không có chứng chỉ"
-useEffect(() => {
-  if (!isCertificationSelected) {
-    setValue('certificationStartDate', '');
-    setValue('certificationEndDate', '');
-    setValue('employeeCertificationScore', '');
-    clearErrors([
-      'certificationStartDate',
-      'certificationEndDate',
-      'employeeCertificationScore',
-    ]);
-  }
-}, [isCertificationSelected, setValue, clearErrors]);
-```
-
-* **[PROJECT] Ý nghĩa:** Khi người dùng chuyển dropdown Chứng chỉ về trạng thái rỗng ("選択してください"), hook sẽ tự động xóa sạch dữ liệu ngày cấp, ngày hết hạn, điểm số và vô hiệu hóa/xóa các thông báo lỗi liên quan đến khối chứng chỉ.
+#### 4. Điều hướng nút Quay lại (`handleBack`) & Lỗi hệ thống (`handleSystemErrorOk`)
+- **Khi bấm [戻る (Quay lại)] (`handleBack`):**
+  - Nếu `mode === 'edit'`: Điều hướng quay lại màn hình Chi tiết nhân viên **ADM003** (`/employees/adm003?id=${employeeId}&returnTo=${encodeURIComponent(returnTo)}`).
+  - Nếu `mode === 'add'`: Điều hướng quay lại màn hình Danh sách nhân viên **ADM002** (`returnTo` hoặc `/employees/adm002`).
+- **Khi bấm [確認 (Xác nhận)] (`handleConfirm`):**
+  - Kiểm tra form hợp lệ qua Zod schema.
+  - Ở `mode === 'edit'`, thực hiện gọi `checkEmployeeExist(employeeId)`. Nếu nhân viên không còn tồn tại trong cơ sở dữ liệu (404/ER015), bật cờ `isSystemError(true)`.
+  - Màn hình hiển thị Modal System Error với thông điệp `"システムエラーが発生しました。"` và nút `[OK]`. Khi bấm `[OK]` (`handleSystemErrorOk`), điều hướng người dùng về **ADM002**.
 
 ---
 
@@ -570,24 +585,32 @@ useEffect(() => {
   - Nếu `mode=delete`: Gọi trực tiếp API `getEmployee(id)` để lấy thông tin nhân viên hiển thị.
 
 #### 3. Các file liên quan
-* [page.tsx](file:///d:/Project/manageEmployees/frontend/app/(protected)/employees/adm005/page.tsx): Render thông tin dạng bảng phẳng chỉ đọc (Read-only view).
-* [useAdm005.ts](file:///d:/Project/manageEmployees/frontend/hooks/useAdm005.ts): Thực thi API `createEmployee`, `updateEmployee`, `deleteEmployee` khi người dùng bấm [OK].
-* [useDepartments.ts](file:///d:/Project/manageEmployees/frontend/hooks/useDepartments.ts) & [useCertifications.ts](file:///d:/Project/manageEmployees/frontend/hooks/useCertifications.ts): Dùng để ánh xạ (map) từ `departmentId` sang `departmentName` và `certificationId` sang `certificationName`.
+* [page.tsx](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/app/(protected)/employees/adm005/page.tsx): Route Entry Point, bọc `<Suspense>` và render `<Adm005 />`.
+* [Adm005.tsx](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/components/employees/Adm005.tsx): Component giao diện hiển thị thông tin dạng bảng phẳng chỉ đọc (Read-only view) và Modal Lỗi hệ thống.
+* [useAdm005.ts](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/hooks/useAdm005.ts): Thực thi API `createEmployee`, `updateEmployee`, `deleteEmployee` khi người dùng bấm [OK], quản lý trạng thái `isSystemError` và hàm `handleSystemErrorOk`.
+* [useDepartments.ts](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/hooks/useDepartments.ts) & [useCertifications.ts](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/hooks/useCertifications.ts): Dùng để ánh xạ (map) từ `departmentId` sang `departmentName` và `certificationId` sang `certificationName`.
 
 #### 4. Luồng xử lý khi bấm [OK] và [Quay lại]
 ```text
 Bấm [OK]:
   ├── mode === 'add':
-  │     createEmployee(payload) -> 200 OK -> Xóa sessionStorage -> Điều hướng /employees/adm006?mode=add
+  │     createEmployee(payload) -> 200 OK -> Xóa sessionStorage -> Điều hướng /employees/adm006?mode=add&returnTo=...
   ├── mode === 'edit':
-  │     updateEmployee(id, payload) -> 200 OK -> Xóa sessionStorage -> Điều hướng /employees/adm006?mode=edit
+  │     updateEmployee(id, payload) -> 200 OK -> Xóa sessionStorage -> Điều hướng /employees/adm006?mode=edit&returnTo=...
   └── mode === 'delete':
-        deleteEmployee(id) -> 200 OK -> Điều hướng /employees/adm006?mode=delete
+        deleteEmployee(id) -> 200 OK -> Điều hướng /employees/adm006?mode=delete&returnTo=...
+
+Nếu xảy ra lỗi trong quá trình submit:
+  ├── Lỗi không tìm thấy bản ghi / 404 / 500 (ER015):
+  │     Bật cờ `isSystemError(true)` -> Hiển thị Modal "システムエラーが発生しました。"
+  │     Khi người dùng bấm [OK] (handleSystemErrorOk) -> Điều hướng về ADM002 (returnTo)
+  └── Lỗi nghiệp vụ (ER001-ER023):
+        Hiển thị thông báo lỗi tại khung .box-err phía trên bảng dữ liệu.
 
 Bấm [戻る (Quay lại)]:
-  ├── mode === 'add' -> Điều hướng về /employees/adm004?mode=back (Khôi phục dữ liệu từ sessionStorage)
-  ├── mode === 'edit' -> Điều hướng về /employees/adm004?mode=back&id=...
-  └── mode === 'delete' -> Điều hướng về /employees/adm003?id=... (Trang chi tiết)
+  ├── mode === 'add' -> Điều hướng về /employees/adm004?mode=back&returnTo=... (Khôi phục dữ liệu từ sessionStorage)
+  ├── mode === 'edit' -> Điều hướng về /employees/adm004?mode=back&id=...&returnTo=...
+  └── mode === 'delete' -> Điều hướng về /employees/adm003?id=...&returnTo=... (Trang chi tiết)
 ```
 
 ---
@@ -597,13 +620,18 @@ Bấm [戻る (Quay lại)]:
 #### 1. Mục đích
 Hiển thị thông điệp xác nhận thao tác nghiệp vụ đã được thực hiện thành công vào cơ sở dữ liệu.
 
-#### 2. Route & Mapping thông báo
+#### 2. Các file liên quan
+* [page.tsx](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/app/(protected)/employees/adm006/page.tsx): Route Entry Point, bọc `<Suspense>` và render `<Adm006 />`.
+* [Adm006.tsx](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/components/employees/Adm006.tsx): Component giao diện hiển thị thông báo hoàn tất và nút [OK].
+* [useAdm006.ts](file:///c:/LARG05/03.Output/09.Project/03.BaiTapCuoiKhoa/SRC/manageEmployees/frontend/hooks/useAdm006.ts): Hook quản lý ánh xạ message và điều hướng về `returnTo`.
+
+#### 3. Route & Mapping thông báo
 * **URL:** `/employees/adm006?mode={add|edit|delete}&returnTo={returnTo}`
 * **Bảng thông báo hiển thị:**
   - `mode=add`: `ユーザの登録が完了しました。` (MSG001)
   - `mode=edit`: `ユーザの更新が完了しました。` (MSG002)
   - `mode=delete`: `ユーザの削除が完了しました。` (MSG003)
-* **Thao tác người dùng:** Nhấn nút `[OK]` -> Hệ thống gọi `router.push(returnTo)` để đưa người dùng trở lại danh sách nhân viên ADM002 với nguyên vẹn các điều kiện tìm kiếm ban đầu.
+* **Thao tác người dùng:** Nhấn nút `[OK]` (`handleOk`) -> Hệ thống gọi `router.push(returnTo)` để đưa người dùng trở lại danh sách nhân viên ADM002 với nguyên vẹn các điều kiện tìm kiếm ban đầu.
 
 ---
 
@@ -958,22 +986,31 @@ Dự án không sử dụng các thư viện Global State cồng kềnh (như Re
 
 ## 15. ĐIỀU HƯỚNG & CƠ CHẾ BẢO LƯU TRẠNG THÁI (NAVIGATION & STATE PRESERVATION)
 
-### Cơ chế `returnTo` Pattern
+### Cơ chế `returnTo` Pattern & Flat URL Navigation
 
-Một điểm sáng về trải nghiệm người dùng trong dự án là **bảo lưu trạng thái danh sách khi quay lại**:
+Một điểm sáng về trải nghiệm người dùng trong dự án là **bảo lưu trạng thái danh sách khi quay lại** với định dạng URL phẳng (Flat URL Parameters):
 
 ```text
-Tại ADM002: Người dùng đang lọc theo "Phòng ban IT" + Sắp xếp theo "Tên DESC" + Đang ở "Trang 3"
-URL hiện tại: /employees/adm002?department_id=2&ord_employee_name=DESC&offset=40
+1. Tại ADM002: Người dùng đang lọc theo "Phòng ban IT" + Sắp xếp theo "Tên DESC" + Đang ở "Trang 3"
+   URL hiện tại: /employees/adm002?department_id=2&ord_employee_name=DESC&offset=40
                   ↓
-Người dùng bấm [新規追加 (Thêm mới)] hoặc [Xem chi tiết nhân viên ID=5]
+2. Người dùng chọn thao tác:
+   ├── Bấm [新規追加 (Thêm mới)]:
+   │     URL tạo ra: /employees/adm004?mode=add&returnTo=/employees/adm002?department_id=2&ord_employee_name=DESC&offset=40
+   └── Click xem chi tiết nhân viên ID=5:
+         URL tạo ra: /employees/adm003?id=5&returnTo=/employees/adm002?department_id=2&ord_employee_name=DESC&offset=40
                   ↓
-URL tạo ra: /employees/adm004?mode=add&returnTo=%2Femployees%2Fadm002%3Fdepartment_id%3D2...
+3. Tại ADM003, người dùng bấm [編集 (Chỉnh sửa)]:
+   URL chuyển sang: /employees/adm004?mode=edit&id=5&returnTo=/employees/adm002?department_id=2&ord_employee_name=DESC&offset=40
                   ↓
-Sau khi hoàn thành thao tác tại ADM006 hoặc bấm [Quay lại] từ ADM003:
-Hệ thống gọi: router.push(decodeURIComponent(returnTo))
+4. Cơ chế điều hướng nút Quay lại [戻る] tại ADM004:
+   ├── Ở mode 'edit': handleBack() điều hướng quay lại ADM003:
+   │     router.push(`/employees/adm003?id=${employeeId}&returnTo=${encodeURIComponent(returnTo)}`)
+   └── Ở mode 'add': handleBack() điều hướng quay lại ADM002:
+         router.push(returnTo || ROUTES.EMPLOYEES_ADM002)
                   ↓
-Người dùng quay lại chính xác ADM002 với nguyên vẹn bộ lọc, thứ tự sort và trang 3!
+5. Sau khi hoàn thành thao tác tại ADM006 hoặc bấm [戻る] từ ADM003:
+   Hệ thống gọi: router.push(returnTo) -> Quay lại chính xác ADM002 với nguyên vẹn bộ lọc, thứ tự sort và phân trang cũ!
 ```
 
 ---
@@ -1043,12 +1080,15 @@ Hệ thống phân tách lỗi thành 3 cấp độ rõ ràng:
    - Bắt bởi Zod & React Hook Form khi người dùng submit hoặc thay đổi giá trị.
    - Hiển thị trực tiếp dòng text màu đỏ (`.invalid-feedback`) ngay dưới input tương ứng.
 2. **Lỗi Nghiệp vụ từ Backend (Business Error):**
-   - Backend trả về mã lỗi kèm params, ví dụ: `{ code: "ER003", params: ["employeeLoginId"] }`.
+   - Backend trả về mã lỗi kèm params, ví dụ: `{ code: "ER003", params: ["employeeLoginId"] }` hoặc `{ code: "ER020", params: [] }` (Không được xóa Admin).
    - Hàm `messageHelper.getErrorMessage()` thay thế placeholder `{0}` bằng nhãn tiếng Nhật `"アカウント名"` để tạo ra chuỗi: `"「アカウント名」は既に存在しています。"`.
    - Hiển thị tại khung thông báo `.box-err` đầu form.
-3. **Lỗi Hệ thống (System Error - 500 / Không tìm thấy ID):**
-   - Đặt cờ `isSystemError = true`.
-   - Render màn hình thông báo lỗi hệ thống toàn trang với thông điệp chuẩn `"システムエラーが発生しました。"` (ER015) và nút `[OK]` để quay lại an toàn.
+3. **Lỗi Hệ thống (System Error - 404 / 500 / Không tìm thấy ID / ER015):**
+   - Khi API nạp dữ liệu hoặc thao tác trả về lỗi hệ thống hoặc không tìm thấy bản ghi (404/ER015):
+     - Hook kích hoạt state `isSystemError(true)`.
+     - Giao diện hiển thị Modal chuẩn Lỗi hệ thống với thông điệp: `"システムエラーが発生しました。"` và **duy nhất 1 nút `[OK]`**.
+     - Khi người dùng bấm `[OK]` (`handleSystemErrorOk`), Modal đóng lại và hệ thống điều hướng người dùng quay trở lại màn hình Danh sách **ADM002** an toàn (thông qua `returnTo` hoặc `/employees/adm002`).
+     - Đã được áp dụng thống nhất trên toàn bộ các màn hình nghiệp vụ: **ADM003** (`useAdm003`), **ADM004** (`useAdm004` khi `checkEmployeeExist` thất bại) và **ADM005** (`useAdm005` khi submit thất bại do lỗi hệ thống).
 
 ---
 
@@ -1135,6 +1175,12 @@ if (endPage > totalPages) {
 ```text
 app/(protected)/employees/adm004/page.tsx
 │
+├── components/employees/Adm004.tsx
+│   ├── components/common/DatePicker.tsx
+│   ├── components/common/Modal.tsx
+│   ├── components/common/Input.tsx
+│   └── components/common/Select.tsx
+│
 ├── hooks/useAuth.ts
 │   └── lib/auth/token.ts
 │
@@ -1153,7 +1199,8 @@ app/(protected)/employees/adm004/page.tsx
 │   ├── lib/api/employee.api.ts
 │   │   └── lib/api/client.ts
 │   │
-│   └── lib/constants/index.ts
+│   ├── lib/constants/routes.ts
+│   └── lib/constants/messages.ts
 │
 └── react-datepicker (Third-party)
 ```
@@ -1199,9 +1246,9 @@ app/(protected)/employees/adm004/page.tsx
 ## 25. ĐÁNH GIÁ KIẾN TRÚC: ĐIỂM MẠNH & ĐIỂM CÓ THỂ CẢI TIẾN
 
 ### Điểm mạnh (Best Practices)
-1. **Phân tầng cực kỳ rõ ràng:** 100% logic được tách ra Custom Hook, component chỉ làm nhiệm vụ render UI.
+1. **Phân tầng cực kỳ rõ ràng:** 100% logic được tách ra Custom Hook, page chỉ là Route Entry Point bọc `<Suspense>`, component chuyên biệt hiển thị UI.
 2. **Type Safety toàn diện:** TypeScript bao phủ từ Request/Response API đến Form và Component Props.
-3. **Trải nghiệm người dùng tốt:** Đồng bộ URL State, giữ nguyên vị trí phân trang/tìm kiếm khi quay lại (`returnTo`), hỗ trợ phím Tab Loop cho bàn phím.
+3. **Trải nghiệm người dùng tốt:** Đồng bộ URL State, giữ nguyên vị trí phân trang/tìm kiếm khi quay lại (`returnTo`), hỗ trợ phím Tab Loop cho bàn phím, Modal lỗi hệ thống chuẩn chỉ với 1 nút OK.
 4. **Validation mạnh mẽ:** Kết hợp Zod và React Hook Form xử lý mượt mà cả 2 mode Add/Edit trên cùng một form.
 
 ### Điểm có thể nâng cấp trong tương lai (Refactoring Opportunities)
@@ -1219,7 +1266,7 @@ Bước 1: Đọc `package.json` -> Nắm danh sách các thư viện được s
    ↓
 Bước 2: Đọc `types/` (`employee.ts`, `department.ts`, `api.ts`) -> Hiểu cấu trúc dữ liệu của nghiệp vụ.
    ↓
-Bước 3: Đọc `lib/constants/` (`index.ts`, `messages.ts`) -> Hiểu các hằng số, routes và bộ mã lỗi chuẩn.
+Bước 3: Đọc `lib/constants/` (`routes.ts`, `table.ts`, `http.ts`, `messages.ts`) -> Hiểu các hằng số, routes và bộ mã lỗi chuẩn.
    ↓
 Bước 4: Đọc `lib/api/client.ts` & `lib/auth/token.ts` -> Hiểu cách thức gọi API và quản lý Token.
    ↓
@@ -1227,13 +1274,13 @@ Bước 5: Đọc `app/layout.tsx` -> Hiểu cấu trúc khung hiển thị chun
    ↓
 Bước 6: Đọc luồng Login (`app/(auth)/login/page.tsx` -> `components/auth/LoginForm.tsx` -> `lib/validation/auth.ts`).
    ↓
-Bước 7: Đọc màn hình Danh sách ADM002 (`app/(protected)/employees/adm002/page.tsx` -> `hooks/useAdm002.ts` -> `EmployeeTable.tsx` -> `Pagination.tsx`).
+Bước 7: Đọc màn hình Danh sách ADM002 (`app/(protected)/employees/adm002/page.tsx` -> `components/employees/Adm002.tsx` -> `hooks/useAdm002.ts` -> `EmployeeTable.tsx` -> `Pagination.tsx`).
    ↓
 Bước 8: Đọc Validation Schema nhân viên (`lib/validation/employee.ts`) -> Nắm rõ các quy tắc kiểm tra dữ liệu.
    ↓
-Bước 9: Đọc toàn bộ luồng Thêm mới: ADM004 (`hooks/useAdm004.ts`) -> ADM005 (`hooks/useAdm005.ts`) -> ADM006.
+Bước 9: Đọc toàn bộ luồng Thêm mới: ADM004 (`components/employees/Adm004.tsx` + `hooks/useAdm004.ts`) -> ADM005 (`components/employees/Adm005.tsx` + `hooks/useAdm005.ts`) -> ADM006 (`components/employees/Adm006.tsx` + `hooks/useAdm006.ts`).
    ↓
-Bước 10: Đọc luồng Chi tiết & Xóa ADM003 (`hooks/useAdm003.ts`).
+Bước 10: Đọc luồng Chi tiết & Xóa ADM003 (`components/employees/Adm003.tsx` + `hooks/useAdm003.ts`).
 ```
 
 ---
