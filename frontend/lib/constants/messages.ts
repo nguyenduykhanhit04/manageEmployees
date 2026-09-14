@@ -46,6 +46,14 @@ export const ERROR_MESSAGES: Record<string, string> = {
 };
 
 /**
+ * Các câu thông báo lỗi nghiệp vụ chuẩn tiếng Nhật khi gọi API.
+ */
+export const API_ERROR_MESSAGES = {
+  GET_DEPARTMENTS_FAILED: '部門を取得できません',
+  GET_EMPLOYEES_FAILED: '従業員を取得できません',
+} as const;
+
+/**
  * Nhãn trường tiếng Nhật chuẩn (Field labels)
  */
 export const FIELD_LABELS: Record<string, string> = {

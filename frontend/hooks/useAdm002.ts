@@ -6,15 +6,10 @@ import { getEmployees } from '@/lib/api/employee.api';
 import { getDepartments } from '@/lib/api/department.api';
 import { EmployeeItem, SortField, SortDirection, SortOrders } from '@/types/employee';
 import { DepartmentItem } from '@/types/department';
-import {
-  PAGING,
-  SORT_ORDER,
-  SORT_FIELDS,
-  ROUTES,
-  QUERY_PARAMS,
-  HTTP_STATUS,
-  ERROR_MESSAGES,
-} from '@/lib/constants';
+import { ROUTES, QUERY_PARAMS } from '@/lib/constants/routes';
+import { PAGING, SORT_ORDER, SORT_FIELDS } from '@/lib/constants/table';
+import { HTTP_STATUS } from '@/lib/constants/http';
+import { API_ERROR_MESSAGES } from '@/lib/constants/messages';
 
 // Re-export các kiểu dữ liệu sắp xếp
 export type { SortField, SortDirection, SortOrders };
@@ -165,12 +160,12 @@ export function useAdm002() {
         if (res && res.code === HTTP_STATUS.OK) {
           setDepartments(res.departments || []);
         } else {
-          setErrorMessage(ERROR_MESSAGES.GET_DEPARTMENTS_FAILED);
+          setErrorMessage(API_ERROR_MESSAGES.GET_DEPARTMENTS_FAILED);
         }
       })
       .catch((err) => {
         console.error('Error fetching departments:', err);
-        setErrorMessage(ERROR_MESSAGES.GET_DEPARTMENTS_FAILED);
+        setErrorMessage(API_ERROR_MESSAGES.GET_DEPARTMENTS_FAILED);
       });
   }, []);
 
@@ -205,11 +200,11 @@ export function useAdm002() {
           setEmployees(res.employees || []);
           setTotalRecords(res.totalRecords || 0);
         } else {
-          setErrorMessage(ERROR_MESSAGES.GET_EMPLOYEES_FAILED);
+          setErrorMessage(API_ERROR_MESSAGES.GET_EMPLOYEES_FAILED);
         }
       } catch (error) {
         console.error('Error fetching employees:', error);
-        setErrorMessage(ERROR_MESSAGES.GET_EMPLOYEES_FAILED);
+        setErrorMessage(API_ERROR_MESSAGES.GET_EMPLOYEES_FAILED);
       } finally {
         setIsLoading(false);
       }

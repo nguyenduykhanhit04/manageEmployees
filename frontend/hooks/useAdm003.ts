@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { EmployeeDetailResponse } from '@/types/employee';
 import { getEmployee, deleteEmployee } from '@/lib/api/employee.api';
-import { ROUTES, HTTP_STATUS } from '@/lib/constants';
+import { ROUTES } from '@/lib/constants/routes';
+import { HTTP_STATUS } from '@/lib/constants/http';
 import { formatErrorMessage, ERROR_MESSAGES } from '@/lib/constants/messages';
 
 /**

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { getCertifications } from '@/lib/api/certification.api';
 import { CertificationItem } from '@/types/certification';
-import { HTTP_STATUS } from '@/lib/constants';
+import { HTTP_STATUS } from '@/lib/constants/http';
 
 /**
  * Custom Hook quản lý việc lấy và lưu trữ danh sách chứng chỉ tiếng Nhật.

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { PAGING } from '@/lib/constants';
+import { PAGING } from '@/lib/constants/table';
 
 /**
  * Props truyền vào Component thanh phân trang Pagination.

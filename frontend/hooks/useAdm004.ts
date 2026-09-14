@@ -12,7 +12,8 @@ import {
 import { useDepartments } from '@/hooks/useDepartments';
 import { useCertifications } from '@/hooks/useCertifications';
 import { getEmployee, checkEmployeeExist } from '@/lib/api/employee.api';
-import { ROUTES, HTTP_STATUS } from '@/lib/constants';
+import { ROUTES } from '@/lib/constants/routes';
+import { HTTP_STATUS } from '@/lib/constants/http';
 import { ERROR_MESSAGES } from '@/lib/constants/messages';
 
 export const ADM004_STORAGE_KEY = 'ADM004_TEMP_DATA';

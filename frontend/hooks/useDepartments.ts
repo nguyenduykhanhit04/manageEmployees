@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { getDepartments } from '@/lib/api/department.api';
 import { DepartmentItem } from '@/types/department';
-import { HTTP_STATUS, ERROR_MESSAGES } from '@/lib/constants';
+import { HTTP_STATUS } from '@/lib/constants/http';
+import { API_ERROR_MESSAGES } from '@/lib/constants/messages';
 
 /**
  * Custom Hook quản lý việc lấy và lưu trữ danh sách phòng ban.
@@ -35,7 +36,7 @@ export function useDepartments() {
             setDepartments(res.departments || []);
           } else {
             // Lưu thông báo lỗi khi API phản hồi không thành công
-            setErrorMessage(ERROR_MESSAGES.GET_DEPARTMENTS_FAILED);
+            setErrorMessage(API_ERROR_MESSAGES.GET_DEPARTMENTS_FAILED);
           }
         }
       })
@@ -43,7 +44,7 @@ export function useDepartments() {
         // 2.2.3 Xử lý khi xảy ra lỗi ngoại lệ gọi API
         if (isMounted) {
           console.error('Error fetching departments:', err);
-          setErrorMessage(ERROR_MESSAGES.GET_DEPARTMENTS_FAILED);
+          setErrorMessage(API_ERROR_MESSAGES.GET_DEPARTMENTS_FAILED);
         }
       })
       .finally(() => {

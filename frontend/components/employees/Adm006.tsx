@@ -3,7 +3,7 @@
 import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ROUTES } from '@/lib/constants';
+import { ROUTES } from '@/lib/constants/routes';
 
 /**
  * Component hiển thị nội dung hoàn thành thao tác thêm/sửa/xóa nhân viên (ADM006).

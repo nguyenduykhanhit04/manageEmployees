@@ -8,9 +8,8 @@ import {
   SORT_ORDER,
   SORT_ICONS,
   SORT_FIELDS,
-  ROUTES,
-  QUERY_PARAMS,
-} from '@/lib/constants';
+} from '@/lib/constants/table';
+import { ROUTES, QUERY_PARAMS } from '@/lib/constants/routes';
 import { SYSTEM_MESSAGES } from '@/lib/constants/messages';
 import { truncateText } from '@/lib/utils/format';
 

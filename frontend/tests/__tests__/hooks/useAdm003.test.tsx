@@ -2,7 +2,7 @@ import { renderHook, waitFor, act } from '@testing-library/react';
 import { useAdm003 } from '@/hooks/useAdm003';
 import { getEmployee, deleteEmployee } from '@/lib/api/employee.api';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ROUTES } from '@/lib/constants';
+import { ROUTES } from '@/lib/constants/routes';
 
 // Mock dependencies
 jest.mock('@/lib/api/employee.api');

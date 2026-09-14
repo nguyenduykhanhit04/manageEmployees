@@ -1,4 +1,4 @@
-import { SORT_ORDER, SORT_FIELDS } from '@/lib/constants';
+import { SORT_ORDER, SORT_FIELDS } from '@/lib/constants/table';
 
 /**
  * Kiểu định danh các trường cho phép sắp xếp trong bảng nhân viên.

@@ -1,4 +1,4 @@
-import { DISPLAY_CONFIG } from '@/lib/constants';
+import { DISPLAY_CONFIG } from '@/lib/constants/table';
 
 /**
  * Cắt ngắn chuỗi văn bản nếu vượt quá độ dài tối đa và thêm dấu ba chấm (...).
