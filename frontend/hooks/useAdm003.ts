@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { EmployeeDetailResponse } from '@/types/employee';
 import { getEmployee, deleteEmployee } from '@/lib/api/employee.api';
-import { ROUTES } from '@/lib/constants';
+import { ROUTES, HTTP_STATUS } from '@/lib/constants';
 import { formatErrorMessage, ERROR_MESSAGES } from '@/lib/constants/messages';
 
 /**
@@ -34,7 +34,7 @@ export function useAdm003() {
     setIsSystemError(false);
     try {
       const data = await getEmployee(id);
-      if (data && data.code === 200) {
+      if (data && data.code === HTTP_STATUS.OK) {
         setEmployee(data);
       } else {
         setIsSystemError(true);
@@ -88,7 +88,7 @@ export function useAdm003() {
 
     try {
       const response = await deleteEmployee(employeeId);
-      if (response && response.code === 200) {
+      if (response && response.code === HTTP_STATUS.OK) {
         // 7.2.1 Điều hướng sang màn hình Hoàn thành ADM006 kèm mode=delete
         router.push(`${ROUTES.EMPLOYEE_COMPLETE}?mode=delete&returnTo=${encodeURIComponent(returnTo)}`);
       } else {

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDepartments } from '@/hooks/useDepartments';
 import { useCertifications } from '@/hooks/useCertifications';
-import { ROUTES } from '@/lib/constants';
+import { ROUTES, HTTP_STATUS } from '@/lib/constants';
 import { ADM004_STORAGE_KEY } from '@/hooks/useAdm004';
 import { createEmployee, getEmployee, deleteEmployee, updateEmployee } from '@/lib/api/employee.api';
 import { formatErrorMessage, ERROR_MESSAGES } from '@/lib/constants/messages';
@@ -57,7 +57,7 @@ export function useAdm005() {
       setIsLoadingDetail(true);
       getEmployee(employeeId)
         .then((res) => {
-          if (res && res.code === 200) {
+          if (res && res.code === HTTP_STATUS.OK) {
             const cert = res.certifications && res.certifications.length > 0 ? res.certifications[0] : null;
             setFormData({
               employeeLoginId: res.employeeLoginId,
@@ -121,7 +121,7 @@ export function useAdm005() {
       // 6.1 Xử lý khi xác nhận XÓA nhân viên
       if (mode === 'delete' && employeeId) {
         const deleteResponse = await deleteEmployee(employeeId);
-        if (deleteResponse && deleteResponse.code === 200) {
+        if (deleteResponse && deleteResponse.code === HTTP_STATUS.OK) {
           router.push(`${ROUTES.EMPLOYEE_COMPLETE}?mode=delete&returnTo=${encodeURIComponent(returnTo)}`);
         }
         return;
@@ -155,7 +155,7 @@ export function useAdm005() {
         }
 
         const updateResponse = await updateEmployee(employeeId, updatePayload);
-        if (updateResponse && updateResponse.code === 200) {
+        if (updateResponse && updateResponse.code === HTTP_STATUS.OK) {
           sessionStorage.removeItem(ADM004_STORAGE_KEY);
           router.push(`${ROUTES.EMPLOYEE_COMPLETE}?mode=edit&returnTo=${encodeURIComponent(returnTo)}`);
         }
@@ -186,7 +186,7 @@ export function useAdm005() {
 
       const response = await createEmployee(payload);
 
-      if (response && response.code === 200) {
+      if (response && response.code === HTTP_STATUS.OK) {
         sessionStorage.removeItem(ADM004_STORAGE_KEY);
         router.push(`${ROUTES.EMPLOYEE_COMPLETE}?mode=add&returnTo=${encodeURIComponent(returnTo)}`);
       }

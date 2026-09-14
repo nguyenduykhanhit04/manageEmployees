@@ -12,7 +12,7 @@ import {
 import { useDepartments } from '@/hooks/useDepartments';
 import { useCertifications } from '@/hooks/useCertifications';
 import { getEmployee, checkEmployeeExist } from '@/lib/api/employee.api';
-import { ROUTES } from '@/lib/constants';
+import { ROUTES, HTTP_STATUS } from '@/lib/constants';
 import { ERROR_MESSAGES } from '@/lib/constants/messages';
 
 export const ADM004_STORAGE_KEY = 'ADM004_TEMP_DATA';
@@ -145,7 +145,7 @@ export function useAdm004() {
           const data = await getEmployee(employeeId);
 
           // Kiểm tra kết quả phản hồi thành công (HTTP status 200) và component còn mount
-          if (data && data.code === 200 && isMounted) {
+          if (data && data.code === HTTP_STATUS.OK && isMounted) {
             // Lấy thông tin chứng chỉ tiếng Nhật đầu tiên nếu nhân viên có sở hữu
             const cert =
               data.certifications && data.certifications.length > 0
@@ -220,7 +220,7 @@ export function useAdm004() {
     if (isEditMode && employeeId) {
       try {
         const checkRes = await checkEmployeeExist(employeeId);
-        if (!checkRes || checkRes.code !== 200) {
+        if (!checkRes || checkRes.code !== HTTP_STATUS.OK) {
           setIsSystemError(true);
           setErrorMessage(ERROR_MESSAGES.ER015);
           return;
