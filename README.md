@@ -54,15 +54,31 @@ manageEmployees/
 ### 1. Yêu Cầu Môi Trường
 - **JDK 17** trở lên
 - **Node.js 18+** & **npm**
-- **MySQL 8.x**
+- **Docker** & **Docker Compose** (hoặc MySQL 8.x cài trực tiếp trên máy)
 
 ---
 
-### 2. Khởi Chạy Backend
+### 2. Khởi Động Database Bằng Docker (Khuyên Dùng khi mang sang máy khác)
 
-1. Tạo database MySQL (ví dụ: `manage_employees_db`).
-2. Cấu hình thông tin kết nối trong `backend/src/main/resources/config/application-dev.yaml` (username, password, URL).
-3. Mở terminal tại thư mục backend và chạy:
+Nếu sang máy khác chưa cài MySQL hoặc chưa có Navicat/DBeaver, bạn chỉ cần dùng Docker:
+
+```bash
+# Tại thư mục gốc dự án (manageEmployees):
+docker compose up -d
+```
+
+Lệnh trên sẽ tự động khởi tạo:
+- **MySQL 8.0 Server** (Port `3306`, user: `root`, password: `LA.luvina1234`, database: `user-manage`).
+- **Adminer Web UI** (Trình quản lý Database trực quan trên trình duyệt tại: `http://localhost:8080` — thay thế hoàn hảo cho Navicat/DBeaver mà không cần cài thêm phần mềm gì).
+
+> [!NOTE]
+> Dự án đã tích hợp sẵn **Flyway Migration**. Khi Backend khởi động lần đầu, toàn bộ cấu trúc bảng và dữ liệu mẫu (`admin`, phòng ban, chứng chỉ N1-N5) sẽ được tự động khởi tạo vào Database mà bạn không cần import SQL thủ công!
+
+---
+
+### 3. Khởi Chạy Backend
+
+Mở terminal tại thư mục backend và chạy:
 
 ```bash
 cd backend
@@ -72,11 +88,11 @@ cd backend
 ```
 *(Trên Windows PowerShell có thể chạy `.\mvnw.cmd spring-boot:run`)*
 
-👉 Backend API sẽ hoạt động tại: `http://localhost:8080`
+👉 Backend API sẽ hoạt động tại: `http://localhost:8085`
 
 ---
 
-### 3. Khởi Chạy Frontend
+### 4. Khởi Chạy Frontend
 
 Mở terminal mới tại thư mục frontend:
 
@@ -94,7 +110,7 @@ npm run dev
 
 ---
 
-### 4. Chạy Test
+### 5. Chạy Test
 
 - **Backend Tests:**
   ```bash

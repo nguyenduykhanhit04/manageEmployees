@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  # 1. MySQL 8 Database Container
+  mysql:
+    image: mysql:8.0
+    container_name: manage_employees_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: LA.luvina1234
+      MYSQL_DATABASE: user-manage
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  # 2. Web Database Management UI (Adminer - thay thế Navicat / DBeaver hoàn hảo trên trình duyệt)
+  adminer:
+    image: adminer:latest
+    container_name: manage_employees_adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:
+    driver: local
