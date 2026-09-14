@@ -139,6 +139,9 @@ public class Constants {
     // Mã lỗi sai định dạng Login ID.
     public static final String ER019 = "ER019";
 
+    // Mã lỗi không thể xóa người dùng quản trị viên (Admin).
+    public static final String ER020 = "ER020";
+
     // Mã lỗi tham số sắp xếp không hợp lệ.
     public static final String ER021 = "ER021";
 

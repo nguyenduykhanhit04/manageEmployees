@@ -128,8 +128,24 @@ class EmployeeValidatorTest {
 
     @Test
     void testValidateDeleteEmployee_Success() {
-        org.mockito.Mockito.when(employeeRepository.existsById(1L)).thenReturn(true);
+        com.luvina.la.entity.EmployeeEntity employee = new com.luvina.la.entity.EmployeeEntity();
+        employee.setEmployeeId(1L);
+        employee.setEmployeeRole(Constants.ROLE_USER);
+        org.mockito.Mockito.when(employeeRepository.findById(1L)).thenReturn(java.util.Optional.of(employee));
         assertDoesNotThrow(() -> employeeValidator.validateDeleteEmployee(1L));
+    }
+
+    @Test
+    void testValidateDeleteEmployee_AdminRole_ThrowsER020() {
+        com.luvina.la.entity.EmployeeEntity adminEmployee = new com.luvina.la.entity.EmployeeEntity();
+        adminEmployee.setEmployeeId(1L);
+        adminEmployee.setEmployeeRole(Constants.ROLE_ADMIN);
+        org.mockito.Mockito.when(employeeRepository.findById(1L)).thenReturn(java.util.Optional.of(adminEmployee));
+
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> employeeValidator.validateDeleteEmployee(1L));
+        assertEquals(Constants.ER020, ex.getErrorCode());
     }
 
     @Test
@@ -148,7 +164,7 @@ class EmployeeValidatorTest {
 
     @Test
     void testValidateDeleteEmployee_NotFound() {
-        org.mockito.Mockito.when(employeeRepository.existsById(999L)).thenReturn(false);
+        org.mockito.Mockito.when(employeeRepository.findById(999L)).thenReturn(java.util.Optional.empty());
         BusinessException ex = assertThrows(
                 BusinessException.class,
                 () -> employeeValidator.validateDeleteEmployee(999L));

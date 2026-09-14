@@ -247,7 +247,13 @@ export function useAdm004() {
     router.push(confirmUrl);
   });
 
-  // 6. Xử lý khi nhấn nút "Quay lại" (戻る)
+  // 6.1 Xử lý khi nhấn nút "OK" trên màn hình System Error -> Quay về màn hình danh sách ADM002
+  const handleSystemErrorOk = useCallback(() => {
+    sessionStorage.removeItem(ADM004_STORAGE_KEY);
+    router.push(returnTo);
+  }, [returnTo, router]);
+
+  // 6.2 Xử lý khi nhấn nút "Quay lại" (戻る) trên Form
   const handleBack = useCallback(() => {
     sessionStorage.removeItem(ADM004_STORAGE_KEY);
     // Nếu là mode edit: Quay lại màn hình chi tiết nhân viên ADM003 kèm returnTo gốc
@@ -328,6 +334,7 @@ export function useAdm004() {
     setErrorMessage,
     handleConfirm,
     handleBack,
+    handleSystemErrorOk,
     handleKeyDown,
   };
 }

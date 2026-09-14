@@ -21,11 +21,30 @@ export function Adm005() {
     certificationName,
     isLoading,
     isSubmitting,
+    isSystemError,
     errorMessage,
     handleOk,
     handleBack,
+    handleSystemErrorOk,
   } = useAdm005();
 
+  // 1. Trạng thái lỗi hệ thống
+  if (isSystemError) {
+    return (
+      <div className="box-shadow">
+        <div className="notification-box">
+          <h1 className="msg-title">システムエラーが発生しました。</h1>
+          <div className="notification-box-btn">
+            <button type="button" onClick={handleSystemErrorOk} className="btn btn-primary btn-sm">
+              OK
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Trạng thái đang tải dữ liệu
   if (isLoading || !formData) {
     return (
       <div style={{ textAlign: 'center', padding: '40px' }}>

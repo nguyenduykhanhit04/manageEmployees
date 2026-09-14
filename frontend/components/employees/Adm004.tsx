@@ -29,6 +29,7 @@ export function Adm004() {
     errorMessage,
     handleConfirm,
     handleBack,
+    handleSystemErrorOk,
     handleKeyDown,
   } = useAdm004();
 
@@ -95,7 +96,7 @@ export function Adm004() {
         <div className="notification-box">
           <h1 className="msg-title">システムエラーが発生しました。</h1>
           <div className="notification-box-btn">
-            <button type="button" onClick={handleBack} className="btn btn-primary btn-sm">
+            <button type="button" onClick={handleSystemErrorOk} className="btn btn-primary btn-sm">
               OK
             </button>
           </div>

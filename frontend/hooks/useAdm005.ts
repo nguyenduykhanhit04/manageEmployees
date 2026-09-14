@@ -39,6 +39,7 @@ export function useAdm005() {
   // 2. Khai báo các state quản lý
   const [formData, setFormData] = useState<any>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [isSystemError, setIsSystemError] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isLoadingDetail, setIsLoadingDetail] = useState<boolean>(mode === 'delete');
 
@@ -51,11 +52,13 @@ export function useAdm005() {
     // 4.1 Xử lý khi mode là XÓA (mode = delete)
     if (mode === 'delete') {
       if (!employeeId) {
-        router.push(ROUTES.EMPLOYEE_LIST);
+        setIsSystemError(true);
+        setIsLoadingDetail(false);
         return;
       }
 
       setIsLoadingDetail(true);
+      setIsSystemError(false);
       getEmployee(employeeId)
         .then((res) => {
           if (res && res.code === HTTP_STATUS.OK) {
@@ -75,17 +78,12 @@ export function useAdm005() {
               returnTo,
             });
           } else {
-            setErrorMessage(ERROR_MESSAGES.ER015);
+            setIsSystemError(true);
           }
         })
         .catch((err) => {
           console.error('Error fetching employee detail for delete confirm:', err);
-          const errorData = err.response?.data;
-          if (errorData?.message?.code) {
-            setErrorMessage(formatErrorMessage(errorData.message.code, errorData.message.params || []));
-          } else {
-            setErrorMessage(ERROR_MESSAGES.ER015);
-          }
+          setIsSystemError(true);
         })
         .finally(() => {
           setIsLoadingDetail(false);
@@ -208,22 +206,29 @@ export function useAdm005() {
         return;
       }
 
-      // Nếu là Mode Delete: Hiển thị lỗi tại ADM005
-      setErrorMessage(msg);
+      // Nếu là Mode Delete: Hiển thị lỗi hệ thống tại ADM005
+      setIsSystemError(true);
+      setErrorMessage(ERROR_MESSAGES.ER015);
     } finally {
       setIsSubmitting(false);
     }
   }, [formData, isSubmitting, mode, employeeId, returnTo, router]);
 
-  // 7. Xử lý khi nhấn nút "Quay lại" (戻る)
+  // 7.1 Xử lý khi nhấn nút "OK" trên màn hình System Error -> Quay về màn hình danh sách ADM002
+  const handleSystemErrorOk = useCallback(() => {
+    sessionStorage.removeItem(ADM004_STORAGE_KEY);
+    router.push(returnTo);
+  }, [returnTo, router]);
+
+  // 7.2 Xử lý khi nhấn nút "Quay lại" (戻る)
   const handleBack = useCallback(() => {
-    // 7.1 Nếu đang ở mode delete -> Quay lại màn hình chi tiết ADM003
+    // Nếu đang ở mode delete -> Quay lại màn hình chi tiết ADM003
     if (mode === 'delete' && employeeId) {
       router.push(`${ROUTES.EMPLOYEE_DETAIL}?id=${employeeId}&returnTo=${encodeURIComponent(returnTo)}`);
       return;
     }
 
-    // 7.2 Nếu đang ở mode edit -> Quay về ADM004 kèm mode=back&id=...
+    // Nếu đang ở mode edit -> Quay về ADM004 kèm mode=back&id=...
     if (mode === 'edit') {
       router.push(
         `${ROUTES.EMPLOYEE_EDIT}?mode=back${
@@ -233,7 +238,7 @@ export function useAdm005() {
       return;
     }
 
-    // 7.3 Nếu đang ở mode add -> Quay về ADM004 kèm mode=back
+    // Nếu đang ở mode add -> Quay về ADM004 kèm mode=back
     router.push(`${ROUTES.EMPLOYEE_EDIT}?mode=back&returnTo=${encodeURIComponent(returnTo)}`);
   }, [mode, employeeId, returnTo, router]);
 
@@ -242,11 +247,13 @@ export function useAdm005() {
     formData,
     departmentName,
     certificationName,
-    isLoading: isLoadingDept || isLoadingCert || isLoadingDetail || !formData,
+    isLoading: isLoadingDept || isLoadingCert || isLoadingDetail || (!isSystemError && !formData),
     isSubmitting,
+    isSystemError,
     errorMessage,
     setErrorMessage,
     handleOk,
     handleBack,
+    handleSystemErrorOk,
   };
 }

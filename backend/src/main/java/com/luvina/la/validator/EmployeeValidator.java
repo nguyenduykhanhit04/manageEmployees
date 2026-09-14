@@ -9,6 +9,7 @@ import com.luvina.la.config.Constants;
 import com.luvina.la.exception.BusinessException;
 import com.luvina.la.payload.request.EmployeeSaveRequest;
 import com.luvina.la.payload.request.EmployeeSearchRequest;
+import com.luvina.la.entity.EmployeeEntity;
 import com.luvina.la.repository.CertificationRepository;
 import com.luvina.la.repository.DepartmentRepository;
 import com.luvina.la.repository.EmployeeRepository;
@@ -82,8 +83,12 @@ public class EmployeeValidator {
         }
 
         // 2. Kiểm tra sự tồn tại của nhân viên trong cơ sở dữ liệu
-        if (!employeeRepository.existsById(employeeId)) {
-            throw new BusinessException(Constants.ER014, List.of(Constants.LABEL_ID));
+        EmployeeEntity employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new BusinessException(Constants.ER014, List.of(Constants.LABEL_ID)));
+
+        // 3. Kiểm tra không được xóa người dùng quản trị viên (Admin)
+        if (employee.getEmployeeRole() != null && employee.getEmployeeRole() == Constants.ROLE_ADMIN) {
+            throw new BusinessException(Constants.ER020, List.of());
         }
     }
 
