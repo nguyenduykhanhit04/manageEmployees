@@ -182,6 +182,7 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
             left join employees_certifications ec on ec.employee_id = e.employee_id
             left join certifications c on c.certification_id = ec.certification_id
             where e.employee_id = :employeeId
+            and e.employee_role = 1
             order by c.certification_level asc
         """;
 
