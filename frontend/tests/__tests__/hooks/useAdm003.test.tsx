@@ -144,8 +144,9 @@ describe('useAdm003 Hook', () => {
     act(() => {
       result.current.handleEdit();
     });
+    const expectedDetailUrl = `${ROUTES.EMPLOYEE_DETAIL}?id=1&returnTo=${encodeURIComponent('/employees/adm002?employee_name=test')}`;
     expect(mockPush).toHaveBeenCalledWith(
-      `${ROUTES.EMPLOYEE_EDIT}?mode=edit&id=1&returnTo=${encodeURIComponent('/employees/adm002?employee_name=test')}`
+      `${ROUTES.EMPLOYEE_EDIT}?mode=edit&id=1&returnTo=${encodeURIComponent(expectedDetailUrl)}`
     );
 
     // Test handleDelete khi user cancel
