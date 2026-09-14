@@ -218,6 +218,7 @@ function EmployeeEditContent() {
                       placeholderText={todayStr}
                       selected={parseStringToDate(field.value)}
                       onChange={(date: Date | null) => field.onChange(formatDateToString(date))}
+                      onBlur={field.onBlur}
                       dateFormat="yyyy/MM/dd"
                       onKeyDown={(e) => e.preventDefault()}
                       showYearDropdown
@@ -358,6 +359,7 @@ function EmployeeEditContent() {
                       placeholderText={todayStr}
                       selected={parseStringToDate(field.value)}
                       onChange={(date: Date | null) => field.onChange(formatDateToString(date))}
+                      onBlur={field.onBlur}
                       dateFormat="yyyy/MM/dd"
                       disabled={!isCertificationSelected}
                       onKeyDown={(e) => e.preventDefault()}
@@ -404,6 +406,7 @@ function EmployeeEditContent() {
                       placeholderText={todayStr}
                       selected={parseStringToDate(field.value)}
                       onChange={(date: Date | null) => field.onChange(formatDateToString(date))}
+                      onBlur={field.onBlur}
                       dateFormat="yyyy/MM/dd"
                       disabled={!isCertificationSelected}
                       onKeyDown={(e) => e.preventDefault()}

@@ -75,7 +75,7 @@ export function useAdm004() {
   const form = useForm<AddEmployeeFormData>({
     resolver: zodResolver(currentSchema) as any,
     defaultValues: getDefaultFormValues(),
-    mode: 'onChange',
+    mode: 'all',
   });
 
   const { reset, handleSubmit, watch, setValue, clearErrors } = form;
