@@ -1,0 +1,21 @@
+{
+  "description": "Model Context Protocol (MCP) server configuration for Manage Employees project",
+  "version": "1.0.0",
+  "mcpServers": {
+    "mysql": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-mysql"
+      ],
+      "env": {
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "root",
+        "MYSQL_PASSWORD": "",
+        "MYSQL_DATABASE": "manage_employees"
+      },
+      "disabled": true
+    }
+  }
+}

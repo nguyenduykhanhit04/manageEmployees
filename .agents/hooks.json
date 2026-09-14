@@ -1,0 +1,19 @@
+{
+  "description": "Lifecycle and automation hooks for Manage Employees project",
+  "version": "1.0.0",
+  "hooks": {
+    "post_edit": [
+      {
+        "description": "Check TypeScript errors or formatting after editing frontend files",
+        "pattern": "frontend/**/*.{ts,tsx}",
+        "command": "npx tsc --noEmit"
+      }
+    ],
+    "pre_commit": [
+      {
+        "description": "Run unit tests and verification checklist",
+        "command": "mvn test-compile"
+      }
+    ]
+  }
+}
