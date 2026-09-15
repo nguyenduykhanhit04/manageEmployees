@@ -194,14 +194,14 @@ export const addEmployeeSchema = baseEmployeeSchema
         });
       }
 
-      // 11. 失効日 >= 資格交付日 (ER012)
+      // 11. 失効日 > 資格交付日 (ER012: 失効日 phải là ngày trong tương lai so với 資格交付日)
       if (
         data.certificationStartDate &&
         data.certificationEndDate &&
         isValidDateString(data.certificationStartDate) &&
         isValidDateString(data.certificationEndDate)
       ) {
-        if (new Date(data.certificationEndDate) < new Date(data.certificationStartDate)) {
+        if (new Date(data.certificationEndDate) <= new Date(data.certificationStartDate)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: formatErrorMessage('ER012', [FIELD_LABELS.endDate, FIELD_LABELS.startDate]),
@@ -318,14 +318,14 @@ export const editEmployeeSchema = baseEmployeeSchema
         });
       }
 
-      // 11. 失効日 >= 資格交付日 (ER012)
+      // 11. 失効日 > 資格交付日 (ER012: 失効日 phải là ngày trong tương lai so với 資格交付日)
       if (
         data.certificationStartDate &&
         data.certificationEndDate &&
         isValidDateString(data.certificationStartDate) &&
         isValidDateString(data.certificationEndDate)
       ) {
-        if (new Date(data.certificationEndDate) < new Date(data.certificationStartDate)) {
+        if (new Date(data.certificationEndDate) <= new Date(data.certificationStartDate)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: formatErrorMessage('ER012', [FIELD_LABELS.endDate, FIELD_LABELS.startDate]),

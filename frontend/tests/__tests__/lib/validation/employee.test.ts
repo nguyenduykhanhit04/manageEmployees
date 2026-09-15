@@ -95,3 +95,62 @@ describe('Employee Validation Schema - Email Field', () => {
   });
 });
 
+describe('Employee Validation Schema - Certification Dates (ER012)', () => {
+  const validAddEmployee = {
+    employeeLoginId: 'user01',
+    departmentId: '1',
+    employeeName: 'Nguyen Van A',
+    employeeNameKana: 'ﾀﾅｶ ﾀﾛｳ',
+    employeeBirthDate: '1990/01/01',
+    employeeEmail: 'user@example.com',
+    employeeTelephone: '0123456789',
+    employeeLoginPassword: 'Password123!',
+    employeeLoginPasswordConfirm: 'Password123!',
+    certificationId: '1',
+    certificationStartDate: '2023/01/01',
+    certificationEndDate: '2023/01/02',
+    employeeCertificationScore: '900',
+  };
+
+  it('should pass when certificationEndDate is strictly in the future of certificationStartDate', () => {
+    const { addEmployeeSchema } = require('@/lib/validation/employee');
+    const result = addEmployeeSchema.safeParse(validAddEmployee);
+    expect(result.success).toBe(true);
+  });
+
+  it('should fail with ER012 when certificationEndDate is equal to certificationStartDate', () => {
+    const { addEmployeeSchema } = require('@/lib/validation/employee');
+    const result = addEmployeeSchema.safeParse({
+      ...validAddEmployee,
+      certificationStartDate: '2023/01/01',
+      certificationEndDate: '2023/01/01',
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const dateError = result.error.issues.find((issue: any) => issue.path.includes('certificationEndDate'));
+      expect(dateError).toBeDefined();
+      expect(dateError?.message).toBe(
+        formatErrorMessage('ER012', [FIELD_LABELS.endDate, FIELD_LABELS.startDate])
+      );
+    }
+  });
+
+  it('should fail with ER012 when certificationEndDate is before certificationStartDate', () => {
+    const { addEmployeeSchema } = require('@/lib/validation/employee');
+    const result = addEmployeeSchema.safeParse({
+      ...validAddEmployee,
+      certificationStartDate: '2023/01/05',
+      certificationEndDate: '2023/01/01',
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const dateError = result.error.issues.find((issue: any) => issue.path.includes('certificationEndDate'));
+      expect(dateError).toBeDefined();
+      expect(dateError?.message).toBe(
+        formatErrorMessage('ER012', [FIELD_LABELS.endDate, FIELD_LABELS.startDate])
+      );
+    }
+  });
+});
+
+

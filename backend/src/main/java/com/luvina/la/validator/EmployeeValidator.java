@@ -291,8 +291,8 @@ public class EmployeeValidator {
             }
             LocalDate endDate = parseAndValidateDate(endDateStr, Constants.LABEL_CERT_END_DATE);
 
-            // 失効日 >= 資格交付日 (ER012)
-            if (endDate.isBefore(startDate)) {
+            // 失効日 > 資格交付日 (ER012: 失効日 phải là ngày trong tương lai so với 資格交付日)
+            if (!endDate.isAfter(startDate)) {
                 throw new BusinessException(Constants.ER012, List.of(Constants.LABEL_CERT_END_DATE, Constants.LABEL_CERT_START_DATE));
             }
 
@@ -436,8 +436,8 @@ public class EmployeeValidator {
             }
             LocalDate endDate = parseAndValidateDate(endDateStr, Constants.LABEL_CERT_END_DATE);
 
-            // 失効日 >= 資格交付日 (ER012)
-            if (endDate.isBefore(startDate)) {
+            // 失効日 > 資格交付日 (ER012: 失効日 phải là ngày trong tương lai so với 資格交付日)
+            if (!endDate.isAfter(startDate)) {
                 throw new BusinessException(Constants.ER012, List.of(Constants.LABEL_CERT_END_DATE, Constants.LABEL_CERT_START_DATE));
             }
 

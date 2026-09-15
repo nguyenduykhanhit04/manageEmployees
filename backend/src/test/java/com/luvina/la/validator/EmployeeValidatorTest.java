@@ -276,6 +276,57 @@ class EmployeeValidatorTest {
         assertEquals(Constants.ER005, ex.getErrorCode());
         assertEquals(Constants.LABEL_EMAIL, ex.getParams().get(0));
     }
+
+    @Test
+    void testValidateAddEmployee_CertEndDateEqualsStartDate_ThrowsER012() {
+        com.luvina.la.payload.request.EmployeeSaveRequest request = new com.luvina.la.payload.request.EmployeeSaveRequest();
+        request.setEmployeeLoginId("user01");
+        request.setDepartmentId(1L);
+        request.setEmployeeName("Nguyen Van A");
+        request.setEmployeeNameKana("ﾀﾅｶ ﾀﾛｳ");
+        request.setEmployeeBirthDate("1990/01/01");
+        request.setEmployeeEmail("test@luvina.net");
+        request.setEmployeeTelephone("0123456789");
+        request.setEmployeeLoginPassword("Password123!");
+        request.setCertificationId(1L);
+        request.setCertificationStartDate("2023/01/01");
+        request.setCertificationEndDate("2023/01/01");
+        request.setEmployeeCertificationScore(new java.math.BigDecimal("900"));
+
+        org.mockito.Mockito.when(employeeRepository.existsByEmployeeLoginId("user01")).thenReturn(false);
+        org.mockito.Mockito.when(departmentRepository.existsById(1L)).thenReturn(true);
+        org.mockito.Mockito.when(certificationRepository.existsById(1L)).thenReturn(true);
+
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> employeeValidator.validateAddEmployee(request));
+        assertEquals(Constants.ER012, ex.getErrorCode());
+        assertEquals(Constants.LABEL_CERT_END_DATE, ex.getParams().get(0));
+        assertEquals(Constants.LABEL_CERT_START_DATE, ex.getParams().get(1));
+    }
+
+    @Test
+    void testValidateAddEmployee_CertEndDateAfterStartDate_Success() {
+        com.luvina.la.payload.request.EmployeeSaveRequest request = new com.luvina.la.payload.request.EmployeeSaveRequest();
+        request.setEmployeeLoginId("user01");
+        request.setDepartmentId(1L);
+        request.setEmployeeName("Nguyen Van A");
+        request.setEmployeeNameKana("ﾀﾅｶ ﾀﾛｳ");
+        request.setEmployeeBirthDate("1990/01/01");
+        request.setEmployeeEmail("test@luvina.net");
+        request.setEmployeeTelephone("0123456789");
+        request.setEmployeeLoginPassword("Password123!");
+        request.setCertificationId(1L);
+        request.setCertificationStartDate("2023/01/01");
+        request.setCertificationEndDate("2023/01/02");
+        request.setEmployeeCertificationScore(new java.math.BigDecimal("900"));
+
+        org.mockito.Mockito.when(employeeRepository.existsByEmployeeLoginId("user01")).thenReturn(false);
+        org.mockito.Mockito.when(departmentRepository.existsById(1L)).thenReturn(true);
+        org.mockito.Mockito.when(certificationRepository.existsById(1L)).thenReturn(true);
+
+        assertDoesNotThrow(() -> employeeValidator.validateAddEmployee(request));
+    }
 }
 
 
