@@ -39,6 +39,7 @@ public class EmployeeValidator {
     private static final Pattern KATAKANA_PATTERN = Pattern.compile("^[\\uFF65-\\uFF9F\\s]+$");
     private static final Pattern HALF_SIZE_LOGIN_ID_PATTERN = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*$");
     private static final Pattern TELEPHONE_PATTERN = Pattern.compile("^[0-9-+()]+$");
+    private static final Pattern HALF_SIZE_ASCII_PATTERN = Pattern.compile("^[\\x20-\\x7E]+$");
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
@@ -241,6 +242,9 @@ public class EmployeeValidator {
         if (email.length() > 125) {
             throw new BusinessException(Constants.ER006, List.of(Constants.LABEL_EMAIL, "125"));
         }
+        if (!HALF_SIZE_ASCII_PATTERN.matcher(email).matches()) {
+            throw new BusinessException(Constants.ER008, List.of(Constants.LABEL_EMAIL));
+        }
         if (!EMAIL_PATTERN.matcher(email).matches()) {
             throw new BusinessException(Constants.ER005, List.of(Constants.LABEL_EMAIL, "email"));
         }
@@ -383,6 +387,9 @@ public class EmployeeValidator {
         }
         if (email.length() > 125) {
             throw new BusinessException(Constants.ER006, List.of(Constants.LABEL_EMAIL, "125"));
+        }
+        if (!HALF_SIZE_ASCII_PATTERN.matcher(email).matches()) {
+            throw new BusinessException(Constants.ER008, List.of(Constants.LABEL_EMAIL));
         }
         if (!EMAIL_PATTERN.matcher(email).matches()) {
             throw new BusinessException(Constants.ER005, List.of(Constants.LABEL_EMAIL, "email"));

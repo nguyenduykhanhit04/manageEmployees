@@ -76,13 +76,13 @@ export const baseEmployeeSchema = z.object({
       message: formatErrorMessage('ER011', [FIELD_LABELS.employeeBirthDate]),
     }),
 
-  // 6. メールアドレス: ER001, ER005, ER006, ER008
+  // 6. メールアドレス: ER001, ER008, ER006, ER005
   employeeEmail: z
     .string()
     .min(1, formatErrorMessage('ER001', [FIELD_LABELS.employeeEmail]))
-    .email(formatErrorMessage('ER005', [FIELD_LABELS.employeeEmail, 'email']))
+    .regex(HALF_SIZE_ASCII_REGEX, formatErrorMessage('ER008', [FIELD_LABELS.employeeEmail]))
     .max(125, formatErrorMessage('ER006', [FIELD_LABELS.employeeEmail, 125]))
-    .regex(HALF_SIZE_ASCII_REGEX, formatErrorMessage('ER008', [FIELD_LABELS.employeeEmail])),
+    .email(formatErrorMessage('ER005', [FIELD_LABELS.employeeEmail, 'email'])),
 
   // 7. 電話番号: ER001, ER006, ER008
   employeeTelephone: z
