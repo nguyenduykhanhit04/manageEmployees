@@ -899,8 +899,8 @@ export function isTokenExpired(token: string): boolean {
 
 #### 1. Regex kiểm tra chuẩn dữ liệu tiếng Nhật
 ```typescript
-// Kiểm tra Katakana toàn giác và bán giác
-const KATAKANA_REGEX = /^[\u30A0-\u30FF\uFF65-\uFF9F\s\u3000]+$/;
+// Kiểm tra Katakana bán giác (half-width Katakana và khoảng trắng)
+const KATAKANA_REGEX = /^[\uFF65-\uFF9F ]+$/;
 
 // Kiểm tra Alphanumeric nửa độ rộng, không bắt đầu bằng số
 const HALF_SIZE_REGEX = /^[a-zA-Z_][a-zA-Z0-9_]*$/;

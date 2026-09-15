@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { formatErrorMessage, FIELD_LABELS } from '@/lib/constants/messages';
 
-// Regex kiểm tra Katakana (bao gồm cả Katakana toàn giác 全角 và bán giác 半角, dấu trường âm và khoảng trắng)
-const KATAKANA_REGEX = /^[\u30A0-\u30FF\uFF65-\uFF9F\s\u3000]+$/;
+// Regex kiểm tra Katakana bán giác (half-width Katakana và khoảng trắng)
+const KATAKANA_REGEX = /^[\uFF65-\uFF9F ]+$/;
 
 // Regex kiểm tra half-size alphanumeric và dấu gạch dưới, không bắt đầu bằng số
 const HALF_SIZE_REGEX = /^[a-zA-Z_][a-zA-Z0-9_]*$/;

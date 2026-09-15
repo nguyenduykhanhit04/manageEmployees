@@ -35,8 +35,8 @@ public class EmployeeValidator {
     private final DepartmentRepository departmentRepository;
     private final CertificationRepository certificationRepository;
 
-    // Regex patterns
-    private static final Pattern KATAKANA_PATTERN = Pattern.compile("^[\\u30A0-\\u30FF\\uFF65-\\uFF9F\\s\\u3000]+$");
+    // Regex patterns (Katakana bán giác half-width)
+    private static final Pattern KATAKANA_PATTERN = Pattern.compile("^[\\uFF65-\\uFF9F\\s]+$");
     private static final Pattern HALF_SIZE_LOGIN_ID_PATTERN = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*$");
     private static final Pattern TELEPHONE_PATTERN = Pattern.compile("^[0-9-+()]+$");
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");

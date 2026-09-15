@@ -566,9 +566,9 @@ public void validateDeleteEmployee(EmployeeEntity employee) {
 ### 9.3 Biểu thức chính quy (Regex) được định nghĩa trong Validator
 
 ```java
-// Kiểm tra Katakana toàn giác và bán giác (kèm khoảng trắng)
+// Kiểm tra Katakana bán giác (half-width kèm khoảng trắng)
 private static final Pattern KATAKANA_PATTERN = 
-        Pattern.compile("^[\\u30A0-\\u30FF\\uFF65-\\uFF9F\\s\\u3000]+$");
+        Pattern.compile("^[\\uFF65-\\uFF9F\\s]+$");
 
 // Kiểm tra Login ID: Bắt đầu bằng chữ cái hoặc dấu gạch dưới, theo sau là chữ/số/_
 private static final Pattern HALF_SIZE_LOGIN_ID_PATTERN = 

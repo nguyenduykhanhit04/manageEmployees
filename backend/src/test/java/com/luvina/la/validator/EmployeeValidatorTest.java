@@ -171,5 +171,67 @@ class EmployeeValidatorTest {
         assertEquals(Constants.ER014, ex.getErrorCode());
         assertEquals(Constants.LABEL_ID, ex.getParams().get(0));
     }
+
+    @Test
+    void testValidateAddEmployee_KatakanaHalfWidth_Success() {
+        com.luvina.la.payload.request.EmployeeSaveRequest request = new com.luvina.la.payload.request.EmployeeSaveRequest();
+        request.setEmployeeLoginId("user01");
+        request.setDepartmentId(1L);
+        request.setEmployeeName("Nguyen Van A");
+        request.setEmployeeNameKana("ﾀﾅｶ ﾀﾛｳ");
+        request.setEmployeeBirthDate("1990/01/01");
+        request.setEmployeeEmail("test@luvina.net");
+        request.setEmployeeTelephone("0123456789");
+        request.setEmployeeLoginPassword("Password123!");
+
+        org.mockito.Mockito.when(employeeRepository.existsByEmployeeLoginId("user01")).thenReturn(false);
+        org.mockito.Mockito.when(departmentRepository.existsById(1L)).thenReturn(true);
+
+        assertDoesNotThrow(() -> employeeValidator.validateAddEmployee(request));
+    }
+
+    @Test
+    void testValidateAddEmployee_KatakanaFullWidth_ThrowsER009() {
+        com.luvina.la.payload.request.EmployeeSaveRequest request = new com.luvina.la.payload.request.EmployeeSaveRequest();
+        request.setEmployeeLoginId("user01");
+        request.setDepartmentId(1L);
+        request.setEmployeeName("Nguyen Van A");
+        request.setEmployeeNameKana("タナカ タロウ");
+        request.setEmployeeBirthDate("1990/01/01");
+        request.setEmployeeEmail("test@luvina.net");
+        request.setEmployeeTelephone("0123456789");
+        request.setEmployeeLoginPassword("Password123!");
+
+        org.mockito.Mockito.when(employeeRepository.existsByEmployeeLoginId("user01")).thenReturn(false);
+        org.mockito.Mockito.when(departmentRepository.existsById(1L)).thenReturn(true);
+
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> employeeValidator.validateAddEmployee(request));
+        assertEquals(Constants.ER009, ex.getErrorCode());
+        assertEquals(Constants.LABEL_EMPLOYEE_NAME_KANA, ex.getParams().get(0));
+    }
+
+    @Test
+    void testValidateUpdateEmployee_KatakanaFullWidth_ThrowsER009() {
+        com.luvina.la.payload.request.EmployeeSaveRequest request = new com.luvina.la.payload.request.EmployeeSaveRequest();
+        request.setEmployeeLoginId("user01");
+        request.setDepartmentId(1L);
+        request.setEmployeeName("Nguyen Van A");
+        request.setEmployeeNameKana("カタカナ");
+        request.setEmployeeBirthDate("1990/01/01");
+        request.setEmployeeEmail("test@luvina.net");
+        request.setEmployeeTelephone("0123456789");
+
+        org.mockito.Mockito.when(employeeRepository.existsById(1L)).thenReturn(true);
+        org.mockito.Mockito.when(departmentRepository.existsById(1L)).thenReturn(true);
+
+        BusinessException ex = assertThrows(
+                BusinessException.class,
+                () -> employeeValidator.validateUpdateEmployee(1L, request));
+        assertEquals(Constants.ER009, ex.getErrorCode());
+        assertEquals(Constants.LABEL_EMPLOYEE_NAME_KANA, ex.getParams().get(0));
+    }
 }
+
 
