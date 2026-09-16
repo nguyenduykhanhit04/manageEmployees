@@ -121,6 +121,9 @@ public class Constants {
     // Mã lỗi phải là ký tự Katakana.
     public static final String ER009 = "ER009";
 
+    // Mã lỗi ngày tháng không hợp lệ.
+    public static final String ER011 = "ER011";
+
     // Mã lỗi ngày kết thúc nhỏ hơn hoặc bằng ngày bắt đầu.
     public static final String ER012 = "ER012";
 
@@ -157,8 +160,20 @@ public class Constants {
     // Alias mã lỗi tên nhân viên không hợp lệ.
     public static final String ERROR_CODE_INVALID_EMPLOYEE_NAME = ER006;
 
-    // Giá trị tối đa hợp lệ cho tên nhân viên.
+    // Giới hạn độ dài tối đa cho các trường dữ liệu
+    public static final int MAX_LOGIN_ID_LENGTH = 50;
     public static final int MAX_EMPLOYEE_NAME_LENGTH = 125;
+    public static final int MAX_EMPLOYEE_NAME_KANA_LENGTH = 125;
+    public static final int MAX_EMAIL_LENGTH = 125;
+    public static final int MAX_TELEPHONE_LENGTH = 50;
+
+    // Giới hạn độ dài mật khẩu đăng nhập
+    public static final int MIN_PASSWORD_LENGTH = 8;
+    public static final int MAX_PASSWORD_LENGTH = 50;
+
+    // Phân trang mặc định
+    public static final int DEFAULT_PAGING_OFFSET = 0;
+    public static final int DEFAULT_PAGING_LIMIT = 20;
 
     /**
      * Tên Nhãn (Field Labels) Dùng Cho Thông Báo Lỗi
