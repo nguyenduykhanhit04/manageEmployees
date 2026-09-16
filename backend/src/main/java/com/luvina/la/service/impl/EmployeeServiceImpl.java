@@ -186,7 +186,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long updateEmployee(Long employeeId, EmployeeSaveRequest request) {
-        // 1. Tìm nhân viên cần cập nhật trong database
+        // 1. Tìm nhân viên cần cập nhật trong database (ném ER013 nếu không tồn tại)
         EmployeeEntity employeeEntity = employeeRepository.findByEmployeeId(employeeId)
                 .orElseThrow(() -> new BusinessException(Constants.ER013, List.of(Constants.LABEL_ID)));
 
@@ -199,27 +199,30 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         employeeEntity.setEmployeeName(request.getEmployeeName());
         employeeEntity.setEmployeeNameKana(request.getEmployeeNameKana());
-        if (request.getEmployeeBirthDate() != null && !request.getEmployeeBirthDate().isEmpty()) {
+        if (request.getEmployeeBirthDate() != null && !request.getEmployeeBirthDate().isBlank()) {
             employeeEntity.setEmployeeBirthDate(LocalDate.parse(request.getEmployeeBirthDate(), DATE_FORMATTER));
         }
         employeeEntity.setEmployeeEmail(request.getEmployeeEmail());
         employeeEntity.setEmployeeTelephone(request.getEmployeeTelephone());
 
         // 3. Nếu có nhập mật khẩu mới -> Mã hóa và cập nhật. Nếu để trống -> Giữ nguyên mật khẩu cũ
-        if (request.getEmployeeLoginPassword() != null && !request.getEmployeeLoginPassword().trim().isEmpty()) {
+        if (request.getEmployeeLoginPassword() != null && !request.getEmployeeLoginPassword().isBlank()) {
             employeeEntity.setEmployeeLoginPassword(passwordEncoder.encode(request.getEmployeeLoginPassword()));
         }
 
         // 4. Lưu thông tin nhân viên vào bảng employees
         employeeRepository.save(employeeEntity);
 
-        // 5. Cập nhật chứng chỉ tiếng Nhật: Xóa chứng chỉ cũ
+        // 5. Cập nhật chứng chỉ tiếng Nhật: Xóa chứng chỉ cũ và flush để đảm bảo câu lệnh DELETE thực thi trước
         employeesCertificationRepository.deleteByEmployeeId(employeeId);
+        employeesCertificationRepository.flush();
 
         // 6. Nếu có chọn chứng chỉ tiếng Nhật mới -> Lưu vào bảng employees_certifications
         if (request.getCertificationId() != null && request.getCertificationId() > 0) {
-            LocalDate startDate = LocalDate.parse(request.getCertificationStartDate(), DATE_FORMATTER);
-            LocalDate endDate = LocalDate.parse(request.getCertificationEndDate(), DATE_FORMATTER);
+            LocalDate startDate = request.getCertificationStartDate() != null && !request.getCertificationStartDate().isBlank()
+                    ? LocalDate.parse(request.getCertificationStartDate(), DATE_FORMATTER) : null;
+            LocalDate endDate = request.getCertificationEndDate() != null && !request.getCertificationEndDate().isBlank()
+                    ? LocalDate.parse(request.getCertificationEndDate(), DATE_FORMATTER) : null;
 
             EmployeesCertificationEntity certEntity = new EmployeesCertificationEntity(
                     employeeId,

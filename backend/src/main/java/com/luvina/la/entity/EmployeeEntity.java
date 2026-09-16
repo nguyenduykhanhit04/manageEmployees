@@ -5,9 +5,13 @@
  */
 package com.luvina.la.entity;
 
+import com.luvina.la.dto.EmployeeDTO;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,6 +19,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +31,23 @@ import lombok.Setter;
  */
 @Entity
 @Table(name = "employees")
+@SqlResultSetMapping(
+        name = "EmployeeDTOMapping",
+        classes = @ConstructorResult(
+                targetClass = EmployeeDTO.class,
+                columns = {
+                        @ColumnResult(name = "employee_id", type = Long.class),
+                        @ColumnResult(name = "employee_name", type = String.class),
+                        @ColumnResult(name = "employee_birth_date", type = LocalDate.class),
+                        @ColumnResult(name = "department_name", type = String.class),
+                        @ColumnResult(name = "employee_email", type = String.class),
+                        @ColumnResult(name = "employee_telephone", type = String.class),
+                        @ColumnResult(name = "certification_name", type = String.class),
+                        @ColumnResult(name = "end_date", type = LocalDate.class),
+                        @ColumnResult(name = "score", type = BigDecimal.class)
+                }
+        )
+)
 @Getter
 @Setter
 public class EmployeeEntity implements Serializable {
