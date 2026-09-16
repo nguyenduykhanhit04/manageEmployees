@@ -113,7 +113,7 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
         // 6. Bổ sung phân trang LIMIT và OFFSET
         sql.append(" limit :limit offset :offset ");
 
-        Query query = entityManager.createNativeQuery(sql.toString(), "EmployeeDTOMapping");
+        Query query = entityManager.createNativeQuery(sql.toString());
 
         // 7. Gán giá trị các tham số truy vấn
         if (employeeName != null && !employeeName.isEmpty()) {
@@ -125,9 +125,25 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
         query.setParameter("limit", limit);
         query.setParameter("offset", offset);
 
-        // 8. Tự động trả về danh sách EmployeeDTO nhờ JPA SqlResultSetMapping 
+        // 8. Chuyển đổi dữ liệu thô sang danh sách EmployeeDTO
         @SuppressWarnings("unchecked")
-        List<EmployeeDTO> result = query.getResultList();
+        List<Object[]> rows = query.getResultList();
+        List<EmployeeDTO> result = new ArrayList<>();
+
+        for (Object[] row : rows) {
+            Long empId = row[0] != null ? ((Number) row[0]).longValue() : null;
+            String name = (String) row[1];
+            LocalDate birthDate = row[2] != null ? ((Date) row[2]).toLocalDate() : null;
+            String departmentName = (String) row[3];
+            String employeeEmail = (String) row[4];
+            String employeeTelephone = (String) row[5];
+            String certificationName = (String) row[6];
+            LocalDate endDate = row[7] != null ? ((Date) row[7]).toLocalDate() : null;
+            BigDecimal score = row[8] != null ? (BigDecimal) row[8] : null;
+
+            result.add(new EmployeeDTO(empId, name, birthDate, departmentName, employeeEmail, employeeTelephone, certificationName, endDate, score));
+        }
+
         return result;
     }
 
