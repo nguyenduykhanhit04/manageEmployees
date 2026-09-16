@@ -167,6 +167,7 @@ frontend/
 │   │   ├── routes.ts                 # Định nghĩa các Route paths (`ROUTES`)
 │   │   ├── http.ts                   # Định nghĩa mã trạng thái HTTP, Content Types
 │   │   ├── table.ts                  # Cấu hình phân trang, thứ tự sort (`PAGING`, `SORT_ORDER`, `QUERY_PARAMS`)
+│   │   ├── validation.ts             # Giới hạn độ dài, định dạng ngày tháng (`VALIDATION_LIMITS`, `DATE_FORMATS`)
 │   │   └── messages.ts               # Bộ thông báo chuẩn Nhật ngữ (ER001-ER023, MSG001-MSG005, FIELD_LABELS, API_ERROR_MESSAGES)
 │   ├── utils/
 │   │   ├── format.ts                 # Xử lý format văn bản (truncateText cắt 22 ký tự)
@@ -909,19 +910,25 @@ const HALF_SIZE_REGEX = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 const HALF_SIZE_ASCII_REGEX = /^[\x20-\x7E]+$/;
 ```
 
-#### 2. Kế thừa Schema (`extend`) và Tinh chỉnh nâng cao (`superRefine`)
+#### 2. Kế thừa Schema (`extend`), Chuẩn hóa Hằng số (`VALIDATION_LIMITS`) và DRY Validation
 
-Dự án định nghĩa `baseEmployeeSchema`, sau đó tái sử dụng và mở rộng cho 2 mode:
+Dự án định nghĩa `baseEmployeeSchema`, loại bỏ hoàn toàn magic numbers qua `VALIDATION_LIMITS` (`lib/constants/validation.ts`), tách helper kiểm tra chứng chỉ dùng chung (`validateCertificationFields`) và mở rộng cho 2 mode:
 
 ```typescript
-// Mode Add: Mật khẩu bắt buộc từ 8-50 ký tự
+// Mode Add: Mật khẩu bắt buộc từ 8-50 ký tự (chuẩn hóa qua VALIDATION_LIMITS)
 export const addEmployeeSchema = baseEmployeeSchema
   .extend({
     employeeLoginPassword: z
       .string()
       .min(1, formatErrorMessage('ER001', [FIELD_LABELS.employeeLoginPassword]))
-      .min(8, formatErrorMessage('ER007', [FIELD_LABELS.employeeLoginPassword, 8, 50]))
-      .max(50, formatErrorMessage('ER007', [FIELD_LABELS.employeeLoginPassword, 8, 50])),
+      .min(
+        VALIDATION_LIMITS.PASSWORD.MIN,
+        formatErrorMessage('ER007', [FIELD_LABELS.employeeLoginPassword, VALIDATION_LIMITS.PASSWORD.MIN, VALIDATION_LIMITS.PASSWORD.MAX])
+      )
+      .max(
+        VALIDATION_LIMITS.PASSWORD.MAX,
+        formatErrorMessage('ER007', [FIELD_LABELS.employeeLoginPassword, VALIDATION_LIMITS.PASSWORD.MIN, VALIDATION_LIMITS.PASSWORD.MAX])
+      ),
     employeeLoginPasswordConfirm: z
       .string()
       .min(1, formatErrorMessage('ER001', [FIELD_LABELS.employeeLoginPasswordConfirm])),
@@ -936,16 +943,8 @@ export const addEmployeeSchema = baseEmployeeSchema
       });
     }
 
-    // 2. Kiểm tra nghiệp vụ chứng chỉ: Ngày hết hạn >= Ngày cấp (ER012)
-    if (data.certificationStartDate && data.certificationEndDate) {
-      if (new Date(data.certificationEndDate) < new Date(data.certificationStartDate)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: formatErrorMessage('ER012', [FIELD_LABELS.endDate, FIELD_LABELS.startDate]),
-          path: ['certificationEndDate'],
-        });
-      }
-    }
+    // 2. Tái sử dụng logic kiểm tra chứng chỉ dùng chung (ER002, ER012, ER018)
+    validateCertificationFields(data, ctx);
   });
 ```
 

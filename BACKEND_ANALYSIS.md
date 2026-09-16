@@ -517,7 +517,7 @@ public Long createEmployee(EmployeeSaveRequest request) {
 Khi cập nhật thông tin nhân viên có kèm chứng chỉ:
 1. Tìm Entity nhân viên trong DB (ném lỗi `ER013` nếu không tìm thấy).
 2. Cập nhật các trường thông tin cơ bản; nếu có mật khẩu mới thì mã hóa BCrypt, nếu không nhập thì giữ nguyên mật khẩu cũ.
-3. **Cơ chế Replace chứng chỉ:** Gọi `employeesCertificationRepository.deleteByEmployeeId(employeeId)` để xóa sạch chứng chỉ cũ của nhân viên, sau đó nếu có chọn chứng chỉ mới thì tiến hành insert mới. Cách tiếp cận này giúp đơn giản hóa logic đồng bộ chứng chỉ và tránh xung đột khóa chính.
+3. **Cơ chế Replace chứng chỉ:** Gọi `employeesCertificationRepository.deleteByEmployeeId(employeeId)` kết hợp `employeesCertificationRepository.flush()` (từ `JpaRepository`) để đẩy ngay lệnh `DELETE` xuống Database, sau đó nếu có chọn chứng chỉ mới thì tiến hành insert mới. Cách tiếp cận này giúp đơn giản hóa logic đồng bộ chứng chỉ và tránh lỗi xung đột khóa chính / ràng buộc dữ liệu trong cùng một transaction.
 
 ---
 
@@ -582,6 +582,11 @@ private static final Pattern TELEPHONE_PATTERN =
 private static final Pattern EMAIL_PATTERN = 
         Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
 ```
+
+### 9.4 Chuẩn hóa Hằng số (Constants) & Tái sử dụng Mã nguồn (DRY Refactoring)
+
+- **Loại bỏ hoàn toàn Magic Numbers:** Mọi giới hạn độ dài (`MAX_LOGIN_ID_LENGTH = 50`, `MAX_EMAIL_LENGTH = 125`, `MIN_PASSWORD_LENGTH = 8`, `MAX_PASSWORD_LENGTH = 50`...), phân trang mặc định (`DEFAULT_PAGING_OFFSET = 0`, `DEFAULT_PAGING_LIMIT = 20`) đều được định nghĩa tập trung tại `com.luvina.la.config.Constants` thay vì hardcode số nguyên phân tán.
+- **Tái sử dụng qua DRY Helpers:** Tầng Validator tách các hàm kiểm tra dùng chung (`validateCommonFields`, `validateRequired`, `validateMaxLength`, `validatePattern`, `validateDateLogic`, `validateCertificationFields`), giúp `validateAddEmployee` và `validateUpdateEmployee` loại bỏ hoàn toàn code trùng lặp, dễ mở rộng và bảo trì.
 
 ---
 

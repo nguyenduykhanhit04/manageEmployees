@@ -104,10 +104,11 @@ com.luvina.la
 ├── controller/              # REST Controllers (AuthController, EmployeeController, DepartmentController, CertificationController)
 ├── service/                 # Tầng nghiệp vụ (Service Interfaces)
 │   └── impl/                # Service Implementations (@Service, @Transactional)
-├── validator/               # Tầng kiểm tra nghiệp vụ độc lập (EmployeeValidator - kiểm tra định dạng, tồn tại, chặn xóa Admin ER020)
+├── validator/               # Tầng kiểm tra nghiệp vụ độc lập (EmployeeValidator - Clean Code, No Magic Numbers, DRY helpers)
 ├── repository/              # Tầng truy xuất dữ liệu Spring Data JPA
 │   ├── EmployeeRepository.java
 │   ├── EmployeeRepositoryCustom.java
+│   ├── EmployeesCertificationRepository.java # JpaRepository hỗ trợ flush & transaction sync
 │   └── impl/
 │       └── EmployeeRepositoryCustomImpl.java  # Custom Native Query (sắp xếp đa cột, collate tiếng Nhật/Việt, DTO projection)
 ├── entity/                  # JPA Entities (EmployeeEntity, DepartmentEntity, CertificationEntity, EmployeeCertificationEntity)
@@ -141,8 +142,8 @@ frontend/
 ├── hooks/                         # Custom React Hooks (useAuth, useAdm002, useAdm003, useAdm004, useAdm005, useAdm006...)
 ├── lib/
 │   ├── api/                       # API Services (employee.ts, department.ts, certification.ts, auth.ts, client.ts)
-│   ├── constants/                 # Constants phân tách (routes.ts, http.ts, table.ts, messages.ts)
-│   └── validation/                # Zod schemas validate form
+│   ├── constants/                 # Constants phân tách (routes.ts, http.ts, table.ts, messages.ts, validation.ts)
+│   └── validation/                # Zod schemas validate form (No Magic Numbers, DRY shared validation)
 ├── tests/                         # Unit tests & Integration tests (Jest & Testing Library)
 └── types/                         # TypeScript interfaces & types định nghĩa dữ liệu
 ```
