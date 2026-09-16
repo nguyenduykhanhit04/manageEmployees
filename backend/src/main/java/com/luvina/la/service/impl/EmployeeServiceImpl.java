@@ -88,7 +88,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             int offset,
             int limit) {
 
-        int pageSize = limit > 0 ? limit : 20;
+        int pageSize = limit > 0 ? limit : Constants.DEFAULT_PAGING_LIMIT;
         int pageIndex = offset / pageSize;
         Pageable pageable = PageRequest.of(pageIndex, pageSize);
 
