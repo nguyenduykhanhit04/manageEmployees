@@ -12,7 +12,10 @@ import { HTTP_STATUS } from '@/lib/constants/http';
 import { formatErrorMessage, ERROR_MESSAGES } from '@/lib/constants/messages';
 import { EmployeeFormData } from '@/lib/validation/employee';
 import { getStoredReturnUrl, STORAGE_KEYS } from '@/lib/constants/storage';
-import { mapEmployeeDetailToFormData, buildCertPayload } from '@/lib/utils/employeeMapper';
+import {
+  mapEmployeeDetailToFormData,
+  buildBaseEmployeePayload,
+} from '@/lib/utils/employeeMapper';
 
 /**
  * Custom Hook quản lý dữ liệu và nghiệp vụ cho màn hình Xác nhận (ADM005).
@@ -128,17 +131,11 @@ export function useAdm005() {
 
       // 6.2 Xử lý khi xác nhận CHỈNH SỬA thông tin nhân viên (mode = edit)
       if (mode === 'edit' && employeeId) {
-        // 6.2.1 Chuẩn bị payload cập nhật nhân viên (chuyển đổi định dạng ngày yyyy/MM/dd -> yyyy-MM-dd và ép kiểu số)
+        // 6.2.1 Chuẩn bị payload cập nhật nhân viên
         const payload = {
+          ...buildBaseEmployeePayload(formData),
           employeeId: Number(employeeId),
-          employeeName: formData.employeeName,
-          employeeNameKana: formData.employeeNameKana,
-          employeeBirthDate: formData.employeeBirthDate.replaceAll('/', '-'),
-          departmentId: Number(formData.departmentId),
-          employeeEmail: formData.employeeEmail,
-          employeeTelephone: formData.employeeTelephone,
           employeeLoginPassword: formData.employeeLoginPassword || undefined,
-          ...buildCertPayload(formData),
         };
 
         // 6.2.2 Gọi API cập nhật thông tin nhân viên
@@ -153,17 +150,11 @@ export function useAdm005() {
       }
 
       // 6.3 Xử lý khi xác nhận THÊM MỚI nhân viên (mode = add)
-      // 6.3.1 Chuẩn bị payload thêm mới nhân viên (chuyển đổi định dạng ngày yyyy/MM/dd -> yyyy-MM-dd và ép kiểu số)
+      // 6.3.1 Chuẩn bị payload thêm mới nhân viên
       const payload = {
+        ...buildBaseEmployeePayload(formData),
         employeeLoginId: formData.employeeLoginId,
-        departmentId: Number(formData.departmentId),
-        employeeName: formData.employeeName,
-        employeeNameKana: formData.employeeNameKana,
-        employeeBirthDate: formData.employeeBirthDate.replaceAll('/', '-'),
-        employeeEmail: formData.employeeEmail,
-        employeeTelephone: formData.employeeTelephone,
         employeeLoginPassword: formData.employeeLoginPassword,
-        ...buildCertPayload(formData),
       };
 
       // 6.3.2 Gọi API thêm mới nhân viên vào hệ thống

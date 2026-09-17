@@ -116,19 +116,10 @@ export function useAdm004() {
         try {
           const storedData = JSON.parse(storedDataStr);
           reset({
-            employeeLoginId: storedData.employeeLoginId || '',
+            ...getDefaultFormValues(),
+            ...storedData,
             departmentId: String(storedData.departmentId || ''),
-            employeeName: storedData.employeeName || '',
-            employeeNameKana: storedData.employeeNameKana || '',
-            employeeBirthDate: storedData.employeeBirthDate || '',
-            employeeEmail: storedData.employeeEmail || '',
-            employeeTelephone: storedData.employeeTelephone || '',
-            employeeLoginPassword: storedData.employeeLoginPassword || '',
-            employeeLoginPasswordConfirm: storedData.employeeLoginPasswordConfirm || '',
             certificationId: String(storedData.certificationId || ''),
-            certificationStartDate: storedData.certificationStartDate || '',
-            certificationEndDate: storedData.certificationEndDate || '',
-            employeeCertificationScore: storedData.employeeCertificationScore || '',
           });
           return;
         } catch {

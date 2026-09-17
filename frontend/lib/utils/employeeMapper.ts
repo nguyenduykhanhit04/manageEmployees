@@ -69,3 +69,22 @@ export function buildCertPayload(formData: EmployeeFormData) {
         : null,
   };
 }
+
+/**
+ * Xây dựng payload thông tin cơ bản nhân viên (dùng chung cho cả thêm mới và cập nhật).
+ *
+ * @param formData dữ liệu form nhân viên
+ * @return object payload cơ bản gồm các thông tin chung và chứng chỉ
+ */
+export function buildBaseEmployeePayload(formData: EmployeeFormData) {
+  return {
+    departmentId: Number(formData.departmentId),
+    employeeName: formData.employeeName,
+    employeeNameKana: formData.employeeNameKana,
+    employeeBirthDate: formData.employeeBirthDate.replaceAll('/', '-'),
+    employeeEmail: formData.employeeEmail,
+    employeeTelephone: formData.employeeTelephone,
+    ...buildCertPayload(formData),
+  };
+}
+
