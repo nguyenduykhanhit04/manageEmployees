@@ -113,6 +113,11 @@ export function useAdm003() {
     }
   }, [employeeId, router]);
 
+  // 8. Trả về state và các hàm xử lý cho component ADM003
+  const refetch = useCallback(() => {
+    if (employeeId) fetchEmployeeDetail(employeeId);
+  }, [employeeId, fetchEmployeeDetail]);
+
   return {
     employee,
     loading: isLoading,
@@ -121,6 +126,6 @@ export function useAdm003() {
     handleBack,
     handleEdit,
     handleDelete,
-    refetch: () => employeeId && fetchEmployeeDetail(employeeId),
+    refetch,
   };
 }

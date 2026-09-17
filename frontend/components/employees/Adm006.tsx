@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getStoredReturnUrl } from '@/lib/constants/storage';
@@ -17,13 +16,13 @@ export function Adm006() {
   // 1. Đọc mode từ searchParams
   const mode = searchParams.get('mode') || 'add';
 
-  // 2. Xác định thông điệp hoàn thành tương ứng
-  let message = SUCCESS_MESSAGES.MSG001;
-  if (mode === 'delete') {
-    message = SUCCESS_MESSAGES.MSG003;
-  } else if (mode === 'edit') {
-    message = SUCCESS_MESSAGES.MSG002;
-  }
+  // 2. Xác định thông điệp hoàn thành tương ứng theo mode
+  const MESSAGE_MAP: Record<string, string> = {
+    add: SUCCESS_MESSAGES.MSG001,
+    edit: SUCCESS_MESSAGES.MSG002,
+    delete: SUCCESS_MESSAGES.MSG003,
+  };
+  const message = MESSAGE_MAP[mode] ?? SUCCESS_MESSAGES.MSG001;
 
   // 3. Xử lý khi nhấn nút OK -> Điều hướng về URL đã lưu trong sessionStorage (hoặc danh sách ADM002)
   const handleOk = () => {

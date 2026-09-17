@@ -141,7 +141,7 @@ export function useAdm002() {
   /**
    * Xử lý khi người dùng nhấn nút Tìm kiếm trên Form.
    */
-  const handleSearch = (e?: React.FormEvent) => {
+  const handleSearch = useCallback((e?: React.FormEvent) => {
     // 1. Ngăn chặn submit form mặc định
     if (e) e.preventDefault();
 
@@ -153,12 +153,12 @@ export function useAdm002() {
       sortOrders,
       PAGING.DEFAULT_PAGE
     );
-  };
+  }, [employeeName, departmentId, sortPriority, sortOrders, syncUrlParameters]);
 
   /**
    * Xử lý khi click vào tiêu đề cột để sắp xếp đa cột.
    */
-  const handleSort = (field: SortField) => {
+  const handleSort = useCallback((field: SortField) => {
     // 1. Đảo chiều sắp xếp của cột được click (ASC -> DESC hoặc DESC -> ASC)
     const nextOrder: SortDirection =
       sortOrders[field] === SORT_ORDER.ASC ? SORT_ORDER.DESC : SORT_ORDER.ASC;
@@ -185,7 +185,7 @@ export function useAdm002() {
       updatedOrders,
       PAGING.DEFAULT_PAGE
     );
-  };
+  }, [sortOrders, sortPriority, employeeName, departmentId, syncUrlParameters]);
 
   // Tính tổng số trang dựa trên tổng số bản ghi
   const totalPages = Math.max(1, Math.ceil(totalRecords / limit));
@@ -193,13 +193,13 @@ export function useAdm002() {
   /**
    * Xử lý khi người dùng chuyển trang trên Pagination.
    */
-  const handlePageChange = (page: number) => {
+  const handlePageChange = useCallback((page: number) => {
     // 1. Kiểm tra điều kiện số trang đích hợp lệ
     if (page < 1 || page > totalPages || page === currentPage) return;
 
     // 2. Đồng bộ số trang mới lên URL
     syncUrlParameters(employeeName, departmentId, sortPriority, sortOrders, page);
-  };
+  }, [totalPages, currentPage, employeeName, departmentId, sortPriority, sortOrders, syncUrlParameters]);
 
   /**
    * Xử lý điều hướng sang màn hình thêm mới nhân viên (URL sạch không kèm returnTo).

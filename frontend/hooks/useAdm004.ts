@@ -17,6 +17,7 @@ import { ROUTES } from '@/lib/constants/routes';
 import { HTTP_STATUS } from '@/lib/constants/http';
 import { ERROR_MESSAGES } from '@/lib/constants/messages';
 import { getStoredReturnUrl, STORAGE_KEYS } from '@/lib/constants/storage';
+import { mapEmployeeDetailToFormData } from '@/lib/utils/employeeMapper';
 
 /**
  * Lấy chuỗi ngày hiện tại theo định dạng yyyy/MM/dd (dùng cho placeholder).
@@ -142,35 +143,9 @@ export function useAdm004() {
       setIsSystemError(false);
       getEmployee(employeeId)
         .then((emp) => {
+          // 4.3.1 Map dữ liệu API response sang EmployeeFormData và reset form
           if (emp && emp.code === HTTP_STATUS.OK) {
-            const cert =
-              emp.certifications && emp.certifications.length > 0
-                ? emp.certifications[0]
-                : null;
-            reset({
-              employeeLoginId: emp.employeeLoginId || '',
-              departmentId: String(emp.departmentId || ''),
-              employeeName: emp.employeeName || '',
-              employeeNameKana: emp.employeeNameKana || '',
-              employeeBirthDate: emp.employeeBirthDate
-                ? emp.employeeBirthDate.replaceAll('-', '/')
-                : '',
-              employeeEmail: emp.employeeEmail || '',
-              employeeTelephone: emp.employeeTelephone || '',
-              employeeLoginPassword: '',
-              employeeLoginPasswordConfirm: '',
-              certificationId: cert ? String(cert.certificationId) : '',
-              certificationStartDate: cert?.startDate
-                ? cert.startDate.replaceAll('-', '/')
-                : '',
-              certificationEndDate: cert?.endDate
-                ? cert.endDate.replaceAll('-', '/')
-                : '',
-              employeeCertificationScore:
-                cert?.score !== null && cert?.score !== undefined
-                  ? String(cert.score)
-                  : '',
-            });
+            reset(mapEmployeeDetailToFormData(emp));
           } else {
             setIsSystemError(true);
             setErrorMessage(ERROR_MESSAGES.ER015);
@@ -282,7 +257,6 @@ export function useAdm004() {
     isSystemError,
     errorMessage,
     setErrorMessage,
-    onSubmit,
     handleConfirm: onSubmit,
     handleBack,
     handleSystemErrorOk,

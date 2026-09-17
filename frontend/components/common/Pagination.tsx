@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { PAGING } from '@/lib/constants/table';
 
 /**

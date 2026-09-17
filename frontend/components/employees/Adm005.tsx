@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdm005 } from '@/hooks/useAdm005';
 import { SYSTEM_MESSAGES } from '@/lib/constants/messages';

@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdm002 } from '@/hooks/useAdm002';
 import { EmployeeSearchForm } from '@/components/employees/EmployeeSearchForm';

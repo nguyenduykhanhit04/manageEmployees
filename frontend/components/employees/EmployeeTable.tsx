@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import { Fragment } from 'react';
 import Link from 'next/link';
 import { EmployeeItem, SortOrders, SortField } from '@/types/employee';
 import { Pagination } from '@/components/common/Pagination';
@@ -12,6 +12,27 @@ import {
 import { ROUTES, QUERY_PARAMS } from '@/lib/constants/routes';
 import { SYSTEM_MESSAGES } from '@/lib/constants/messages';
 import { truncateText } from '@/lib/utils/format';
+
+/**
+ * Tạo đường dẫn chi tiết sang màn hình ADM003.
+ *
+ * @param employeeId mã nhân viên cần xem chi tiết
+ * @return chuỗi URL đầy đủ kèm tham số ID
+ */
+function getDetailLink(employeeId: number): string {
+  return `${ROUTES.EMPLOYEE_DETAIL}?${QUERY_PARAMS.ID}=${employeeId}`;
+}
+
+/**
+ * Lấy icon sắp xếp cho cột tương ứng theo chiều ASC/DESC.
+ *
+ * @param sortOrders trạng thái chiều sắp xếp hiện tại
+ * @param field tên trường cần hiển thị icon
+ * @return chuỗi icon sắp xếp
+ */
+function getSortIcon(sortOrders: SortOrders, field: SortField): string {
+  return sortOrders[field] === SORT_ORDER.ASC ? SORT_ICONS.ASC : SORT_ICONS.DESC;
+}
 
 /**
  * Props truyền vào Component EmployeeTable.
@@ -46,22 +67,6 @@ export function EmployeeTable({
   totalPages,
   onPageChange,
 }: EmployeeTableProps) {
-  /**
-   * Tạo đường dẫn chi tiết sang màn hình ADM003.
-   */
-  const getDetailLink = (employeeId: number) => {
-    return `${ROUTES.EMPLOYEE_DETAIL}?${QUERY_PARAMS.ID}=${employeeId}`;
-  };
-
-  /**
-   * Lấy icon sắp xếp cho từng cột theo chiều ASC/DESC.
-   */
-  const getSortIcon = (field: SortField) => {
-    if (sortOrders[field] === SORT_ORDER.ASC) {
-      return SORT_ICONS.ASC;
-    }
-    return SORT_ICONS.DESC;
-  };
 
   return (
     <div className="row row-table">
@@ -74,7 +79,7 @@ export function EmployeeTable({
             onClick={() => onSort(SORT_FIELDS.EMPLOYEE_NAME)}
             title="氏名で並び替え"
           >
-            氏名 {getSortIcon(SORT_FIELDS.EMPLOYEE_NAME)}
+            氏名 {getSortIcon(sortOrders, SORT_FIELDS.EMPLOYEE_NAME)}
           </div>
           <div>生年月日</div>
           <div>グループ</div>
@@ -85,14 +90,14 @@ export function EmployeeTable({
             onClick={() => onSort(SORT_FIELDS.CERTIFICATION_NAME)}
             title="日本語能力で並び替え"
           >
-            日本語能力 {getSortIcon(SORT_FIELDS.CERTIFICATION_NAME)}
+            日本語能力 {getSortIcon(sortOrders, SORT_FIELDS.CERTIFICATION_NAME)}
           </div>
           <div
             style={{ cursor: 'pointer', userSelect: 'none' }}
             onClick={() => onSort(SORT_FIELDS.END_DATE)}
             title="失効日で並び替え"
           >
-            失効日 {getSortIcon(SORT_FIELDS.END_DATE)}
+            失効日 {getSortIcon(sortOrders, SORT_FIELDS.END_DATE)}
           </div>
           <div>点数</div>
         </div>
@@ -116,7 +121,7 @@ export function EmployeeTable({
           {/* 3. Render danh sách từng nhân viên */}
           {!loading &&
             employees.map((emp) => (
-              <React.Fragment key={emp.employeeId}>
+              <Fragment key={emp.employeeId}>
                 <div className="bor-l-none text-center">
                   <Link href={getDetailLink(emp.employeeId)}>
                     {emp.employeeId}
@@ -146,7 +151,7 @@ export function EmployeeTable({
                 <div>
                   {emp.score !== null && emp.score !== undefined ? emp.score : ''}
                 </div>
-              </React.Fragment>
+              </Fragment>
             ))}
         </div>
 
