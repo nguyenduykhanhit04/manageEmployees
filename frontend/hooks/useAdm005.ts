@@ -2,30 +2,21 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { AxiosError } from 'axios';
+import { ApiResponse } from '@/types/api';
 import { useDepartments } from '@/hooks/useDepartments';
 import { useCertifications } from '@/hooks/useCertifications';
 import { getEmployee, createEmployee, updateEmployee, deleteEmployee } from '@/lib/api/employee.api';
 import { ROUTES } from '@/lib/constants/routes';
 import { HTTP_STATUS } from '@/lib/constants/http';
 import { formatErrorMessage, ERROR_MESSAGES } from '@/lib/constants/messages';
+import { EmployeeFormData } from '@/lib/validation/employee';
 import { getStoredReturnUrl, STORAGE_KEYS } from '@/lib/constants/storage';
-
-export const ADM004_STORAGE_KEY = STORAGE_KEYS.ADM004_TEMP_DATA;
-
-const getAddStorageSession = () => {
-  if (typeof window === 'undefined') return null;
-  const data = sessionStorage.getItem(STORAGE_KEYS.ADM004_TEMP_DATA);
-  if (!data) return null;
-  try {
-    return JSON.parse(data);
-  } catch (e) {
-    console.error('Error parsing ADM004_TEMP_DATA session:', e);
-    return null;
-  }
-};
 
 /**
  * Custom Hook quản lý dữ liệu và nghiệp vụ cho màn hình Xác nhận (ADM005).
+ *
+ * @author nguyenduykhanh2
  */
 export function useAdm005() {
   const router = useRouter();
@@ -36,7 +27,7 @@ export function useAdm005() {
   const employeeId = searchParams.get('id') || searchParams.get('employeeId');
 
   // 2. Khai báo các state quản lý
-  const [formData, setFormData] = useState<any>(null);
+  const [formData, setFormData] = useState<EmployeeFormData | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isSystemError, setIsSystemError] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -67,15 +58,17 @@ export function useAdm005() {
                 : null;
             setFormData({
               employeeLoginId: res.employeeLoginId,
-              departmentId: res.departmentId,
+              departmentId: String(res.departmentId),
               employeeName: res.employeeName,
-              employeeNameKana: res.employeeNameKana,
+              employeeNameKana: res.employeeNameKana || '',
               employeeBirthDate: res.employeeBirthDate
                 ? res.employeeBirthDate.replaceAll('-', '/')
                 : '',
               employeeEmail: res.employeeEmail,
-              employeeTelephone: res.employeeTelephone,
-              certificationId: cert ? cert.certificationId : null,
+              employeeTelephone: res.employeeTelephone || '',
+              employeeLoginPassword: '',
+              employeeLoginPasswordConfirm: '',
+              certificationId: cert ? String(cert.certificationId) : '',
               certificationStartDate: cert?.startDate
                 ? cert.startDate.replaceAll('-', '/')
                 : '',
@@ -102,12 +95,16 @@ export function useAdm005() {
     }
 
     // 4.2 Xử lý khi mode là THÊM MỚI hoặc CHỈNH SỬA (đọc từ sessionStorage)
-    const data = getAddStorageSession();
-    if (!data) {
+    const storedDataStr = sessionStorage.getItem(STORAGE_KEYS.ADM004_TEMP_DATA);
+    if (!storedDataStr) {
       router.push(ROUTES.EMPLOYEE_LIST);
       return;
     }
-    setFormData(data);
+    try {
+      setFormData(JSON.parse(storedDataStr));
+    } catch {
+      router.push(ROUTES.EMPLOYEE_LIST);
+    }
   }, [mode, employeeId, router]);
 
   // 5. Map ID sang Tên hiển thị (Department Name & Certification Name)
@@ -209,11 +206,15 @@ export function useAdm005() {
         sessionStorage.removeItem(STORAGE_KEYS.ADM004_TEMP_DATA);
         router.push(`${ROUTES.EMPLOYEE_COMPLETE}?mode=add`);
       }
-    } catch (error: any) {
-      const errorData = error.response?.data;
-      const msg = errorData?.message?.code
-        ? formatErrorMessage(errorData.message.code, errorData.message.params || [])
-        : ERROR_MESSAGES.ER015;
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      const errorData = axiosError.response?.data;
+      let msg = ERROR_MESSAGES.ER015;
+      if (errorData?.message && typeof errorData.message === 'object' && errorData.message.code) {
+        msg = formatErrorMessage(errorData.message.code, errorData.message.params || []);
+      } else if (typeof errorData?.message === 'string') {
+        msg = errorData.message;
+      }
 
       // Nếu là Mode Add hoặc Edit: Lưu lỗi và điều hướng về ADM004
       if (mode === 'add' || mode === 'edit') {

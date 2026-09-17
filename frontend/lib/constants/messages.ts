@@ -58,6 +58,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
 export const API_ERROR_MESSAGES = {
   GET_DEPARTMENTS_FAILED: '部門を取得できません',
   GET_EMPLOYEES_FAILED: '従業員を取得できません',
+  GET_CERTIFICATIONS_FAILED: '資格を取得できません',
 } as const;
 
 /**

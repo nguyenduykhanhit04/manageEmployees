@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   addEmployeeSchema,
   editEmployeeSchema,
+  EmployeeFormData,
   AddEmployeeFormData,
 } from '@/lib/validation/employee';
 import { useDepartments } from '@/hooks/useDepartments';
@@ -16,8 +17,6 @@ import { ROUTES } from '@/lib/constants/routes';
 import { HTTP_STATUS } from '@/lib/constants/http';
 import { ERROR_MESSAGES } from '@/lib/constants/messages';
 import { getStoredReturnUrl, STORAGE_KEYS } from '@/lib/constants/storage';
-
-export const ADM004_STORAGE_KEY = STORAGE_KEYS.ADM004_TEMP_DATA;
 
 /**
  * Lấy chuỗi ngày hiện tại theo định dạng yyyy/MM/dd (dùng cho placeholder).
@@ -48,6 +47,8 @@ export const getDefaultFormValues = (): AddEmployeeFormData => ({
 
 /**
  * Custom Hook quản lý toàn bộ nghiệp vụ cho màn hình Thêm mới/Chỉnh sửa nhân viên (ADM004).
+ *
+ * @author nguyenduykhanh2
  */
 export function useAdm004() {
   const router = useRouter();
@@ -70,7 +71,7 @@ export function useAdm004() {
 
   // 3. Khởi tạo form với Schema tương ứng theo mode
   const currentSchema = isEditMode ? editEmployeeSchema : addEmployeeSchema;
-  const form = useForm<AddEmployeeFormData>({
+  const form = useForm<EmployeeFormData>({
     resolver: zodResolver(currentSchema) as any,
     defaultValues: getDefaultFormValues(),
     mode: 'all',

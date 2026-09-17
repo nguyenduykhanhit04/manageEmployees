@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { getCertifications } from '@/lib/api/certification.api';
 import { CertificationItem } from '@/types/certification';
 import { HTTP_STATUS } from '@/lib/constants/http';
+import { API_ERROR_MESSAGES } from '@/lib/constants/messages';
 
 /**
  * Custom Hook quản lý việc lấy và lưu trữ danh sách chứng chỉ tiếng Nhật.
@@ -35,7 +36,7 @@ export function useCertifications() {
             setCertifications(res.certifications || []);
           } else {
             // Lưu thông báo lỗi khi API phản hồi không thành công
-            setErrorMessage('資格を取得できません');
+            setErrorMessage(API_ERROR_MESSAGES.GET_CERTIFICATIONS_FAILED);
           }
         }
       })
@@ -43,7 +44,7 @@ export function useCertifications() {
         // 2.2.3 Xử lý khi xảy ra lỗi ngoại lệ gọi API
         if (isMounted) {
           console.error('Error fetching certifications:', err);
-          setErrorMessage('資格を取得できません');
+          setErrorMessage(API_ERROR_MESSAGES.GET_CERTIFICATIONS_FAILED);
         }
       })
       .finally(() => {
