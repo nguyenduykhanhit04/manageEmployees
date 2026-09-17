@@ -9,3 +9,6 @@ export const TELEPHONE_REGEX = /^[0-9-+()]+$/;
 
 /** Regex kiểm tra ký tự half-size (1 byte ASCII) cho email */
 export const HALF_SIZE_ASCII_REGEX = /^[\x20-\x7E]+$/;
+
+/** Regex kiểm tra định dạng email chuẩn công ty (@luvina.net) */
+export const LUVINA_EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@luvina\.net$/;

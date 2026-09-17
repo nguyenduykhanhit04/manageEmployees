@@ -8,7 +8,7 @@ describe('Employee Validation Schema - Katakana Field', () => {
     employeeName: 'Nguyen Van A',
     employeeNameKana: 'ﾀﾅｶ ﾀﾛｳ', // Half-width Katakana
     employeeBirthDate: '1990/01/01',
-    employeeEmail: 'user@example.com',
+    employeeEmail: 'user@luvina.net',
     employeeTelephone: '0123456789',
   };
 
@@ -55,11 +55,11 @@ describe('Employee Validation Schema - Email Field', () => {
     employeeName: 'Nguyen Van A',
     employeeNameKana: 'ﾀﾅｶ ﾀﾛｳ',
     employeeBirthDate: '1990/01/01',
-    employeeEmail: 'user@example.com',
+    employeeEmail: 'user@luvina.net',
     employeeTelephone: '0123456789',
   };
 
-  it('should pass when employeeEmail is a valid half-size email', () => {
+  it('should pass when employeeEmail is a valid half-size @luvina.net email', () => {
     const result = baseEmployeeSchema.safeParse(validBaseEmployee);
     expect(result.success).toBe(true);
   });
@@ -75,6 +75,21 @@ describe('Employee Validation Schema - Email Field', () => {
       expect(emailError).toBeDefined();
       expect(emailError?.message).toBe(
         formatErrorMessage('ER008', [FIELD_LABELS.employeeEmail])
+      );
+    }
+  });
+
+  it('should fail with ER005 when employeeEmail is not @luvina.net domain (e.g. user@gmail.com)', () => {
+    const result = baseEmployeeSchema.safeParse({
+      ...validBaseEmployee,
+      employeeEmail: 'user@gmail.com',
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const emailError = result.error.issues.find((issue) => issue.path.includes('employeeEmail'));
+      expect(emailError).toBeDefined();
+      expect(emailError?.message).toBe(
+        formatErrorMessage('ER005', [FIELD_LABELS.employeeEmail, 'email'])
       );
     }
   });
@@ -102,7 +117,7 @@ describe('Employee Validation Schema - Certification Dates (ER012)', () => {
     employeeName: 'Nguyen Van A',
     employeeNameKana: 'ﾀﾅｶ ﾀﾛｳ',
     employeeBirthDate: '1990/01/01',
-    employeeEmail: 'user@example.com',
+    employeeEmail: 'user@luvina.net',
     employeeTelephone: '0123456789',
     employeeLoginPassword: 'Password123!',
     employeeLoginPasswordConfirm: 'Password123!',

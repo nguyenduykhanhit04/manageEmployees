@@ -41,7 +41,7 @@ public class EmployeeValidator {
     private static final Pattern HALF_SIZE_LOGIN_ID_PATTERN = Pattern.compile("^[a-zA-Z_][a-zA-Z0-9_]*$");
     private static final Pattern TELEPHONE_PATTERN = Pattern.compile("^[0-9-+()]+$");
     private static final Pattern HALF_SIZE_ASCII_PATTERN = Pattern.compile("^[\\x20-\\x7E]+$");
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@luvina\\.net$");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
     // Danh sách các trường cho phép sắp xếp hợp lệ theo đặc tả TKAPI_ListEmployee

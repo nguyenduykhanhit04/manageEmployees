@@ -6,6 +6,7 @@ import {
   HALF_SIZE_REGEX,
   TELEPHONE_REGEX,
   HALF_SIZE_ASCII_REGEX,
+  LUVINA_EMAIL_REGEX,
 } from '@/lib/constants/regex';
 import {
   requiredString,
@@ -52,7 +53,7 @@ export const baseEmployeeSchema = z.object({
   // 5. 生年月日: ER001, ER005, ER011
   employeeBirthDate: requiredDateString(FIELD_LABELS.employeeBirthDate),
 
-  // 6. メールアドレス: ER001, ER008, ER006, ER005
+  // 6. メールアドレス: ER001, ER008, ER006, ER005 (@luvina.net)
   employeeEmail: requiredString(
     FIELD_LABELS.employeeEmail,
     VALIDATION_LIMITS.EMAIL_MAX
@@ -61,7 +62,10 @@ export const baseEmployeeSchema = z.object({
       HALF_SIZE_ASCII_REGEX,
       formatErrorMessage('ER008', [FIELD_LABELS.employeeEmail])
     )
-    .email(formatErrorMessage('ER005', [FIELD_LABELS.employeeEmail, 'email'])),
+    .regex(
+      LUVINA_EMAIL_REGEX,
+      formatErrorMessage('ER005', [FIELD_LABELS.employeeEmail, 'email'])
+    ),
 
   // 7. 電話番号: ER001, ER006, ER008
   employeeTelephone: requiredString(
