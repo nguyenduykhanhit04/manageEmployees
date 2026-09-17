@@ -36,6 +36,7 @@ export function Adm004() {
   const {
     register,
     control,
+    watch,
     formState: { errors },
   } = form;
 
@@ -126,17 +127,28 @@ export function Adm004() {
           <li className="form-group row d-flex">
             <label className="col-form-label col-sm-2">
               <i className="relative">
-                アカウント名:<span className="note-red">*</span>
+                アカウント名:{mode === 'add' && <span className="note-red">*</span>}
               </i>
             </label>
             <div className="col-sm col-sm-10">
-              <input
-                type="text"
-                className={`form-control ${errors.employeeLoginId ? 'is-invalid' : ''}`}
-                {...register('employeeLoginId')}
-              />
-              {errors.employeeLoginId && (
-                <div className="invalid-feedback d-block">{errors.employeeLoginId.message}</div>
+              {mode === 'edit' ? (
+                <>
+                  <input type="hidden" {...register('employeeLoginId')} />
+                  <div className="form-control-plaintext pt-2">
+                    {watch('employeeLoginId') || ''}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <input
+                    type="text"
+                    className={`form-control ${errors.employeeLoginId ? 'is-invalid' : ''}`}
+                    {...register('employeeLoginId')}
+                  />
+                  {errors.employeeLoginId && (
+                    <div className="invalid-feedback d-block">{errors.employeeLoginId.message}</div>
+                  )}
+                </>
               )}
             </div>
           </li>
