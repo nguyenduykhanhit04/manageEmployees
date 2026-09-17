@@ -7,6 +7,7 @@ package com.luvina.la.controller;
 
 import com.luvina.la.config.Constants;
 import com.luvina.la.dto.EmployeeDTO;
+import com.luvina.la.dto.EmployeeDetailDTO;
 import com.luvina.la.payload.request.EmployeeSaveRequest;
 import com.luvina.la.payload.response.ApiErrorMessage;
 import com.luvina.la.payload.response.ApiResponse;
@@ -99,10 +100,11 @@ public class EmployeeController {
         // 1. Kiểm tra tính hợp lệ của tham số employeeId qua Validator (bắt lỗi ER001)
         employeeValidator.validateGetEmployee(employeeId);
 
-        // 2. Gọi Service để lấy thông tin chi tiết nhân viên (bắt lỗi ER013 nếu không tìm thấy)
-        EmployeeDetailResponse response = employeeService.getEmployeeDetail(employeeId);
+        // 2. Gọi Service để lấy thông tin chi tiết nhân viên dạng DTO (bắt lỗi ER013 nếu không tìm thấy)
+        EmployeeDetailDTO employeeDetailDTO = employeeService.getEmployeeDetail(employeeId);
 
-        // 3. Trả về phản hồi thành công mã 200
+        // 3. Đóng gói DTO vào Response payload và trả về thành công mã 200
+        EmployeeDetailResponse response = new EmployeeDetailResponse(Constants.CODE_SUCCESS, employeeDetailDTO);
         return ResponseEntity.ok(response);
     }
 

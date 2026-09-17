@@ -6,7 +6,7 @@
 package com.luvina.la.repository;
 
 import com.luvina.la.dto.EmployeeDTO;
-import com.luvina.la.payload.response.EmployeeDetailResponse;
+import com.luvina.la.dto.EmployeeDetailDTO;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,8 +39,8 @@ public interface EmployeeRepositoryCustom {
      * Lấy thông tin chi tiết của một nhân viên theo mã employeeId (bao gồm phòng ban và chứng chỉ tiếng Nhật).
      *
      * @param employeeId mã định danh của nhân viên
-     * @return đối tượng EmployeeDetailResponse chứa thông tin chi tiết nhân viên nếu tồn tại
+     * @return đối tượng EmployeeDetailDTO chứa thông tin chi tiết nhân viên nếu tồn tại
      */
-    Optional<EmployeeDetailResponse> getEmployeeDetail(Long employeeId);
+    Optional<EmployeeDetailDTO> getEmployeeDetail(Long employeeId);
 }
 

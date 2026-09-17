@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.luvina.la.config.Constants;
+import com.luvina.la.dto.EmployeeDetailDTO;
 import com.luvina.la.payload.response.EmployeeDetailResponse;
 import com.luvina.la.service.EmployeeService;
 import com.luvina.la.validator.EmployeeValidator;
@@ -42,19 +43,19 @@ class EmployeeControllerTest {
     @Test
     void testGetEmployeeDetail_Success() {
         Long employeeId = 1L;
-        EmployeeDetailResponse mockResponse = new EmployeeDetailResponse();
-        mockResponse.setCode(Constants.CODE_SUCCESS);
-        mockResponse.setEmployeeId(employeeId);
-        mockResponse.setEmployeeName("Nguyễn Văn A");
+        EmployeeDetailDTO mockDTO = new EmployeeDetailDTO();
+        mockDTO.setEmployeeId(employeeId);
+        mockDTO.setEmployeeName("Nguyễn Văn A");
 
         doNothing().when(employeeValidator).validateGetEmployee(employeeId);
-        when(employeeService.getEmployeeDetail(employeeId)).thenReturn(mockResponse);
+        when(employeeService.getEmployeeDetail(employeeId)).thenReturn(mockDTO);
 
         ResponseEntity<EmployeeDetailResponse> response = employeeController.getEmployeeDetail(employeeId);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
+        assertEquals(Constants.CODE_SUCCESS, response.getBody().getCode());
         assertEquals(1L, response.getBody().getEmployeeId());
         assertEquals("Nguyễn Văn A", response.getBody().getEmployeeName());
 

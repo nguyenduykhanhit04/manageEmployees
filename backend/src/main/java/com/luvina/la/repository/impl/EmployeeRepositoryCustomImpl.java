@@ -8,7 +8,7 @@ package com.luvina.la.repository.impl;
 import com.luvina.la.config.Constants;
 import com.luvina.la.dto.EmployeeCertificationDetailDTO;
 import com.luvina.la.dto.EmployeeDTO;
-import com.luvina.la.payload.response.EmployeeDetailResponse;
+import com.luvina.la.dto.EmployeeDetailDTO;
 import com.luvina.la.repository.EmployeeRepositoryCustom;
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -151,10 +151,10 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
      * Lấy thông tin chi tiết một nhân viên bao gồm phòng ban và danh sách chứng chỉ tiếng Nhật.
      *
      * @param employeeId mã định danh của nhân viên
-     * @return đối tượng EmployeeDetailResponse chứa đầy đủ thông tin chi tiết nếu tồn tại
+     * @return đối tượng EmployeeDetailDTO chứa đầy đủ thông tin chi tiết nếu tồn tại
      */
     @Override
-    public Optional<EmployeeDetailResponse> getEmployeeDetail(Long employeeId) {
+    public Optional<EmployeeDetailDTO> getEmployeeDetail(Long employeeId) {
         // 1. Kiểm tra tham số đầu vào employeeId hợp lệ
         if (employeeId == null || employeeId <= 0) {
             return Optional.empty();
@@ -198,14 +198,14 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
             return Optional.empty();
         }
 
-        // 5. Khởi tạo đối tượng response và danh sách chứng chỉ
-        EmployeeDetailResponse employeeDetailResponse = null;
+        // 5. Khởi tạo đối tượng DTO và danh sách chứng chỉ
+        EmployeeDetailDTO employeeDetailDTO = null;
         List<EmployeeCertificationDetailDTO> certificationList = new ArrayList<>();
 
         // 6. Duyệt qua các dòng kết quả để ánh xạ dữ liệu
         for (Object[] row : rows) {
             // 6.1 Ánh xạ thông tin cơ bản của nhân viên ở dòng đầu tiên
-            if (employeeDetailResponse == null) {
+            if (employeeDetailDTO == null) {
                 Long empId = row[0] != null ? ((Number) row[0]).longValue() : null;
                 String employeeName = (String) row[1];
                 LocalDate employeeBirthDate = row[2] != null ? ((Date) row[2]).toLocalDate() : null;
@@ -216,17 +216,16 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
                 String employeeNameKana = (String) row[7];
                 String employeeLoginId = (String) row[8];
 
-                employeeDetailResponse = new EmployeeDetailResponse();
-                employeeDetailResponse.setCode(Constants.CODE_SUCCESS);
-                employeeDetailResponse.setEmployeeId(empId);
-                employeeDetailResponse.setEmployeeName(employeeName);
-                employeeDetailResponse.setEmployeeBirthDate(employeeBirthDate != null ? employeeBirthDate.format(DATE_FORMATTER) : null);
-                employeeDetailResponse.setDepartmentId(departmentId);
-                employeeDetailResponse.setDepartmentName(departmentName);
-                employeeDetailResponse.setEmployeeEmail(employeeEmail);
-                employeeDetailResponse.setEmployeeTelephone(employeeTelephone);
-                employeeDetailResponse.setEmployeeNameKana(employeeNameKana);
-                employeeDetailResponse.setEmployeeLoginId(employeeLoginId);
+                employeeDetailDTO = new EmployeeDetailDTO();
+                employeeDetailDTO.setEmployeeId(empId);
+                employeeDetailDTO.setEmployeeName(employeeName);
+                employeeDetailDTO.setEmployeeBirthDate(employeeBirthDate != null ? employeeBirthDate.format(DATE_FORMATTER) : null);
+                employeeDetailDTO.setDepartmentId(departmentId);
+                employeeDetailDTO.setDepartmentName(departmentName);
+                employeeDetailDTO.setEmployeeEmail(employeeEmail);
+                employeeDetailDTO.setEmployeeTelephone(employeeTelephone);
+                employeeDetailDTO.setEmployeeNameKana(employeeNameKana);
+                employeeDetailDTO.setEmployeeLoginId(employeeLoginId);
             }
 
             // 6.2 Ánh xạ thông tin chứng chỉ tiếng Nhật nếu nhân viên có chứng chỉ
@@ -248,12 +247,12 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
             }
         }
 
-        // 7. Gán danh sách chứng chỉ vào response
-        if (employeeDetailResponse != null) {
-            employeeDetailResponse.setCertifications(certificationList);
+        // 7. Gán danh sách chứng chỉ vào DTO
+        if (employeeDetailDTO != null) {
+            employeeDetailDTO.setCertifications(certificationList);
         }
 
-        return Optional.ofNullable(employeeDetailResponse);
+        return Optional.ofNullable(employeeDetailDTO);
     }
 }
 

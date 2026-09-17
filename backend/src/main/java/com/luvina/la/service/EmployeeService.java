@@ -6,8 +6,8 @@
 package com.luvina.la.service;
 
 import com.luvina.la.dto.EmployeeDTO;
+import com.luvina.la.dto.EmployeeDetailDTO;
 import com.luvina.la.payload.request.EmployeeSaveRequest;
-import com.luvina.la.payload.response.EmployeeDetailResponse;
 import java.util.Map;
 import org.springframework.data.domain.Page;
 
@@ -47,9 +47,9 @@ public interface EmployeeService {
      * Lấy thông tin chi tiết một nhân viên theo mã employeeId.
      *
      * @param employeeId mã định danh nhân viên
-     * @return đối tượng EmployeeDetailResponse chứa toàn bộ thông tin chi tiết nhân viên
+     * @return đối tượng EmployeeDetailDTO chứa toàn bộ thông tin chi tiết nhân viên
      */
-    EmployeeDetailResponse getEmployeeDetail(Long employeeId);
+    EmployeeDetailDTO getEmployeeDetail(Long employeeId);
 
     /**
      * Cập nhật thông tin một nhân viên và chứng chỉ tiếng Nhật trong cơ sở dữ liệu.

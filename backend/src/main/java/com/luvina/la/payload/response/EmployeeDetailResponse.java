@@ -7,6 +7,7 @@ package com.luvina.la.payload.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.luvina.la.dto.EmployeeCertificationDetailDTO;
+import com.luvina.la.dto.EmployeeDetailDTO;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
@@ -60,6 +61,28 @@ public class EmployeeDetailResponse {
         this.employeeNameKana = employeeNameKana;
         this.employeeLoginId = employeeLoginId;
         this.certifications = certifications != null ? certifications : new ArrayList<>();
+    }
+
+    /**
+     * Khởi tạo EmployeeDetailResponse từ DTO nghiệp vụ.
+     *
+     * @param code mã phản hồi HTTP
+     * @param dto DTO chứa dữ liệu chi tiết nhân viên
+     */
+    public EmployeeDetailResponse(int code, EmployeeDetailDTO dto) {
+        this.code = code;
+        if (dto != null) {
+            this.employeeId = dto.getEmployeeId();
+            this.employeeName = dto.getEmployeeName();
+            this.employeeBirthDate = dto.getEmployeeBirthDate();
+            this.departmentId = dto.getDepartmentId();
+            this.departmentName = dto.getDepartmentName();
+            this.employeeEmail = dto.getEmployeeEmail();
+            this.employeeTelephone = dto.getEmployeeTelephone();
+            this.employeeNameKana = dto.getEmployeeNameKana();
+            this.employeeLoginId = dto.getEmployeeLoginId();
+            this.certifications = dto.getCertifications() != null ? dto.getCertifications() : new ArrayList<>();
+        }
     }
 
     /**

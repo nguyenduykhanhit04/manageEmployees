@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 import com.luvina.la.config.Constants;
 import com.luvina.la.exception.BusinessException;
 import com.luvina.la.mapper.EmployeeMapper;
-import com.luvina.la.payload.response.EmployeeDetailResponse;
+import com.luvina.la.dto.EmployeeDetailDTO;
 import com.luvina.la.repository.DepartmentRepository;
 import com.luvina.la.repository.EmployeeRepository;
 import com.luvina.la.repository.EmployeesCertificationRepository;
@@ -57,19 +57,17 @@ class EmployeeServiceImplTest {
 
     @Test
     void testGetEmployeeDetail_Success() {
-        EmployeeDetailResponse mockResponse = new EmployeeDetailResponse();
-        mockResponse.setCode(Constants.CODE_SUCCESS);
-        mockResponse.setEmployeeId(1L);
-        mockResponse.setEmployeeName("Nguyễn Văn A");
+        EmployeeDetailDTO mockDTO = new EmployeeDetailDTO();
+        mockDTO.setEmployeeId(1L);
+        mockDTO.setEmployeeName("Nguyễn Văn A");
 
-        when(employeeRepository.getEmployeeDetail(1L)).thenReturn(Optional.of(mockResponse));
+        when(employeeRepository.getEmployeeDetail(1L)).thenReturn(Optional.of(mockDTO));
 
-        EmployeeDetailResponse result = employeeService.getEmployeeDetail(1L);
+        EmployeeDetailDTO result = employeeService.getEmployeeDetail(1L);
 
         assertNotNull(result);
         assertEquals(1L, result.getEmployeeId());
         assertEquals("Nguyễn Văn A", result.getEmployeeName());
-        assertEquals(200, result.getCode());
     }
 
     @Test

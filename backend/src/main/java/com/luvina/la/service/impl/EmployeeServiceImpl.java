@@ -7,13 +7,13 @@ package com.luvina.la.service.impl;
 
 import com.luvina.la.config.Constants;
 import com.luvina.la.dto.EmployeeDTO;
+import com.luvina.la.dto.EmployeeDetailDTO;
 import com.luvina.la.entity.DepartmentEntity;
 import com.luvina.la.entity.EmployeeEntity;
 import com.luvina.la.entity.EmployeesCertificationEntity;
 import com.luvina.la.exception.BusinessException;
 import com.luvina.la.mapper.EmployeeMapper;
 import com.luvina.la.payload.request.EmployeeSaveRequest;
-import com.luvina.la.payload.response.EmployeeDetailResponse;
 import com.luvina.la.repository.DepartmentRepository;
 import com.luvina.la.repository.EmployeeRepository;
 import com.luvina.la.repository.EmployeesCertificationRepository;
@@ -164,12 +164,12 @@ public class EmployeeServiceImpl implements EmployeeService {
      * Lấy thông tin chi tiết một nhân viên theo mã định danh employeeId.
      *
      * @param employeeId mã định danh nhân viên
-     * @return đối tượng EmployeeDetailResponse chứa toàn bộ thông tin chi tiết
+     * @return đối tượng EmployeeDetailDTO chứa toàn bộ thông tin chi tiết
      * @throws BusinessException nếu nhân viên không tồn tại trong hệ thống (ER013)
      */
     @Override
     @Transactional(readOnly = true)
-    public EmployeeDetailResponse getEmployeeDetail(Long employeeId) {
+    public EmployeeDetailDTO getEmployeeDetail(Long employeeId) {
         return employeeRepository.getEmployeeDetail(employeeId)
                 .orElseThrow(() -> new BusinessException(Constants.ER013, List.of(Constants.LABEL_ID)));
     }
