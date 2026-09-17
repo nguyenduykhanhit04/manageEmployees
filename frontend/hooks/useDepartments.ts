@@ -40,10 +40,9 @@ export function useDepartments() {
           }
         }
       })
-      .catch((err) => {
+      .catch(() => {
         // 2.2.3 Xử lý khi xảy ra lỗi ngoại lệ gọi API
         if (isMounted) {
-          console.error('Error fetching departments:', err);
           setErrorMessage(API_ERROR_MESSAGES.GET_DEPARTMENTS_FAILED);
         }
       })

@@ -115,10 +115,9 @@ export function useAdm002() {
           setErrorMessage(API_ERROR_MESSAGES.GET_EMPLOYEES_FAILED);
         }
       })
-      .catch((err) => {
+      .catch(() => {
         // 3.2 Xử lý khi có lỗi ngoại lệ
         if (!isMounted) return;
-        console.error('Error fetching employees:', err);
         setErrorMessage(API_ERROR_MESSAGES.GET_EMPLOYEES_FAILED);
       })
       .finally(() => {

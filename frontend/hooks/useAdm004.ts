@@ -131,8 +131,8 @@ export function useAdm004() {
             employeeCertificationScore: storedData.employeeCertificationScore || '',
           });
           return;
-        } catch (e) {
-          console.error('Error parsing stored form data:', e);
+        } catch {
+          // Bỏ qua nếu dữ liệu sessionStorage không hợp lệ
         }
       }
     }
@@ -151,8 +151,7 @@ export function useAdm004() {
             setErrorMessage(ERROR_MESSAGES.ER015);
           }
         })
-        .catch((err) => {
-          console.error('Error fetching employee for edit:', err);
+        .catch(() => {
           setIsSystemError(true);
           setErrorMessage(ERROR_MESSAGES.ER015);
         })

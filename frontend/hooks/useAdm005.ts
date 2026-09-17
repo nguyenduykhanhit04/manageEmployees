@@ -66,9 +66,8 @@ export function useAdm005() {
             setIsSystemError(true);
           }
         })
-        .catch((err) => {
+        .catch(() => {
           // 4.1.4 Bắt lỗi khi không thể kết nối hoặc API ném ngoại lệ
-          console.error('Error fetching employee detail for delete confirm:', err);
           setIsSystemError(true);
         })
         .finally(() => {

@@ -24,8 +24,7 @@ export default function LoginForm() {
           message: 'ログインに失敗しました。アカウント名またはパスワードを確認してください。',
         });
       }
-    } catch (error) {
-      console.error('Login failed:', error);
+    } catch {
       setError('root', {
         message: 'ログインに失敗しました。アカウント名またはパスワードを確認してください。',
       });
