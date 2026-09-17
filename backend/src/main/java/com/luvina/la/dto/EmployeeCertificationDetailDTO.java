@@ -26,4 +26,26 @@ public class EmployeeCertificationDetailDTO {
     private String startDate;
     private String endDate;
     private BigDecimal score;
+
+    /**
+     * Khởi tạo DTO từ kết quả truy vấn JPQL với các trường ngày kiểu LocalDate.
+     *
+     * @param certificationId mã chứng chỉ
+     * @param certificationName tên chứng chỉ
+     * @param startDate ngày cấp chứng chỉ
+     * @param endDate ngày hết hạn chứng chỉ
+     * @param score điểm thi
+     */
+    public EmployeeCertificationDetailDTO(
+            Long certificationId,
+            String certificationName,
+            java.time.LocalDate startDate,
+            java.time.LocalDate endDate,
+            BigDecimal score) {
+        this.certificationId = certificationId;
+        this.certificationName = certificationName;
+        this.startDate = startDate != null ? startDate.format(java.time.format.DateTimeFormatter.ofPattern("yyyy/MM/dd")) : null;
+        this.endDate = endDate != null ? endDate.format(java.time.format.DateTimeFormatter.ofPattern("yyyy/MM/dd")) : null;
+        this.score = score;
+    }
 }

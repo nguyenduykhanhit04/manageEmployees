@@ -71,6 +71,15 @@ public interface EmployeeRepository extends CrudRepository<EmployeeEntity, Long>
     Optional<EmployeeEntity> findByEmployeeId(Long employeeId);
 
     /**
+     * Tìm nhân viên theo mã định danh và vai trò (role = 1: User).
+     *
+     * @param employeeId mã nhân viên
+     * @param employeeRole vai trò nhân viên
+     * @return thông tin entity nhân viên nếu tồn tại
+     */
+    Optional<EmployeeEntity> findByEmployeeIdAndEmployeeRole(Long employeeId, Integer employeeRole);
+
+    /**
      * Đếm tổng số nhân viên thỏa mãn điều kiện tìm kiếm.
      *
      * @param employeeName tên nhân viên cần tìm kiếm

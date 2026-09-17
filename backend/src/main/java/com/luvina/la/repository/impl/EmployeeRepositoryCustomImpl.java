@@ -6,18 +6,14 @@
 package com.luvina.la.repository.impl;
 
 import com.luvina.la.config.Constants;
-import com.luvina.la.dto.EmployeeCertificationDetailDTO;
 import com.luvina.la.dto.EmployeeDTO;
-import com.luvina.la.dto.EmployeeDetailDTO;
 import com.luvina.la.repository.EmployeeRepositoryCustom;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -35,8 +31,6 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
 
     @PersistenceContext
     private EntityManager entityManager;
-
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
     /**
      * Lấy danh sách nhân viên với thứ tự sắp xếp được xây dựng động theo thứ tự click từ Frontend.
@@ -126,78 +120,15 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
         query.setParameter("limit", limit);
         query.setParameter("offset", offset);
 
-        // 8. Chuyển đổi dữ liệu Tuple sang danh sách EmployeeDTO
-        @SuppressWarnings("unchecked")
-        List<Tuple> rows = query.getResultList();
+        // 8. Chuyển đổi dữ liệu Tuple sang danh sách EmployeeDTO (không dùng unchecked cast)
+        List<?> rows = query.getResultList();
         List<EmployeeDTO> result = new ArrayList<>();
 
-        for (Tuple row : rows) {
-            result.add(mapEmployeeFromTuple(row));
+        for (Object row : rows) {
+            result.add(mapEmployeeFromTuple((Tuple) row));
         }
 
         return result;
-    }
-
-    /**
-     * Lấy thông tin chi tiết một nhân viên bao gồm phòng ban và danh sách chứng chỉ tiếng Nhật.
-     *
-     * @param employeeId mã định danh của nhân viên
-     * @return đối tượng EmployeeDetailDTO chứa đầy đủ thông tin chi tiết nếu tồn tại
-     */
-    @Override
-    public Optional<EmployeeDetailDTO> getEmployeeDetail(Long employeeId) {
-        // 1. Khởi tạo câu truy vấn SQL Native lấy thông tin nhân viên, phòng ban và chứng chỉ
-        String sql = """
-            select
-                e.employee_id as employee_id,
-                e.employee_name as employee_name,
-                e.employee_birth_date as employee_birth_date,
-                d.department_id as department_id,
-                d.department_name as department_name,
-                e.employee_email as employee_email,
-                e.employee_telephone as employee_telephone,
-                e.employee_name_kana as employee_name_kana,
-                e.employee_login_id as employee_login_id,
-                c.certification_id as certification_id,
-                c.certification_name as certification_name,
-                ec.start_date as start_date,
-                ec.end_date as end_date,
-                ec.score as score
-            from employees e
-            inner join departments d on d.department_id = e.department_id
-            left join employees_certifications ec on ec.employee_id = e.employee_id
-            left join certifications c on c.certification_id = ec.certification_id
-            where e.employee_id = :employeeId
-            and e.employee_role = 1
-            order by c.certification_level asc
-        """;
-
-        Query query = entityManager.createNativeQuery(sql, Tuple.class);
-        query.setParameter("employeeId", employeeId);
-
-        // 2. Thực thi truy vấn và lấy danh sách kết quả Tuple
-        @SuppressWarnings("unchecked")
-        List<Tuple> rows = query.getResultList();
-
-        // 3. Nếu không tìm thấy bản ghi nào thì trả về rỗng
-        if (rows == null || rows.isEmpty()) {
-            return Optional.empty();
-        }
-
-        // 4. Ánh xạ thông tin cơ bản của nhân viên từ dòng đầu tiên
-        EmployeeDetailDTO employeeDetailDTO = mapEmployeeDetailFromTuple(rows.get(0));
-
-        // 5. Duyệt qua các dòng kết quả để gom danh sách chứng chỉ tiếng Nhật (nếu có)
-        List<EmployeeCertificationDetailDTO> certificationList = new ArrayList<>();
-        for (Tuple row : rows) {
-            EmployeeCertificationDetailDTO cert = mapCertificationFromTuple(row);
-            if (cert != null) {
-                certificationList.add(cert);
-            }
-        }
-        employeeDetailDTO.setCertifications(certificationList);
-
-        return Optional.of(employeeDetailDTO);
     }
 
     /**
@@ -218,47 +149,6 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
         BigDecimal score = getBigDecimal(tuple, "score");
 
         return new EmployeeDTO(empId, name, birthDate, departmentName, employeeEmail, employeeTelephone, certificationName, endDate, score);
-    }
-
-    /**
-     * Ánh xạ thông tin cơ bản nhân viên từ Tuple theo tên cột.
-     *
-     * @param tuple dòng dữ liệu Tuple từ database
-     * @return đối tượng EmployeeDetailDTO chứa thông tin cơ bản
-     */
-    private EmployeeDetailDTO mapEmployeeDetailFromTuple(Tuple tuple) {
-        EmployeeDetailDTO dto = new EmployeeDetailDTO();
-        dto.setEmployeeId(getLong(tuple, "employee_id"));
-        dto.setEmployeeName(getString(tuple, "employee_name"));
-        dto.setEmployeeBirthDate(formatDate(tuple.get("employee_birth_date")));
-        dto.setDepartmentId(getLong(tuple, "department_id"));
-        dto.setDepartmentName(getString(tuple, "department_name"));
-        dto.setEmployeeEmail(getString(tuple, "employee_email"));
-        dto.setEmployeeTelephone(getString(tuple, "employee_telephone"));
-        dto.setEmployeeNameKana(getString(tuple, "employee_name_kana"));
-        dto.setEmployeeLoginId(getString(tuple, "employee_login_id"));
-        return dto;
-    }
-
-    /**
-     * Ánh xạ thông tin chứng chỉ tiếng Nhật từ Tuple theo tên cột.
-     *
-     * @param tuple dòng dữ liệu Tuple từ database
-     * @return đối tượng EmployeeCertificationDetailDTO hoặc null nếu không có chứng chỉ
-     */
-    private EmployeeCertificationDetailDTO mapCertificationFromTuple(Tuple tuple) {
-        Long certificationId = getLong(tuple, "certification_id");
-        if (certificationId == null) {
-            return null;
-        }
-
-        return new EmployeeCertificationDetailDTO(
-                certificationId,
-                getString(tuple, "certification_name"),
-                formatDate(tuple.get("start_date")),
-                formatDate(tuple.get("end_date")),
-                getBigDecimal(tuple, "score")
-        );
     }
 
     /**
@@ -289,14 +179,6 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
             return (BigDecimal) val;
         }
         return new BigDecimal(val.toString());
-    }
-
-    /**
-     * Chuyển đổi đối tượng ngày bất kỳ (Date hoặc LocalDate) sang chuỗi theo định dạng yyyy/MM/dd.
-     */
-    private String formatDate(Object dateObj) {
-        LocalDate localDate = toLocalDate(dateObj);
-        return localDate != null ? localDate.format(DATE_FORMATTER) : null;
     }
 
     /**

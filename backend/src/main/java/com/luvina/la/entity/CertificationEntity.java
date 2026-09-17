@@ -35,4 +35,7 @@ public class CertificationEntity implements Serializable {
 
     @Column(name = "certification_name", unique = true, nullable = false)
     private String certificationName;
+
+    @Column(name = "certification_level", nullable = false)
+    private Integer certificationLevel;
 }

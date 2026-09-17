@@ -170,8 +170,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(readOnly = true)
     public EmployeeDetailDTO getEmployeeDetail(Long employeeId) {
-        return employeeRepository.getEmployeeDetail(employeeId)
+        // 1. Tìm nhân viên theo ID và vai trò role = 1 (ném lỗi ER013 nếu không tồn tại)
+        EmployeeEntity employee = employeeRepository.findByEmployeeIdAndEmployeeRole(employeeId, 1)
                 .orElseThrow(() -> new BusinessException(Constants.ER013, List.of(Constants.LABEL_ID)));
+
+        // 2. Chuyển đổi thông tin cơ bản của nhân viên sang DTO qua MapStruct
+        EmployeeDetailDTO employeeDetailDTO = employeeMapper.toDetailDTO(employee);
+
+        // 3. Lấy danh sách chứng chỉ tiếng Nhật của nhân viên và gán vào DTO
+        List<com.luvina.la.dto.EmployeeCertificationDetailDTO> certs =
+                employeesCertificationRepository.findCertificationsByEmployeeId(employeeId);
+        employeeDetailDTO.setCertifications(certs != null ? certs : new ArrayList<>());
+
+        return employeeDetailDTO;
     }
 
     /**

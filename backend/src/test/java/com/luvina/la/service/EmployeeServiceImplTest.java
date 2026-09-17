@@ -15,10 +15,12 @@ import com.luvina.la.config.Constants;
 import com.luvina.la.exception.BusinessException;
 import com.luvina.la.mapper.EmployeeMapper;
 import com.luvina.la.dto.EmployeeDetailDTO;
+import com.luvina.la.entity.EmployeeEntity;
 import com.luvina.la.repository.DepartmentRepository;
 import com.luvina.la.repository.EmployeeRepository;
 import com.luvina.la.repository.EmployeesCertificationRepository;
 import com.luvina.la.service.impl.EmployeeServiceImpl;
+import java.util.ArrayList;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,11 +59,17 @@ class EmployeeServiceImplTest {
 
     @Test
     void testGetEmployeeDetail_Success() {
+        EmployeeEntity mockEntity = new EmployeeEntity();
+        mockEntity.setEmployeeId(1L);
+        mockEntity.setEmployeeName("Nguyễn Văn A");
+
         EmployeeDetailDTO mockDTO = new EmployeeDetailDTO();
         mockDTO.setEmployeeId(1L);
         mockDTO.setEmployeeName("Nguyễn Văn A");
 
-        when(employeeRepository.getEmployeeDetail(1L)).thenReturn(Optional.of(mockDTO));
+        when(employeeRepository.findByEmployeeIdAndEmployeeRole(1L, 1)).thenReturn(Optional.of(mockEntity));
+        when(employeeMapper.toDetailDTO(mockEntity)).thenReturn(mockDTO);
+        when(employeesCertificationRepository.findCertificationsByEmployeeId(1L)).thenReturn(new ArrayList<>());
 
         EmployeeDetailDTO result = employeeService.getEmployeeDetail(1L);
 
@@ -72,7 +80,7 @@ class EmployeeServiceImplTest {
 
     @Test
     void testGetEmployeeDetail_NotFound_ThrowsER013() {
-        when(employeeRepository.getEmployeeDetail(999L)).thenReturn(Optional.empty());
+        when(employeeRepository.findByEmployeeIdAndEmployeeRole(999L, 1)).thenReturn(Optional.empty());
 
         BusinessException ex = assertThrows(
                 BusinessException.class,

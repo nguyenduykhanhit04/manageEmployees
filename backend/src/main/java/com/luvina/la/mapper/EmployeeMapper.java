@@ -23,5 +23,17 @@ public interface EmployeeMapper {
     @Mapping(target = "department.departmentId", source = "departmentId")
     @Mapping(target = "employeeBirthDate", source = "employeeBirthDate", dateFormat = "yyyy/MM/dd")
     EmployeeEntity toEntity(EmployeeSaveRequest request);
+
+    /**
+     * Chuyển đổi từ EmployeeEntity sang EmployeeDetailDTO.
+     *
+     * @param employee đối tượng entity nhân viên
+     * @return đối tượng EmployeeDetailDTO chứa thông tin cơ bản
+     */
+    @Mapping(target = "departmentId", source = "department.departmentId")
+    @Mapping(target = "departmentName", source = "department.departmentName")
+    @Mapping(target = "employeeBirthDate", source = "employeeBirthDate", dateFormat = "yyyy/MM/dd")
+    @Mapping(target = "certifications", ignore = true)
+    com.luvina.la.dto.EmployeeDetailDTO toDetailDTO(EmployeeEntity employee);
 }
 
