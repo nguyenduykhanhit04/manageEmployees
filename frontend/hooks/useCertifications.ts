@@ -22,38 +22,34 @@ export function useCertifications() {
   useEffect(() => {
     let isMounted = true;
 
-    // 2.1 Bắt đầu trạng thái đang tải dữ liệu
-    setIsLoading(true);
+    // 2.1 Hàm bất đồng bộ gọi API lấy danh sách chứng chỉ
+    const fetchCertifications = async () => {
+      setIsLoading(true);
+      try {
+        const res = await getCertifications();
+        if (!isMounted) return;
 
-    // 2.2 Gọi API getCertifications từ tầng lib/api
-    getCertifications()
-      .then((res) => {
-        // 2.2.1 Kiểm tra component còn đang mounted hay không
-        if (isMounted) {
-          // 2.2.2 Kiểm tra kết quả phản hồi từ API có thành công (mã 200) hay không
-          if (res && res.code === HTTP_STATUS.OK) {
-            // Lưu danh sách chứng chỉ vào state
-            setCertifications(res.certifications || []);
-          } else {
-            // Lưu thông báo lỗi khi API phản hồi không thành công
-            setErrorMessage(API_ERROR_MESSAGES.GET_CERTIFICATIONS_FAILED);
-          }
+        if (res && res.code === HTTP_STATUS.OK) {
+          setCertifications(res.certifications || []);
+          return;
         }
-      })
-      .catch(() => {
-        // 2.2.3 Xử lý khi xảy ra lỗi ngoại lệ gọi API
+        throw new Error();
+      } catch {
+        // 2.2 Xử lý khi API lỗi hoặc ném ngoại lệ
         if (isMounted) {
           setErrorMessage(API_ERROR_MESSAGES.GET_CERTIFICATIONS_FAILED);
         }
-      })
-      .finally(() => {
-        // 2.2.4 Tắt trạng thái đang tải dữ liệu khi hoàn tất
+      } finally {
+        // 2.3 Tắt trạng thái đang tải dữ liệu khi hoàn tất
         if (isMounted) {
           setIsLoading(false);
         }
-      });
+      }
+    };
 
-    // 2.3 Hàm dọn dẹp khi unmount component để tránh memory leak
+    fetchCertifications();
+
+    // 2.4 Hàm dọn dẹp khi unmount component để tránh memory leak
     return () => {
       isMounted = false;
     };
