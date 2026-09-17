@@ -4,6 +4,7 @@ import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getStoredReturnUrl } from '@/lib/constants/storage';
+import { SUCCESS_MESSAGES } from '@/lib/constants/messages';
 
 /**
  * Component hiển thị nội dung hoàn thành thao tác thêm/sửa/xóa nhân viên (ADM006).
@@ -17,11 +18,11 @@ export function Adm006() {
   const mode = searchParams.get('mode') || 'add';
 
   // 2. Xác định thông điệp hoàn thành tương ứng
-  let message = 'ユーザの登録が完了しました。'; // MSG001: Mặc định thêm mới
+  let message = SUCCESS_MESSAGES.MSG001;
   if (mode === 'delete') {
-    message = 'ユーザの削除が完了しました。'; // MSG003: Xóa thành công
+    message = SUCCESS_MESSAGES.MSG003;
   } else if (mode === 'edit') {
-    message = 'ユーザの更新が完了しました。'; // MSG002: Cập nhật thành công
+    message = SUCCESS_MESSAGES.MSG002;
   }
 
   // 3. Xử lý khi nhấn nút OK -> Điều hướng về URL đã lưu trong sessionStorage (hoặc danh sách ADM002)

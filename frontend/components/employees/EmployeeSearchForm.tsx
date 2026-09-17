@@ -28,7 +28,7 @@ export interface EmployeeSearchFormProps {
  *
  * @author nguyenduykhanh2
  */
-export const EmployeeSearchForm: React.FC<EmployeeSearchFormProps> = ({
+export function EmployeeSearchForm({
   employeeName,
   onEmployeeNameChange,
   departmentId,
@@ -36,7 +36,7 @@ export const EmployeeSearchForm: React.FC<EmployeeSearchFormProps> = ({
   departments,
   onSearch,
   onAddNew,
-}) => {
+}: EmployeeSearchFormProps) {
   return (
     <div className="search-memb">
       <h1 className="title">

@@ -37,7 +37,7 @@ export interface EmployeeTableProps {
  * Component bảng danh sách nhân viên hiển thị 9 cột dữ liệu,
  * hỗ trợ sắp xếp các cột, thanh phân trang và tự động cắt ngắn chuỗi nếu quá 22 ký tự.
  */
-export const EmployeeTable: React.FC<EmployeeTableProps> = ({
+export function EmployeeTable({
   employees,
   loading,
   sortOrders,
@@ -45,7 +45,7 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
   currentPage,
   totalPages,
   onPageChange,
-}) => {
+}: EmployeeTableProps) {
   /**
    * Tạo đường dẫn chi tiết sang màn hình ADM003.
    */

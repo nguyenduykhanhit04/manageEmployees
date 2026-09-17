@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
-const Header = () => {
+export default function Header() {
   return (
     <nav className="nav-bar">
       <div className="content-main">
@@ -22,7 +22,5 @@ const Header = () => {
       </div>
     </nav>
   );
-};
-
-export default Header;
+}
 

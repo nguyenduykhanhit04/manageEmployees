@@ -22,12 +22,12 @@ export interface PaginationProps {
  *
  * @author nguyenduykhanh2
  */
-export const Pagination: React.FC<PaginationProps> = ({
+export function Pagination({
   currentPage,
   totalPages,
   onPageChange,
   maxDisplayPages = PAGING.MAX_DISPLAY_PAGES,
-}) => {
+}: PaginationProps) {
   if (totalPages <= 1) {
     return null;
   }
