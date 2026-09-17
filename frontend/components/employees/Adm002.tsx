@@ -8,9 +8,6 @@ import { EmployeeTable } from '@/components/employees/EmployeeTable';
 
 /**
  * Component nội dung màn hình danh sách nhân viên (ADM002).
- *
- * @author nguyenduykhanh2
- * @return Giao diện danh sách nhân viên
  */
 export function Adm002() {
   useAuth();
@@ -27,7 +24,6 @@ export function Adm002() {
     sortOrders,
     currentPage,
     totalPages,
-    currentReturnUrl,
     handleSearch,
     handleSort,
     handlePageChange,
@@ -63,7 +59,6 @@ export function Adm002() {
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
-        returnUrl={currentReturnUrl}
       />
     </>
   );

@@ -7,20 +7,17 @@ import { getEmployee, deleteEmployee } from '@/lib/api/employee.api';
 import { ROUTES } from '@/lib/constants/routes';
 import { HTTP_STATUS } from '@/lib/constants/http';
 import { formatErrorMessage, ERROR_MESSAGES } from '@/lib/constants/messages';
+import { getStoredReturnUrl } from '@/lib/constants/storage';
 
 /**
  * Custom Hook quản lý dữ liệu và các hành động của màn hình Chi tiết nhân viên (ADM003).
- *
- * @author nguyenduykhanh2
- * @return Các state dữ liệu nhân viên, trạng thái tải và các hàm handler điều hướng
  */
 export function useAdm003() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // 1. Đọc employeeId và returnTo từ URLSearchParams
+  // 1. Đọc employeeId từ URL
   const employeeId = searchParams.get('id') || searchParams.get('employeeId');
-  const returnTo = searchParams.get('returnTo') || ROUTES.EMPLOYEE_LIST;
 
   // 2. Khai báo các state quản lý
   const [employee, setEmployee] = useState<EmployeeDetailResponse | null>(null);
@@ -62,15 +59,15 @@ export function useAdm003() {
 
   // 5. Xử lý khi nhấn nút "Quay lại" (戻る) hoặc nút "OK" trên màn hình System Error
   const handleBack = useCallback(() => {
-    router.push(returnTo);
-  }, [returnTo, router]);
+    router.push(getStoredReturnUrl());
+  }, [router]);
 
-  // 6. Xử lý khi nhấn nút "Chỉnh sửa" (編集) -> Chuyển sang ADM004 (mode=edit) kèm returnTo phẳng của ADM002
+  // 6. Xử lý khi nhấn nút "Chỉnh sửa" (編集) -> Chuyển sang ADM004 (mode=edit)
   const handleEdit = useCallback(() => {
     if (!employeeId) return;
-    const editUrl = `${ROUTES.EMPLOYEE_EDIT}?mode=edit&id=${employeeId}&returnTo=${encodeURIComponent(returnTo)}`;
+    const editUrl = `${ROUTES.EMPLOYEE_EDIT}?mode=edit&id=${employeeId}`;
     router.push(editUrl);
-  }, [employeeId, returnTo, router]);
+  }, [employeeId, router]);
 
   // 7. Xử lý khi nhấn nút "Xóa" (削除) -> Hiển thị popup xác nhận xóa (window.confirm)
   const handleDelete = useCallback(async () => {
@@ -91,7 +88,7 @@ export function useAdm003() {
       const response = await deleteEmployee(employeeId);
       if (response && response.code === HTTP_STATUS.OK) {
         // 7.2.1 Điều hướng sang màn hình Hoàn thành ADM006 kèm mode=delete
-        router.push(`${ROUTES.EMPLOYEE_COMPLETE}?mode=delete&returnTo=${encodeURIComponent(returnTo)}`);
+        router.push(`${ROUTES.EMPLOYEE_COMPLETE}?mode=delete`);
       } else {
         setIsSystemError(true);
         setErrorMessage(ERROR_MESSAGES.ER015);
@@ -107,14 +104,13 @@ export function useAdm003() {
     } finally {
       setIsLoading(false);
     }
-  }, [employeeId, returnTo, router]);
+  }, [employeeId, router]);
 
   return {
     employee,
     loading: isLoading,
     errorMessage,
     isSystemError,
-    returnTo,
     handleBack,
     handleEdit,
     handleDelete,

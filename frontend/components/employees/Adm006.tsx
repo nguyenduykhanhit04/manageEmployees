@@ -3,22 +3,18 @@
 import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ROUTES } from '@/lib/constants/routes';
+import { getStoredReturnUrl } from '@/lib/constants/storage';
 
 /**
  * Component hiển thị nội dung hoàn thành thao tác thêm/sửa/xóa nhân viên (ADM006).
- *
- * @author nguyenduykhanh2
- * @return Giao diện thông báo hoàn thành
  */
 export function Adm006() {
   useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // 1. Đọc mode và returnTo từ searchParams
+  // 1. Đọc mode từ searchParams
   const mode = searchParams.get('mode') || 'add';
-  const returnTo = searchParams.get('returnTo') || ROUTES.EMPLOYEE_LIST;
 
   // 2. Xác định thông điệp hoàn thành tương ứng
   let message = 'ユーザの登録が完了しました。'; // MSG001: Mặc định thêm mới
@@ -28,9 +24,9 @@ export function Adm006() {
     message = 'ユーザの更新が完了しました。'; // MSG002: Cập nhật thành công
   }
 
-  // 3. Xử lý khi nhấn nút OK -> Điều hướng về returnTo (hoặc danh sách ADM002)
+  // 3. Xử lý khi nhấn nút OK -> Điều hướng về URL đã lưu trong sessionStorage (hoặc danh sách ADM002)
   const handleOk = () => {
-    router.push(returnTo);
+    router.push(getStoredReturnUrl());
   };
 
   return (

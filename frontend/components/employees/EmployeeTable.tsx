@@ -31,15 +31,11 @@ export interface EmployeeTableProps {
   totalPages: number;
   /** Callback xử lý khi người dùng chọn trang khác */
   onPageChange: (page: number) => void;
-  /** URL quay lại kèm đầy đủ query params để truyền sang màn hình chi tiết */
-  returnUrl?: string;
 }
 
 /**
  * Component bảng danh sách nhân viên hiển thị 9 cột dữ liệu,
  * hỗ trợ sắp xếp các cột, thanh phân trang và tự động cắt ngắn chuỗi nếu quá 22 ký tự.
- *
- * @author nguyenduykhanh2
  */
 export const EmployeeTable: React.FC<EmployeeTableProps> = ({
   employees,
@@ -49,15 +45,11 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
   currentPage,
   totalPages,
   onPageChange,
-  returnUrl,
 }) => {
   /**
-   * Tạo đường dẫn chi tiết kèm tham số returnTo.
+   * Tạo đường dẫn chi tiết sang màn hình ADM003.
    */
   const getDetailLink = (employeeId: number) => {
-    if (returnUrl) {
-      return `${ROUTES.EMPLOYEE_DETAIL}?${QUERY_PARAMS.ID}=${employeeId}&${QUERY_PARAMS.RETURN_TO}=${encodeURIComponent(returnUrl)}`;
-    }
     return `${ROUTES.EMPLOYEE_DETAIL}?${QUERY_PARAMS.ID}=${employeeId}`;
   };
 

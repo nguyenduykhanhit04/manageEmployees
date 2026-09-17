@@ -3,6 +3,7 @@ import { useAdm003 } from '@/hooks/useAdm003';
 import { getEmployee, deleteEmployee } from '@/lib/api/employee.api';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ROUTES } from '@/lib/constants/routes';
+import { setStoredReturnUrl } from '@/lib/constants/storage';
 
 // Mock dependencies
 jest.mock('@/lib/api/employee.api');
@@ -27,7 +28,7 @@ describe('useAdm003 Hook', () => {
 
   it('should trigger system error if no id is provided in searchParams', async () => {
     mockedUseSearchParams.mockReturnValue({
-      get: (key: string) => (key === 'returnTo' ? '/employees/adm002' : null),
+      get: () => null,
     });
 
     const { result } = renderHook(() => useAdm003());
@@ -43,11 +44,7 @@ describe('useAdm003 Hook', () => {
 
   it('should fetch and set employee details successfully when valid id is provided', async () => {
     mockedUseSearchParams.mockReturnValue({
-      get: (key: string) => {
-        if (key === 'id') return '1';
-        if (key === 'returnTo') return '/employees/adm002';
-        return null;
-      },
+      get: (key: string) => (key === 'id' ? '1' : null),
     });
 
     const mockEmployeeData = {
@@ -114,10 +111,11 @@ describe('useAdm003 Hook', () => {
   });
 
   it('should handle navigation buttons correctly', async () => {
+    setStoredReturnUrl('/employees/adm002?employee_name=test');
+
     mockedUseSearchParams.mockReturnValue({
       get: (key: string) => {
         if (key === 'id') return '1';
-        if (key === 'returnTo') return '/employees/adm002?employee_name=test';
         return null;
       },
     });
@@ -145,7 +143,7 @@ describe('useAdm003 Hook', () => {
       result.current.handleEdit();
     });
     expect(mockPush).toHaveBeenCalledWith(
-      `${ROUTES.EMPLOYEE_EDIT}?mode=edit&id=1&returnTo=${encodeURIComponent('/employees/adm002?employee_name=test')}`
+      `${ROUTES.EMPLOYEE_EDIT}?mode=edit&id=1`
     );
 
     // Test handleDelete khi user cancel
@@ -166,9 +164,10 @@ describe('useAdm003 Hook', () => {
     });
     expect(mockedDeleteEmployee).toHaveBeenCalledWith('1');
     expect(mockPush).toHaveBeenCalledWith(
-      `${ROUTES.EMPLOYEE_COMPLETE}?mode=delete&returnTo=${encodeURIComponent('/employees/adm002?employee_name=test')}`
+      `${ROUTES.EMPLOYEE_COMPLETE}?mode=delete`
     );
 
     confirmSpy.mockRestore();
+    sessionStorage.clear();
   });
 });

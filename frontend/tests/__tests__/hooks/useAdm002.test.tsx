@@ -74,7 +74,7 @@ describe('useAdm002 Hook', () => {
     expect(result.current.sortPriority[0]).toBe('ord_employee_name');
   });
 
-  it('should navigate to add employee with returnTo when handleAddNew is called', async () => {
+  it('should navigate to add employee when handleAddNew is called', async () => {
     const { result } = renderHook(() => useAdm002());
 
     await waitFor(() => {
@@ -85,11 +85,6 @@ describe('useAdm002 Hook', () => {
       result.current.handleAddNew();
     });
 
-    expect(mockPush).toHaveBeenCalledWith(
-      expect.stringContaining('/employees/adm004')
-    );
-    expect(mockPush).toHaveBeenCalledWith(
-      expect.stringContaining('returnTo=')
-    );
+    expect(mockPush).toHaveBeenCalledWith('/employees/adm004?mode=add');
   });
 });

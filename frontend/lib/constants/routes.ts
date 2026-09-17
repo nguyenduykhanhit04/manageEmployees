@@ -21,5 +21,4 @@ export const QUERY_PARAMS = {
   OFFSET: 'offset',
   LIMIT: 'limit',
   ID: 'id',
-  RETURN_TO: 'returnTo',
 } as const;
