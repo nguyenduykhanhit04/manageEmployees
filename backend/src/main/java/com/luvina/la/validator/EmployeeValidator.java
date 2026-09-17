@@ -234,10 +234,6 @@ public class EmployeeValidator {
         validateCommonFields(request);
     }
 
-    // =========================================================================
-    // CÁC HÀM VALIDATION DÙNG CHUNG (REUSABLE VALIDATION HELPERS)
-    // =========================================================================
-
     /**
      * Kiểm tra các trường thông tin chung giữa Add và Update.
      *
