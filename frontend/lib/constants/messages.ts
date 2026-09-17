@@ -16,6 +16,13 @@ export const SYSTEM_MESSAGES = {
 } as const;
 
 /**
+ * Định nghĩa các thông báo xác nhận hành động (Confirm Dialog)
+ */
+export const CONFIRM_MESSAGES = {
+  DELETE: '削除しますが、よろしいですか。', // Xác nhận xóa nhân viên
+} as const;
+
+/**
  * Định nghĩa các mẫu câu thông báo lỗi chuẩn (ER001 - ER023)
  * {0}, {1}, {2}... sẽ được thay thế động bởi danh sách params tương ứng.
  */

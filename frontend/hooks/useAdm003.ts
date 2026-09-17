@@ -2,15 +2,19 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { AxiosError } from 'axios';
 import { EmployeeDetailResponse } from '@/types/employee';
+import { ApiResponse } from '@/types/api';
 import { getEmployee, deleteEmployee } from '@/lib/api/employee.api';
 import { ROUTES } from '@/lib/constants/routes';
 import { HTTP_STATUS } from '@/lib/constants/http';
-import { formatErrorMessage, ERROR_MESSAGES } from '@/lib/constants/messages';
+import { formatErrorMessage, ERROR_MESSAGES, CONFIRM_MESSAGES } from '@/lib/constants/messages';
 import { getStoredReturnUrl } from '@/lib/constants/storage';
 
 /**
  * Custom Hook quản lý dữ liệu và các hành động của màn hình Chi tiết nhân viên (ADM003).
+ *
+ * @author nguyenduykhanh2
  */
 export function useAdm003() {
   const router = useRouter();
@@ -38,7 +42,7 @@ export function useAdm003() {
         setIsSystemError(true);
         setErrorMessage(ERROR_MESSAGES.ER015);
       }
-    } catch (error: any) {
+    } catch {
       setIsSystemError(true);
       setErrorMessage(ERROR_MESSAGES.ER015);
     } finally {
@@ -74,7 +78,7 @@ export function useAdm003() {
     if (!employeeId) return;
 
     // 7.1 Hiển thị hộp thoại xác nhận của trình duyệt
-    const isConfirmed = window.confirm('削除しますが、よろしいですか。');
+    const isConfirmed = window.confirm(CONFIRM_MESSAGES.DELETE);
     if (!isConfirmed) {
       return;
     }
@@ -93,11 +97,14 @@ export function useAdm003() {
         setIsSystemError(true);
         setErrorMessage(ERROR_MESSAGES.ER015);
       }
-    } catch (error: any) {
+    } catch (error) {
       setIsSystemError(true);
-      const errorData = error.response?.data;
-      if (errorData?.message?.code) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      const errorData = axiosError.response?.data;
+      if (errorData?.message && typeof errorData.message === 'object' && errorData.message.code) {
         setErrorMessage(formatErrorMessage(errorData.message.code, errorData.message.params || []));
+      } else if (typeof errorData?.message === 'string') {
+        setErrorMessage(errorData.message);
       } else {
         setErrorMessage(ERROR_MESSAGES.ER015);
       }
