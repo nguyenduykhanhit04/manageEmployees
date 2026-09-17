@@ -97,33 +97,40 @@ export function useAdm002() {
       sortPayload[fieldKey] = urlSortOrders[fieldKey];
     });
 
-    // 3. Gọi API lấy danh sách nhân viên
-    getEmployees({
-      employee_name: paramEmployeeName.trim() || undefined,
-      department_id: paramDepartmentId ? Number(paramDepartmentId) : undefined,
-      ...sortPayload,
-      offset: currentOffset,
-      limit: limit,
-    })
-      .then((res) => {
-        // 3.1 Kiểm tra component còn mounted và API thành công
+    // 3. Hàm bất đồng bộ gọi API lấy danh sách nhân viên
+    const fetchEmployees = async () => {
+      setIsLoading(true);
+      setErrorMessage('');
+      try {
+        const res = await getEmployees({
+          employee_name: paramEmployeeName.trim() || undefined,
+          department_id: paramDepartmentId ? Number(paramDepartmentId) : undefined,
+          ...sortPayload,
+          offset: currentOffset,
+          limit: limit,
+        });
         if (!isMounted) return;
+
         if (res && res.code === HTTP_STATUS.OK) {
           setEmployees(res.employees || []);
           setTotalRecords(res.totalRecords || 0);
-        } else {
+          return;
+        }
+        throw new Error();
+      } catch {
+        // 3.1 Xử lý khi API phản hồi lỗi hoặc gặp ngoại lệ
+        if (isMounted) {
           setErrorMessage(API_ERROR_MESSAGES.GET_EMPLOYEES_FAILED);
         }
-      })
-      .catch(() => {
-        // 3.2 Xử lý khi có lỗi ngoại lệ
-        if (!isMounted) return;
-        setErrorMessage(API_ERROR_MESSAGES.GET_EMPLOYEES_FAILED);
-      })
-      .finally(() => {
-        // 3.3 Tắt trạng thái tải khi hoàn tất
-        if (isMounted) setIsLoading(false);
-      });
+      } finally {
+        // 3.2 Tắt trạng thái tải khi hoàn tất
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchEmployees();
 
     return () => {
       isMounted = false;

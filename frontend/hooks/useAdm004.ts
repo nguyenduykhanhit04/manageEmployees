@@ -130,25 +130,26 @@ export function useAdm004() {
 
     // 4.3 Xử lý khi là Mode Chỉnh sửa (mode=edit và có employeeId)
     if (isEditMode && employeeId) {
-      setIsLoadingEmployee(true);
-      setIsSystemError(false);
-      getEmployee(employeeId)
-        .then((emp) => {
-          // 4.3.1 Map dữ liệu API response sang EmployeeFormData và reset form
+      const fetchEmployee = async () => {
+        setIsLoadingEmployee(true);
+        setIsSystemError(false);
+        try {
+          const emp = await getEmployee(employeeId);
           if (emp && emp.code === HTTP_STATUS.OK) {
             reset(mapEmployeeDetailToFormData(emp));
-          } else {
-            setIsSystemError(true);
-            setErrorMessage(ERROR_MESSAGES.ER015);
+            return;
           }
-        })
-        .catch(() => {
+          throw new Error();
+        } catch {
+          // 4.3.1 Xử lý khi API lỗi hoặc không tìm thấy nhân viên
           setIsSystemError(true);
           setErrorMessage(ERROR_MESSAGES.ER015);
-        })
-        .finally(() => {
+        } finally {
           setIsLoadingEmployee(false);
-        });
+        }
+      };
+
+      fetchEmployee();
       return;
     }
 

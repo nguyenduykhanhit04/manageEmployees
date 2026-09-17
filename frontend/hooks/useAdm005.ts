@@ -57,26 +57,27 @@ export function useAdm005() {
       }
 
       // 4.1.2 Bật trạng thái loading và gọi API lấy chi tiết nhân viên
-      setIsLoadingDetail(true);
-      setIsSystemError(false);
-      getEmployee(employeeId)
-        .then((res) => {
+      const fetchEmployeeDetail = async () => {
+        setIsLoadingDetail(true);
+        setIsSystemError(false);
+        try {
+          const res = await getEmployee(employeeId);
           // 4.1.3 Khi API trả về thành công: Map dữ liệu nhân viên & chứng chỉ vào formData
           if (res && res.code === HTTP_STATUS.OK) {
             setFormData(mapEmployeeDetailToFormData(res));
-          } else {
-            // Trường hợp API trả về mã lỗi khác 200
-            setIsSystemError(true);
+            return;
           }
-        })
-        .catch(() => {
+          throw new Error();
+        } catch {
           // 4.1.4 Bắt lỗi khi không thể kết nối hoặc API ném ngoại lệ
           setIsSystemError(true);
-        })
-        .finally(() => {
+        } finally {
           // 4.1.5 Tắt trạng thái loading khi hoàn tất gọi API
           setIsLoadingDetail(false);
-        });
+        }
+      };
+
+      fetchEmployeeDetail();
       return;
     }
 
