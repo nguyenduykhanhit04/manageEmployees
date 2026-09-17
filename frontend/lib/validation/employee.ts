@@ -1,52 +1,30 @@
 import { z } from 'zod';
 import { formatErrorMessage, FIELD_LABELS } from '@/lib/constants/messages';
-import { VALIDATION_LIMITS, DATE_FORMATS } from '@/lib/constants/validation';
-
-// Regex kiểm tra Katakana bán giác (half-width Katakana và khoảng trắng)
-const KATAKANA_REGEX = /^[\uFF65-\uFF9F ]+$/;
-
-// Regex kiểm tra half-size alphanumeric và dấu gạch dưới, không bắt đầu bằng số
-const HALF_SIZE_REGEX = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
-
-// Regex kiểm tra số điện thoại (chỉ ký tự 1 byte số, dấu gạch ngang, cộng, ngoặc)
-const TELEPHONE_REGEX = /^[0-9-+()]+$/;
-
-// Regex kiểm tra ký tự half-size (1 byte ASCII) cho email
-const HALF_SIZE_ASCII_REGEX = /^[\x20-\x7E]+$/;
-
-/**
- * Kiểm tra chuỗi định dạng ngày yyyy/MM/dd có phải ngày hợp lệ trên lịch hay không.
- */
-const isValidDateString = (val?: string): boolean => {
-  if (!val || val.trim() === '') return true;
-  const parts = val.split('/');
-  if (parts.length !== 3) return false;
-  const year = parseInt(parts[0], 10);
-  const month = parseInt(parts[1], 10);
-  const day = parseInt(parts[2], 10);
-  if (isNaN(year) || isNaN(month) || isNaN(day)) return false;
-  if (month < 1 || month > 12) return false;
-  const date = new Date(year, month - 1, day);
-  return (
-    date.getFullYear() === year &&
-    date.getMonth() === month - 1 &&
-    date.getDate() === day
-  );
-};
+import { VALIDATION_LIMITS } from '@/lib/constants/validation';
+import {
+  KATAKANA_REGEX,
+  HALF_SIZE_REGEX,
+  TELEPHONE_REGEX,
+  HALF_SIZE_ASCII_REGEX,
+} from '@/lib/constants/regex';
+import {
+  requiredString,
+  requiredDateString,
+  validateCertificationFields,
+} from './helpers';
 
 /**
  * Schema cơ bản chứa các trường chung của Form nhân viên
  */
 export const baseEmployeeSchema = z.object({
   // 1. アカウント名: ER001, ER006, ER019
-  employeeLoginId: z
-    .string()
-    .min(1, formatErrorMessage('ER001', [FIELD_LABELS.employeeLoginId]))
-    .max(
-      VALIDATION_LIMITS.LOGIN_ID_MAX,
-      formatErrorMessage('ER006', [FIELD_LABELS.employeeLoginId, VALIDATION_LIMITS.LOGIN_ID_MAX])
-    )
-    .regex(HALF_SIZE_REGEX, formatErrorMessage('ER019', [FIELD_LABELS.employeeLoginId])),
+  employeeLoginId: requiredString(
+    FIELD_LABELS.employeeLoginId,
+    VALIDATION_LIMITS.LOGIN_ID_MAX
+  ).regex(
+    HALF_SIZE_REGEX,
+    formatErrorMessage('ER019', [FIELD_LABELS.employeeLoginId])
+  ),
 
   // 2. グループ: ER002 (Bắt buộc chọn)
   departmentId: z
@@ -57,56 +35,44 @@ export const baseEmployeeSchema = z.object({
     }),
 
   // 3. 氏名: ER001, ER006
-  employeeName: z
-    .string()
-    .min(1, formatErrorMessage('ER001', [FIELD_LABELS.employeeName]))
-    .max(
-      VALIDATION_LIMITS.EMPLOYEE_NAME_MAX,
-      formatErrorMessage('ER006', [FIELD_LABELS.employeeName, VALIDATION_LIMITS.EMPLOYEE_NAME_MAX])
-    ),
+  employeeName: requiredString(
+    FIELD_LABELS.employeeName,
+    VALIDATION_LIMITS.EMPLOYEE_NAME_MAX
+  ),
 
   // 4. カタカナ氏名: ER001, ER006, ER009
-  employeeNameKana: z
-    .string()
-    .min(1, formatErrorMessage('ER001', [FIELD_LABELS.employeeNameKana]))
-    .max(
-      VALIDATION_LIMITS.EMPLOYEE_NAME_KANA_MAX,
-      formatErrorMessage('ER006', [FIELD_LABELS.employeeNameKana, VALIDATION_LIMITS.EMPLOYEE_NAME_KANA_MAX])
-    )
-    .regex(KATAKANA_REGEX, formatErrorMessage('ER009', [FIELD_LABELS.employeeNameKana])),
+  employeeNameKana: requiredString(
+    FIELD_LABELS.employeeNameKana,
+    VALIDATION_LIMITS.EMPLOYEE_NAME_KANA_MAX
+  ).regex(
+    KATAKANA_REGEX,
+    formatErrorMessage('ER009', [FIELD_LABELS.employeeNameKana])
+  ),
 
   // 5. 生年月日: ER001, ER005, ER011
-  employeeBirthDate: z
-    .string()
-    .min(1, formatErrorMessage('ER001', [FIELD_LABELS.employeeBirthDate]))
-    .refine((val) => !val || val.trim() === '' || DATE_FORMATS.STANDARD_REGEX.test(val), {
-      message: formatErrorMessage('ER005', [FIELD_LABELS.employeeBirthDate, DATE_FORMATS.STANDARD]),
-    })
-    .refine(isValidDateString, {
-      message: formatErrorMessage('ER011', [FIELD_LABELS.employeeBirthDate]),
-    }),
+  employeeBirthDate: requiredDateString(FIELD_LABELS.employeeBirthDate),
 
   // 6. メールアドレス: ER001, ER008, ER006, ER005
-  employeeEmail: z
-    .string()
-    .min(1, formatErrorMessage('ER001', [FIELD_LABELS.employeeEmail]))
-    .regex(HALF_SIZE_ASCII_REGEX, formatErrorMessage('ER008', [FIELD_LABELS.employeeEmail]))
-    .max(
-      VALIDATION_LIMITS.EMAIL_MAX,
-      formatErrorMessage('ER006', [FIELD_LABELS.employeeEmail, VALIDATION_LIMITS.EMAIL_MAX])
+  employeeEmail: requiredString(
+    FIELD_LABELS.employeeEmail,
+    VALIDATION_LIMITS.EMAIL_MAX
+  )
+    .regex(
+      HALF_SIZE_ASCII_REGEX,
+      formatErrorMessage('ER008', [FIELD_LABELS.employeeEmail])
     )
     .email(formatErrorMessage('ER005', [FIELD_LABELS.employeeEmail, 'email'])),
 
   // 7. 電話番号: ER001, ER006, ER008
-  employeeTelephone: z
-    .string()
-    .min(1, formatErrorMessage('ER001', [FIELD_LABELS.employeeTelephone]))
-    .max(
-      VALIDATION_LIMITS.TELEPHONE_MAX,
-      formatErrorMessage('ER006', [FIELD_LABELS.employeeTelephone, VALIDATION_LIMITS.TELEPHONE_MAX])
-    )
-    .regex(TELEPHONE_REGEX, formatErrorMessage('ER008', [FIELD_LABELS.employeeTelephone])),
+  employeeTelephone: requiredString(
+    FIELD_LABELS.employeeTelephone,
+    VALIDATION_LIMITS.TELEPHONE_MAX
+  ).regex(
+    TELEPHONE_REGEX,
+    formatErrorMessage('ER008', [FIELD_LABELS.employeeTelephone])
+  ),
 
+  // 8. Thông tin chứng chỉ tiếng Nhật (Tùy chọn)
   certificationId: z.string().optional(),
   certificationStartDate: z.string().optional(),
   certificationEndDate: z.string().optional(),
@@ -126,95 +92,7 @@ export const baseEmployeeSchema = z.object({
 });
 
 /**
- * Hàm kiểm tra tính hợp lệ của các trường thông tin chứng chỉ tiếng Nhật dùng chung.
- */
-function validateCertificationFields(
-  data: {
-    certificationId?: string;
-    certificationStartDate?: string;
-    certificationEndDate?: string;
-    employeeCertificationScore?: string;
-  },
-  ctx: z.RefinementCtx
-) {
-  const isCertSelected = Boolean(
-    data.certificationId && data.certificationId !== '' && data.certificationId !== '0'
-  );
-
-  if (!isCertSelected) {
-    return;
-  }
-
-  // 10. 資格交付日: ER002 (bắt buộc chọn), ER005 (đúng format yyyy/MM/dd), ER011 (ngày hợp lệ)
-  if (!data.certificationStartDate || data.certificationStartDate.trim() === '') {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: formatErrorMessage('ER002', [FIELD_LABELS.startDate]),
-      path: ['certificationStartDate'],
-    });
-  } else if (!DATE_FORMATS.STANDARD_REGEX.test(data.certificationStartDate)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: formatErrorMessage('ER005', [FIELD_LABELS.startDate, DATE_FORMATS.STANDARD]),
-      path: ['certificationStartDate'],
-    });
-  } else if (!isValidDateString(data.certificationStartDate)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: formatErrorMessage('ER011', [FIELD_LABELS.startDate]),
-      path: ['certificationStartDate'],
-    });
-  }
-
-  // 11. 失効日: ER002 (bắt buộc chọn), ER005 (đúng format yyyy/MM/dd), ER011 (ngày hợp lệ)
-  if (!data.certificationEndDate || data.certificationEndDate.trim() === '') {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: formatErrorMessage('ER002', [FIELD_LABELS.endDate]),
-      path: ['certificationEndDate'],
-    });
-  } else if (!DATE_FORMATS.STANDARD_REGEX.test(data.certificationEndDate)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: formatErrorMessage('ER005', [FIELD_LABELS.endDate, DATE_FORMATS.STANDARD]),
-      path: ['certificationEndDate'],
-    });
-  } else if (!isValidDateString(data.certificationEndDate)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: formatErrorMessage('ER011', [FIELD_LABELS.endDate]),
-      path: ['certificationEndDate'],
-    });
-  }
-
-  // 12. 点数: ER001 (bắt buộc nhập)
-  if (!data.employeeCertificationScore || data.employeeCertificationScore.trim() === '') {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: formatErrorMessage('ER001', [FIELD_LABELS.score]),
-      path: ['employeeCertificationScore'],
-    });
-  }
-
-  // 11. 失効日 > 資格交付日 (ER012: 失効日 phải là ngày trong tương lai so với 資格交付日)
-  if (
-    data.certificationStartDate &&
-    data.certificationEndDate &&
-    isValidDateString(data.certificationStartDate) &&
-    isValidDateString(data.certificationEndDate)
-  ) {
-    if (new Date(data.certificationEndDate) <= new Date(data.certificationStartDate)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: formatErrorMessage('ER012', [FIELD_LABELS.endDate, FIELD_LABELS.startDate]),
-        path: ['certificationEndDate'],
-      });
-    }
-  }
-}
-
-/**
- * Schema cho chức năng Thêm mới nhân viên (Mode ADD) - Bắt buộc mật khẩu >= 8 ký tự
+ * Schema cho chức năng Thêm mới nhân viên (Mode ADD) - Mật khẩu bắt buộc (8-50 ký tự)
  */
 export const addEmployeeSchema = baseEmployeeSchema
   .extend({
@@ -239,13 +117,16 @@ export const addEmployeeSchema = baseEmployeeSchema
         ])
       ),
 
-    // 9. パスワード（確認）: ER001, ER017
+    // 9. パスワード（確認）: ER001
     employeeLoginPasswordConfirm: z
       .string()
-      .min(1, formatErrorMessage('ER001', [FIELD_LABELS.employeeLoginPasswordConfirm])),
+      .min(
+        1,
+        formatErrorMessage('ER001', [FIELD_LABELS.employeeLoginPasswordConfirm])
+      ),
   })
   .superRefine((data, ctx) => {
-    // 1. Kiểm tra xác nhận mật khẩu (ER017)
+    // 1. Kiểm tra khớp mật khẩu xác nhận (ER017)
     if (data.employeeLoginPassword && data.employeeLoginPasswordConfirm) {
       if (data.employeeLoginPassword !== data.employeeLoginPasswordConfirm) {
         ctx.addIssue({
@@ -269,24 +150,31 @@ export const editEmployeeSchema = baseEmployeeSchema
       .string()
       .max(
         VALIDATION_LIMITS.PASSWORD_MAX,
-        formatErrorMessage('ER006', [FIELD_LABELS.employeeLoginPassword, VALIDATION_LIMITS.PASSWORD_MAX])
+        formatErrorMessage('ER006', [
+          FIELD_LABELS.employeeLoginPassword,
+          VALIDATION_LIMITS.PASSWORD_MAX,
+        ])
       )
       .optional(),
     employeeLoginPasswordConfirm: z.string().optional(),
   })
   .superRefine((data, ctx) => {
-    // 1. Kiểm tra mật khẩu nếu người dùng nhập thay đổi (có nhập Mật khẩu HOẶC Xác nhận mật khẩu)
-    const hasPassword = Boolean(data.employeeLoginPassword && data.employeeLoginPassword.length > 0);
+    const hasPassword = Boolean(
+      data.employeeLoginPassword && data.employeeLoginPassword.length > 0
+    );
     const hasConfirmPassword = Boolean(
-      data.employeeLoginPasswordConfirm && data.employeeLoginPasswordConfirm.length > 0
+      data.employeeLoginPasswordConfirm &&
+      data.employeeLoginPasswordConfirm.length > 0
     );
 
+    // 1. Kiểm tra mật khẩu nếu người dùng có nhập thay đổi
     if (hasPassword || hasConfirmPassword) {
-      // 1.1 Kiểm tra ô Mật khẩu
       if (!hasPassword) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: formatErrorMessage('ER001', [FIELD_LABELS.employeeLoginPassword]),
+          message: formatErrorMessage('ER001', [
+            FIELD_LABELS.employeeLoginPassword,
+          ]),
           path: ['employeeLoginPassword'],
         });
       } else if (
@@ -304,14 +192,17 @@ export const editEmployeeSchema = baseEmployeeSchema
         });
       }
 
-      // 1.2 Kiểm tra ô Xác nhận mật khẩu
       if (!hasConfirmPassword) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: formatErrorMessage('ER001', [FIELD_LABELS.employeeLoginPasswordConfirm]),
+          message: formatErrorMessage('ER001', [
+            FIELD_LABELS.employeeLoginPasswordConfirm,
+          ]),
           path: ['employeeLoginPasswordConfirm'],
         });
-      } else if (data.employeeLoginPassword !== data.employeeLoginPasswordConfirm) {
+      } else if (
+        data.employeeLoginPassword !== data.employeeLoginPasswordConfirm
+      ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: formatErrorMessage('ER017'),

@@ -1,10 +1,4 @@
 /**
- * Copyright(C) 2026 Luvina Software Company
- *
- * validation.ts, 16/09/2026 nguyenduykhanh2
- */
-
-/**
  * Giới hạn độ dài và quy chuẩn cho các trường nhập liệu trên form.
  */
 export const VALIDATION_LIMITS = {
