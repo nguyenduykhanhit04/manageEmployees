@@ -178,14 +178,30 @@ throw new BusinessException(Constants.ER020, List.of());
 ```
 
 ### 7.2. Cách format hiển thị lỗi ở Frontend (TypeScript/React)
+
+Frontend hỗ trợ 2 cách trích xuất và hiển thị thông điệp lỗi:
+
+**Cách 1: Sử dụng tiện ích dùng chung `extractApiErrorMessage` (Được khuyến nghị trong Hooks)**
+```typescript
+import { extractApiErrorMessage } from '@/lib/utils/apiError';
+import { API_ERROR_MESSAGES } from '@/lib/constants/messages';
+
+try {
+  await doSomething();
+} catch (error) {
+  // Tự động nhận diện cấu trúc { code: 500, message: { code: "ERxxx", params: [...] } }
+  // và biên dịch sang câu thông báo Nhật ngữ hoàn chỉnh
+  const errorMsg = extractApiErrorMessage(error, API_ERROR_MESSAGES.SYSTEM_ERROR);
+  setErrorMessage(errorMsg);
+}
+```
+
+**Cách 2: Format thủ công qua `formatErrorMessage` từ `messages.ts`**
 ```typescript
 import { formatErrorMessage } from '@/lib/constants/messages';
 
-// Nhận response từ API: { code: 500, message: { code: "ER006", params: ["氏名", "125"] } }
-const apiError = error.response?.data?.message;
-if (apiError) {
-  const displayMsg = formatErrorMessage(apiError.code, apiError.params);
-  // Kết quả: "125桁以内の「氏名」を入力してください"
-  setErrorMessage(displayMsg);
-}
+// Nhận object message từ API: { code: "ER006", params: ["氏名", "125"] }
+const displayMsg = formatErrorMessage(apiError.code, apiError.params);
+// Kết quả: "125桁以内の「氏名」を入力してください"
+setErrorMessage(displayMsg);
 ```

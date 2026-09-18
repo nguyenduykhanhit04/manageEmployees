@@ -55,81 +55,86 @@ A production-grade, type-safe Next.js frontend application for the **Manage Empl
 
 ## 📁 Architecture & Folder Structure
 
-Following strict **Separation of Concerns (SoC)** and Layered Architecture:
+Cấu trúc toàn bộ các tệp mã nguồn phục vụ biên dịch và thực thi ứng dụng Frontend:
 
 ```text
 frontend/
-├── app/                              # Next.js App Router
-│   ├── (auth)/                       # Public Auth Route Group
-│   │   ├── login/page.tsx            # ADM001: Login Screen
-│   │   └── logout/page.tsx           # Logout Handler & Token Cleanup
-│   ├── (protected)/                  # Protected Route Group (Requires JWT)
+├── app/                                      # Next.js App Router (Routing & Layouts)
+│   ├── (auth)/                               # Public Auth Route Group
+│   │   ├── login/page.tsx                    # ADM001: Màn hình đăng nhập
+│   │   └── logout/page.tsx                   # Xử lý đăng xuất & xóa JWT token
+│   ├── (protected)/                          # Protected Route Group (Yêu cầu JWT)
 │   │   └── employees/
-│   │       ├── adm002/page.tsx       # ADM002: Employee List Route Entry Point
-│   │       ├── adm003/page.tsx       # ADM003: Employee Detail Route Entry Point
-│   │       ├── adm004/page.tsx       # ADM004: Add/Edit Employee Form Route Entry Point
-│   │       ├── adm005/page.tsx       # ADM005: Confirmation Screen Route Entry Point
-│   │       └── adm006/page.tsx       # ADM006: Completion Screen Route Entry Point
-│   ├── globals.css                   # Global CSS & Design System Tokens
-│   ├── layout.tsx                    # Root Layout with Header & Footer conditionally rendered
-│   └── page.tsx                      # Root Index Redirect
-├── components/                       # UI Presentation Components
+│   │       ├── adm002/page.tsx               # ADM002: Danh sách nhân viên & tìm kiếm
+│   │       ├── adm003/page.tsx               # ADM003: Chi tiết thông tin nhân viên
+│   │       ├── adm004/page.tsx               # ADM004: Thêm mới / Chỉnh sửa nhân viên
+│   │       ├── adm005/page.tsx               # ADM005: Xác nhận thông tin nhân viên
+│   │       └── adm006/page.tsx               # ADM006: Thông báo thao tác thành công
+│   ├── globals.css                           # CSS toàn cục & biến giao diện chuẩn UI
+│   ├── layout.tsx                            # Root Layout (bọc Header & Footer)
+│   ├── page.module.css                       # CSS Module cho trang gốc
+│   └── page.tsx                              # Trang gốc điều hướng tự động
+├── components/                               # Thành phần giao diện (UI Presentation)
 │   ├── auth/
-│   │   └── LoginForm.tsx             # Login form component
-│   ├── common/                       # Reusable UI widgets
-│   │   ├── Button.tsx                # Standard action button
-│   │   ├── DatePicker.tsx            # Integrated calendar picker
-│   │   ├── Footer.tsx                # App footer
-│   │   ├── Header.tsx                # App header & navigation
-│   │   ├── Input.tsx                 # Text / Password input with error feedback
-│   │   ├── Modal.tsx                 # System error / Confirmation dialog
-│   │   ├── Pagination.tsx            # Sliding window pagination component
-│   │   └── Select.tsx                # Standard select dropdown
-│   └── employees/                    # Employee domain UI components
-│       ├── Adm002.tsx                # List view wrapper
-│       ├── Adm003.tsx                # Detail view wrapper
-│       ├── Adm004.tsx                # Add/Edit form wrapper
-│       ├── Adm005.tsx                # Confirmation view wrapper
-│       ├── Adm006.tsx                # Completion notice wrapper
-│       ├── EmployeeSearchForm.tsx    # Search filter bar
-│       └── EmployeeTable.tsx         # CSS Grid data table with sortable headers
-├── hooks/                            # Business Logic Layer (Custom React Hooks)
-│   ├── useAdm002.ts                  # ADM002 State (search, multi-sort, pagination, URL sync)
-│   ├── useAdm003.ts                  # ADM003 State (fetch, delete modal, system error handling)
-│   ├── useAdm004.ts                  # ADM004 State (form lifecycle, session restore, tab trap)
-│   ├── useAdm005.ts                  # ADM005 State (API submit, double-submit guard)
-│   ├── useAdm006.ts                  # ADM006 State (success message mapping, return navigation)
-│   ├── useAuth.ts                    # Auth guards (`useAuth`, `useGuest`)
-│   ├── useCertifications.ts          # Japanese Certification Master Data fetcher
-│   └── useDepartments.ts             # Department Master Data fetcher
-├── lib/                              # Core Infrastructure & Utilities
-│   ├── api/                          # HTTP REST Services
-│   │   ├── client.ts                 # Axios instance with request/response interceptors
-│   │   ├── employee.api.ts           # Employee CRUD & check-exist API calls
-│   │   ├── department.api.ts         # Department list API call
-│   │   └── certification.api.ts      # Certification list API call
+│   │   └── LoginForm.tsx                     # Form đăng nhập tài khoản
+│   ├── common/
+│   │   └── Pagination.tsx                    # Phân trang cửa sổ trượt (3 trang hiển thị)
+│   ├── employees/
+│   │   ├── Adm002.tsx                        # Giao diện màn hình danh sách nhân viên
+│   │   ├── Adm003.tsx                        # Giao diện màn hình chi tiết nhân viên
+│   │   ├── Adm004.tsx                        # Giao diện form thêm/sửa nhân viên
+│   │   ├── Adm005.tsx                        # Giao diện màn hình xác nhận thông tin
+│   │   ├── Adm006.tsx                        # Giao diện màn hình thông báo hoàn thành
+│   │   ├── EmployeeSearchForm.tsx            # Khối tìm kiếm (tên nhân viên, phòng ban)
+│   │   └── EmployeeTable.tsx                 # Bảng danh sách CSS Grid & sort đa cột
+│   └── layout/
+│       ├── Header.tsx                        # Thanh tiêu đề điều hướng
+│       └── Footer.tsx                        # Chân trang bản quyền
+├── hooks/                                    # Tầng xử lý nghiệp vụ (Custom React Hooks)
+│   ├── useAdm002.ts                          # Quản lý state danh sách, đa sort, phân trang, URL sync
+│   ├── useAdm003.ts                          # Quản lý chi tiết nhân viên, modal xóa & kiểm tra admin
+│   ├── useAdm004.ts                          # Quản lý form nhập liệu, lưu sessionStorage, tab trap
+│   ├── useAdm005.ts                          # Quản lý xác nhận submit API, chặn double-click
+│   ├── useAdm006.ts                          # Quản lý hiển thị thông báo MSG001-MSG003 & quay lại
+│   ├── useAuth.ts                            # Guard điều hướng (useAuth, useGuest)
+│   ├── useCertifications.ts                  # Fetch danh mục chứng chỉ tiếng Nhật
+│   └── useDepartments.ts                     # Fetch danh mục phòng ban
+├── lib/                                      # Tầng tiện ích, hằng số & kết nối API
+│   ├── api/                                  # Tầng gọi API Backend (Axios Services)
+│   │   ├── auth.api.ts                       # API đăng nhập hệ thống (/login)
+│   │   ├── certification.api.ts              # API lấy danh sách chứng chỉ (/certifications)
+│   │   ├── client.ts                         # Cấu hình Axios instance & Interceptors
+│   │   ├── department.api.ts                 # API lấy danh sách phòng ban (/departments)
+│   │   └── employee.api.ts                   # API nhân viên (CRUD, check-exist)
 │   ├── auth/
-│   │   └── token.ts                  # JWT token storage & expiration check utilities
-│   ├── constants/                    # Centralized Constants
-│   │   ├── routes.ts                 # Application route constants (`ROUTES`)
-│   │   ├── http.ts                   # HTTP status codes & content types
-│   │   ├── table.ts                  # Pagination limits & sort field keys
-│   │   ├── validation.ts             # Validation limits & date formats
-│   │   └── messages.ts               # Japanese error codes (ER001-ER023) & messages (MSG001-MSG005)
-│   ├── utils/
-│   │   ├── format.ts                 # String formatting & truncate helpers
-│   │   └── messageHelper.ts          # Parametric error message compiler
-│   └── validation/                   # Zod Validation Schemas
-│       ├── auth.ts                   # Login schema (`loginSchema`)
-│       └── employee.ts               # Employee schemas (`base`, `add`, `edit`)
-├── types/                            # TypeScript Type Definitions
-│   ├── api.ts                        # API response wrappers & error types
-│   ├── auth.ts                       # Auth payloads & token types
-│   ├── certification.ts              # Certification master data interfaces
-│   ├── department.ts                 # Department master data interfaces
-│   └── employee.ts                   # Employee DTOs, request payloads, sort types
-└── tests/                            # Unit & Component Test Suites (Jest + RTL)
-    └── __tests__/                    # Structured test cases for hooks, components, lib
+│   │   └── token.ts                          # Quản lý lưu trữ & kiểm tra JWT token
+│   ├── constants/                            # Hằng số hệ thống
+│   │   ├── http.ts                           # HTTP Status codes & Content-Types
+│   │   ├── messages.ts                       # Danh mục mã lỗi ER001-ER023 & MSG001-MSG005
+│   │   ├── regex.ts                          # Regex kiểm tra định dạng dữ liệu
+│   │   ├── routes.ts                         # Định nghĩa các đường dẫn URL nội bộ
+│   │   ├── storage.ts                        # Khóa lưu trữ LocalStorage & SessionStorage
+│   │   ├── table.ts                          # Cấu hình phân trang, độ dài text, cột sắp xếp
+│   │   └── validation.ts                     # Giới hạn độ dài, khoảng điểm & format ngày
+│   ├── utils/                                # Hàm tiện ích dùng chung
+│   │   ├── apiError.ts                       # Trích xuất và định dạng mã lỗi parametric
+│   │   ├── date.ts                           # Parse, format và validate chuỗi ngày yyyy/MM/dd
+│   │   ├── employeeMapper.ts                 # Map dữ liệu API <-> Form & build payload
+│   │   ├── employeeSort.ts                   # Xử lý logic sắp xếp đa cột ưu tiên
+│   │   └── format.ts                         # Cắt ngắn chuỗi hiển thị bảng (truncateText)
+│   └── validation/                           # Schemas xác thực dữ liệu (Zod)
+│       ├── auth.ts                           # Schema xác thực đăng nhập
+│       ├── employee.ts                       # Schemas xác thực nhân viên (base, add, edit)
+│       └── helpers.ts                        # Các bộ kiểm tra Zod dùng chung (date, katakana...)
+├── types/                                    # Định nghĩa kiểu dữ liệu TypeScript
+│   ├── api.ts                                # Kiểu phản hồi API & cấu trúc lỗi parametric
+│   ├── auth.ts                               # Kiểu dữ liệu đăng nhập & token phản hồi
+│   ├── certification.ts                      # Kiểu dữ liệu danh mục chứng chỉ
+│   ├── department.ts                         # Kiểu dữ liệu danh mục phòng ban
+│   └── employee.ts                           # Kiểu dữ liệu nhân viên, request payload & sort orders
+├── next.config.ts                            # Cấu hình Next.js
+├── package.json                              # Quản lý dependencies & scripts thực thi
+└── tsconfig.json                             # Cấu hình TypeScript compiler
 ```
 
 ---

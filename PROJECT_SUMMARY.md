@@ -8,7 +8,7 @@ Tài liệu tổng hợp kiến trúc hệ thống, cấu trúc thư mục, danh
 
 Dự án được xây dựng theo mô hình **Client - Server (Decoupled Frontend & Backend)** độc lập:
 
-- **Backend**: **Java 17**, **Spring Boot 2.7.8**, **Spring Security** (Stateless JWT Authentication với Auth0 `java-jwt`), **Spring Data JPA & Hibernate** (kết hợp `EntityManager` Native SQL Dynamic Multi-column Sorting & Vietnamese/Japanese collation), **MapStruct**, **Lombok**, **Flyway Database Migration**, **HikariCP Connection Pool**, **MySQL 8.x**.
+- **Backend**: **Java 17**, **Spring Boot 2.7.8**, **Spring Security** (Stateless JWT Authentication với Auth0 `java-jwt`), **Spring Data JPA & Hibernate** (kết hợp `EntityManager` JPQL động bằng `StringBuilder` hỗ trợ Dynamic Multi-column Sorting & Collation), **MapStruct**, **Lombok**, **Flyway Database Migration**, **HikariCP Connection Pool**, **MySQL 8.x**.
 - **Frontend**: **Next.js 16 (App Router)**, **React 19**, **TypeScript 5.7+**, Pure CSS (`globals.css`), **React Hook Form**, **Zod** validation, **Axios** API Client với Interceptors, **Jest & React Testing Library**.
 
 ```text
@@ -37,13 +37,14 @@ Dự án được xây dựng theo mô hình **Client - Server (Decoupled Fronte
 
 | Tài liệu | Đường dẫn tập tin | Mô tả nội dung |
 | :--- | :--- | :--- |
-| **Phân tích chi tiết Backend** | [BACKEND_ANALYSIS.md](file:///d:/Project/manageEmployees/BACKEND_ANALYSIS.md) | Tài liệu kiến trúc chuyên sâu, deep-dive 23 câu hỏi Spring Boot, Native SQL, HikariCP, Security & Test |
-| **Phân tích chi tiết Frontend** | [FRONTEND_ANALYSIS.md](file:///d:/Project/manageEmployees/FRONTEND_ANALYSIS.md) | Tài liệu kiến trúc chuyên sâu Next.js App Router, Zod, React Hook Form, Custom Hooks, State & Test |
-| **Frontend README** | [frontend/README.md](file:///d:/Project/manageEmployees/frontend/README.md) | Hướng dẫn cài đặt, cấu hình, chạy dev, build production & kiểm thử Unit Test Frontend |
-| **WIKI Mã Lỗi & Thông Báo** | [docs/ERROR_CODES_WIKI.md](file:///d:/Project/manageEmployees/docs/ERROR_CODES_WIKI.md) | Toàn bộ mã lỗi `ER001-ER023`, thông báo `MSG001-MSG005` và nhãn trường Nhật ngữ |
-| **Quy chuẩn Lập trình** | [ManageUser_Checklist.md](file:///d:/Project/manageEmployees/docs/guidelines/ManageUser_Checklist.md) | Checklist nghiệm thu coding rule Java (Javadoc 100%, 3-tier) và Next.js (SoC, Custom Hooks) |
-| **Thiết kế Database (TKDB)** | [TKDB.md](file:///d:/Project/manageEmployees/docs/db/TKDB.md) | Thiết kế 4 bảng (`employees`, `departments`, `certifications`, `employees_certifications`) |
-| **Thiết kế API (TKAPI)** | [docs/api/](file:///d:/Project/manageEmployees/docs/api/) | Toàn bộ tài liệu đặc tả 7 API: Danh sách, Thêm, Sửa, Xóa, Chi tiết, Phòng ban, Chứng chỉ |
+| **Phân tích chi tiết Backend** | [BACKEND_ANALYSIS.md](BACKEND_ANALYSIS.md) | Tài liệu kiến trúc chuyên sâu, deep-dive 23 câu hỏi Spring Boot, JPQL, HikariCP, Security & Test |
+| **Phân tích chi tiết Frontend** | [FRONTEND_ANALYSIS.md](FRONTEND_ANALYSIS.md) | Tài liệu kiến trúc chuyên sâu Next.js App Router, Zod, React Hook Form, Custom Hooks, State & Test |
+| **Backend README** | [backend/README.md](backend/README.md) | Hướng dẫn cấu hình môi trường, khởi động, đăng nhập và cấu trúc mã nguồn Backend |
+| **Frontend README** | [frontend/README.md](frontend/README.md) | Hướng dẫn cài đặt, cấu hình, chạy dev, build production & kiểm thử Unit Test Frontend |
+| **WIKI Mã Lỗi & Thông Báo** | [docs/ERROR_CODES_WIKI.md](docs/ERROR_CODES_WIKI.md) | Toàn bộ mã lỗi `ER001-ER023`, thông báo `MSG001-MSG005` và nhãn trường Nhật ngữ |
+| **Quy chuẩn Lập trình** | [ManageUser_Checklist.md](docs/guidelines/ManageUser_Checklist.md) | Checklist nghiệm thu coding rule Java (Javadoc 100%, 3-tier) và Next.js (SoC, Custom Hooks) |
+| **Thiết kế Database (TKDB)** | [TKDB.md](docs/db/TKDB.md) | Thiết kế 4 bảng (`employees`, `departments`, `certifications`, `employees_certifications`) |
+| **Thiết kế API (TKAPI)** | [docs/api/](docs/api/) | Toàn bộ tài liệu đặc tả 7 API: Danh sách, Thêm, Sửa, Xóa, Chi tiết, Phòng ban, Chứng chỉ |
 
 ---
 
@@ -108,9 +109,11 @@ com.luvina.la
 ├── repository/              # Tầng truy xuất dữ liệu Spring Data JPA
 │   ├── EmployeeRepository.java
 │   ├── EmployeeRepositoryCustom.java
-│   ├── EmployeesCertificationRepository.java # JpaRepository hỗ trợ flush & transaction sync
+│   ├── EmployeesCertificationRepository.java
+│   ├── EmployeesCertificationRepositoryCustom.java
 │   └── impl/
-│       └── EmployeeRepositoryCustomImpl.java  # Native SQL động (Sắp xếp đa cột ưu tiên, collate tiếng Việt/Nhật, tie-breaker)
+│       ├── EmployeeRepositoryCustomImpl.java               # JPQL động với StringBuilder (Sắp xếp đa cột, phân trang)
+│       └── EmployeesCertificationRepositoryCustomImpl.java  # Thao tác JPQL cho chứng chỉ nhân viên
 ├── entity/                  # JPA Entities (EmployeeEntity, DepartmentEntity, CertificationEntity, EmployeesCertificationEntity)
 ├── dto/                     # Data Transfer Objects (EmployeeDTO, DepartmentDTO, CertificationDTO...)
 ├── payload/                 # Request/Response payloads (EmployeeSaveRequest, EmployeeListResponse, ApiResponse...)
@@ -130,8 +133,9 @@ frontend/
 │   └── layout.tsx                 # Root layout tự động điều kiện Header/Footer
 ├── components/                    # UI Presentation Components
 │   ├── auth/                      # LoginForm.tsx
-│   ├── common/                    # Button, Input, Select, DatePicker, Modal, Header, Footer, Pagination...
-│   └── employees/                 # Adm002, Adm003, Adm004, Adm005, Adm006, EmployeeTable, EmployeeSearchForm...
+│   ├── common/                    # Pagination.tsx
+│   ├── layout/                    # Header.tsx, Footer.tsx
+│   └── employees/                 # Adm002, Adm003, Adm004, Adm005, Adm006, EmployeeTable, EmployeeSearchForm
 ├── hooks/                         # Custom React Hooks đóng gói 100% Business Logic
 │   ├── useAdm002.ts               # Search, multi-sort, pagination, URL Search Params sync
 │   ├── useAdm003.ts               # Chi tiết nhân viên, modal xác nhận xóa, modal lỗi hệ thống
@@ -142,11 +146,11 @@ frontend/
 │   ├── useDepartments.ts          # Master Data phòng ban
 │   └── useCertifications.ts       # Master Data chứng chỉ tiếng Nhật
 ├── lib/
-│   ├── api/                       # API HTTP Services (client.ts, employee.api.ts, department.api.ts, certification.api.ts)
+│   ├── api/                       # API HTTP Services (auth.api.ts, client.ts, employee.api.ts, department.api.ts, certification.api.ts)
 │   ├── auth/                      # Token storage & expiration check (token.ts)
-│   ├── constants/                 # Constants phân tách (routes.ts, http.ts, table.ts, messages.ts, validation.ts)
-│   ├── utils/                     # format.ts, messageHelper.ts (formatErrorMessage)
-│   └── validation/                # Zod schemas (auth.ts, employee.ts)
+│   ├── constants/                 # Constants phân tách (routes.ts, http.ts, table.ts, messages.ts, validation.ts, regex.ts, storage.ts)
+│   ├── utils/                     # apiError.ts, date.ts, employeeMapper.ts, employeeSort.ts, format.ts
+│   └── validation/                # Zod schemas (auth.ts, employee.ts, helpers.ts)
 ├── types/                         # TypeScript interfaces & types (api, auth, department, certification, employee)
 └── tests/                         # Unit tests Jest & React Testing Library (__tests__/)
 ```

@@ -150,8 +150,10 @@ backend/
 │   │   │   │   ├── EmployeeRepository.java          # Thao tác bảng employees + extends Custom
 │   │   │   │   ├── EmployeeRepositoryCustom.java    # Khai báo method tìm kiếm động & chi tiết
 │   │   │   │   ├── EmployeesCertificationRepository.java
-│   │   │   │   └── impl/                            # Triển khai Native SQL động
-│   │   │   │       └── EmployeeRepositoryCustomImpl.java # EntityManager Native SQL (Sort động, Collate)
+│   │   │   │   ├── EmployeesCertificationRepositoryCustom.java
+│   │   │   │   └── impl/                            # Triển khai truy vấn động tùy biến
+│   │   │   │       ├── EmployeeRepositoryCustomImpl.java # Native SQL động với StringBuilder (Sort đa cột, Collate, Limit/Offset)
+│   │   │   │       └── EmployeesCertificationRepositoryCustomImpl.java # JPQL Constructor Expression lấy chứng chỉ nhân viên
 │   │   │   ├── service/                             # Tầng Logic Nghiệp vụ (Business Logic Layer)
 │   │   │   │   ├── CertificationService.java
 │   │   │   │   ├── DepartmentService.java

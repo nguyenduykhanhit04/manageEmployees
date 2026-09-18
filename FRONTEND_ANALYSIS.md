@@ -124,19 +124,16 @@ frontend/
 │   │       └── adm006/page.tsx       # ADM006: Hoàn thành thao tác (Page Route Entry Point)
 │   ├── globals.css                   # Toàn bộ CSS dùng chung của hệ thống
 │   ├── layout.tsx                    # Root Layout chứa Header, Footer, Container chung
-│   └── page.tsx                      # Trang Home mặc định
+│   ├── page.module.css               # CSS Module cho trang gốc
+│   └── page.tsx                      # Trang Home điều hướng mặc định
 ├── components/                       # Tầng hiển thị giao diện (Presentation Layer)
 │   ├── auth/
 │   │   └── LoginForm.tsx             # Component Form Đăng nhập
-│   ├── common/                       # Các component UI tái sử dụng
-│   │   ├── Button.tsx                # Nút bấm chung
-│   │   ├── DatePicker.tsx            # Ô chọn ngày tháng (Calendar Picker)
-│   │   ├── Footer.tsx                # Chân trang bản quyền
+│   ├── common/                       # Các component UI dùng chung
+│   │   └── Pagination.tsx            # Phân trang tái sử dụng (Sliding Window 3 trang)
+│   ├── layout/                       # Thành phần bố cục toàn cục
 │   │   ├── Header.tsx                # Thanh điều hướng trên cùng (Logo, Logout)
-│   │   ├── Input.tsx                 # Ô nhập liệu text/password
-│   │   ├── Modal.tsx                 # Hộp thoại Modal thông báo / xác nhận
-│   │   ├── Pagination.tsx            # Phân trang tái sử dụng (Sliding Window)
-│   │   └── Select.tsx                # Dropdown lựa chọn
+│   │   └── Footer.tsx                # Chân trang bản quyền
 │   └── employees/                    # UI Components nghiệp vụ nhân viên
 │       ├── Adm002.tsx                # Component giao diện Danh sách nhân viên (ADM002)
 │       ├── Adm003.tsx                # Component giao diện Chi tiết nhân viên (ADM003)
@@ -153,10 +150,10 @@ frontend/
 │   ├── useAdm006.ts                  # Logic màn hình ADM006 (Message Display, Back to List)
 │   ├── useAuth.ts                    # Hook bảo vệ Route (`useAuth` và `useGuest`)
 │   ├── useCertifications.ts          # Hook tải Master Data danh sách chứng chỉ tiếng Nhật
-│   ├── useDepartments.ts             # Hook tải Master Data danh sách phòng ban
-│   └── useEmployees.ts               # Alias re-export từ `useAdm002`
+│   └── useDepartments.ts             # Hook tải Master Data danh sách phòng ban
 ├── lib/                              # Tầng Core Utilities, Config & Client
 │   ├── api/                          # Tầng gọi API qua HTTP
+│   │   ├── auth.api.ts               # API xác thực đăng nhập (/login)
 │   │   ├── client.ts                 # Cấu hình Axios Client & Interceptors (Request/Response)
 │   │   ├── employee.api.ts           # Các API CRUD nhân viên (get, create, update, delete, check-exist)
 │   │   ├── department.api.ts         # API lấy danh sách phòng ban (/department)
@@ -168,16 +165,22 @@ frontend/
 │   │   ├── http.ts                   # Định nghĩa mã trạng thái HTTP, Content Types
 │   │   ├── table.ts                  # Cấu hình phân trang, thứ tự sort (`PAGING`, `SORT_ORDER`, `QUERY_PARAMS`)
 │   │   ├── validation.ts             # Giới hạn độ dài, định dạng ngày tháng (`VALIDATION_LIMITS`, `DATE_FORMATS`)
+│   │   ├── regex.ts                  # Biểu thức chính quy (Half-width Katakana, ASCII, Email...)
+│   │   ├── storage.ts                # Khóa lưu trữ Local/Session Storage (`STORAGE_KEYS`)
 │   │   └── messages.ts               # Bộ thông báo chuẩn Nhật ngữ (ER001-ER023, MSG001-MSG005, FIELD_LABELS, API_ERROR_MESSAGES)
-│   ├── utils/
-│   │   ├── format.ts                 # Xử lý format văn bản (truncateText cắt 22 ký tự)
-│   │   └── messageHelper.ts          # Trình biên dịch thông báo lỗi có tham số động
+│   ├── utils/                        # Hàm tiện ích dùng chung
+│   │   ├── apiError.ts               # Tiện ích trích xuất thông điệp lỗi API (extractApiErrorMessage)
+│   │   ├── date.ts                   # Xử lý parse/format ngày chuẩn yyyy/MM/dd cho DatePicker
+│   │   ├── employeeMapper.ts         # Chuyển đổi dữ liệu API <-> Form & xây dựng payload chuẩn yyyy/MM/dd
+│   │   ├── employeeSort.ts           # Thuật toán sắp xếp đa cột ưu tiên và biểu tượng sort
+│   │   └── format.ts                 # Xử lý format văn bản (truncateText cắt 22 ký tự)
 │   └── validation/                   # Tầng Schema Validation
 │       ├── auth.ts                   # Schema xác thực đăng nhập (loginSchema)
-│       └── employee.ts               # Schema nhân viên (base, add, edit, date validation)
+│       ├── employee.ts               # Schema nhân viên (base, add, edit, date validation)
+│       └── helpers.ts                # Các hàm kiểm tra dùng chung (date rule, half-width...)
 ├── types/                            # Tầng Định nghĩa Kiểu dữ liệu TypeScript
-│   ├── api.ts                        # Kiểu dữ liệu phản hồi API chung, ApiError, Pagination
-│   ├── auth.ts                       # Kiểu dữ liệu đăng nhập, Token payload
+│   ├── api.ts                        # Kiểu dữ liệu phản hồi API (ApiResponse, ErrorMessageObject)
+│   ├── auth.ts                       # Kiểu dữ liệu đăng nhập (LoginRequest, LoginResponse)
 │   ├── certification.ts              # Kiểu dữ liệu Master Data chứng chỉ
 │   ├── department.ts                 # Kiểu dữ liệu Master Data phòng ban
 │   └── employee.ts                   # Kiểu dữ liệu Nhân viên, Request/Response DTO, Sort Orders
@@ -1080,7 +1083,7 @@ Hệ thống phân tách lỗi thành 3 cấp độ rõ ràng:
    - Hiển thị trực tiếp dòng text màu đỏ (`.invalid-feedback`) ngay dưới input tương ứng.
 2. **Lỗi Nghiệp vụ từ Backend (Business Error):**
    - Backend trả về mã lỗi kèm params, ví dụ: `{ code: "ER003", params: ["employeeLoginId"] }` hoặc `{ code: "ER020", params: [] }` (Không được xóa Admin).
-   - Hàm `messageHelper.getErrorMessage()` thay thế placeholder `{0}` bằng nhãn tiếng Nhật `"アカウント名"` để tạo ra chuỗi: `"「アカウント名」は既に存在しています。"`.
+   - Hàm `extractApiErrorMessage()` (dựa trên `formatErrorMessage()`) thay thế placeholder `{0}` bằng nhãn tiếng Nhật `"アカウント名"` để tạo ra chuỗi: `"「アカウント名」は既に存在しています。"`.
    - Hiển thị tại khung thông báo `.box-err` đầu form.
 3. **Lỗi Hệ thống (System Error - 404 / 500 / Không tìm thấy ID / ER015):**
    - Khi API nạp dữ liệu hoặc thao tác trả về lỗi hệ thống hoặc không tìm thấy bản ghi (404/ER015):
