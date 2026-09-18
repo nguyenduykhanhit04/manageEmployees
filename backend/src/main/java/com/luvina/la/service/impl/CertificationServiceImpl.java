@@ -10,7 +10,6 @@ import com.luvina.la.entity.CertificationEntity;
 import com.luvina.la.mapper.CertificationMapper;
 import com.luvina.la.repository.CertificationRepository;
 import com.luvina.la.service.CertificationService;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,8 +46,10 @@ public class CertificationServiceImpl implements CertificationService {
     @Override
     @Transactional(readOnly = true)
     public List<CertificationDTO> getAllCertifications() {
-        List<CertificationEntity> certificationEntities = new ArrayList<>();
-        certificationRepository.findAll().forEach(certificationEntities::add);
+        // 1. Lấy toàn bộ danh sách Entity chứng chỉ từ cơ sở dữ liệu
+        List<CertificationEntity> certificationEntities = certificationRepository.findAll();
+
+        // 2. Chuyển đổi danh sách Entity sang DTO thông qua Mapper
         return certificationMapper.toDtoList(certificationEntities);
     }
 }

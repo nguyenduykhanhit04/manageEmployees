@@ -133,6 +133,7 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
 
     /**
      * Ánh xạ một dòng Tuple sang đối tượng EmployeeDTO theo tên cột.
+     * Ngày tháng được format thành chuỗi "yyyy/MM/dd" để thống nhất với toàn bộ hệ thống.
      *
      * @param tuple dòng dữ liệu Tuple từ database
      * @return đối tượng EmployeeDTO
@@ -140,12 +141,12 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
     private EmployeeDTO mapEmployeeFromTuple(Tuple tuple) {
         Long empId = getLong(tuple, "employee_id");
         String name = getString(tuple, "employee_name");
-        LocalDate birthDate = toLocalDate(tuple.get("employee_birth_date"));
+        String birthDate = formatDate(tuple.get("employee_birth_date"));
         String departmentName = getString(tuple, "department_name");
         String employeeEmail = getString(tuple, "employee_email");
         String employeeTelephone = getString(tuple, "employee_telephone");
         String certificationName = getString(tuple, "certification_name");
-        LocalDate endDate = toLocalDate(tuple.get("end_date"));
+        String endDate = formatDate(tuple.get("end_date"));
         BigDecimal score = getBigDecimal(tuple, "score");
 
         return new EmployeeDTO(empId, name, birthDate, departmentName, employeeEmail, employeeTelephone, certificationName, endDate, score);
@@ -153,6 +154,10 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
 
     /**
      * Lấy giá trị kiểu Long an toàn từ Tuple theo tên cột.
+     *
+     * @param tuple dòng dữ liệu Tuple
+     * @param alias tên cột cần lấy
+     * @return giá trị Long hoặc null nếu không có
      */
     private Long getLong(Tuple tuple, String alias) {
         Object val = tuple.get(alias);
@@ -161,6 +166,10 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
 
     /**
      * Lấy giá trị kiểu String an toàn từ Tuple theo tên cột.
+     *
+     * @param tuple dòng dữ liệu Tuple
+     * @param alias tên cột cần lấy
+     * @return giá trị String hoặc null nếu không có
      */
     private String getString(Tuple tuple, String alias) {
         Object val = tuple.get(alias);
@@ -169,6 +178,10 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
 
     /**
      * Lấy giá trị kiểu BigDecimal an toàn từ Tuple theo tên cột.
+     *
+     * @param tuple dòng dữ liệu Tuple
+     * @param alias tên cột cần lấy
+     * @return giá trị BigDecimal hoặc null nếu không có
      */
     private BigDecimal getBigDecimal(Tuple tuple, String alias) {
         Object val = tuple.get(alias);
@@ -182,19 +195,22 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
     }
 
     /**
-     * Chuyển đổi đối tượng ngày bất kỳ (Date hoặc LocalDate) sang LocalDate.
+     * Chuyển đổi đối tượng ngày bất kỳ (Date hoặc LocalDate) sang chuỗi định dạng "yyyy/MM/dd".
+     * Thống nhất với định dạng ngày tháng toàn hệ thống được khai báo tại Constants.DEFAULT_DATE_FORMATTER.
+     *
+     * @param dateObj đối tượng ngày (Date hoặc LocalDate)
+     * @return chuỗi ngày tháng định dạng "yyyy/MM/dd" hoặc null nếu không có
      */
-    private LocalDate toLocalDate(Object dateObj) {
+    private String formatDate(Object dateObj) {
         if (dateObj == null) {
             return null;
         }
         if (dateObj instanceof Date) {
-            return ((Date) dateObj).toLocalDate();
+            return ((Date) dateObj).toLocalDate().format(Constants.DEFAULT_DATE_FORMATTER);
         }
         if (dateObj instanceof LocalDate) {
-            return (LocalDate) dateObj;
+            return ((LocalDate) dateObj).format(Constants.DEFAULT_DATE_FORMATTER);
         }
         return null;
     }
 }
-

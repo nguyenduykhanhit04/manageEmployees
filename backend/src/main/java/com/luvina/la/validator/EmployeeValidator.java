@@ -42,7 +42,6 @@ public class EmployeeValidator {
     private static final Pattern TELEPHONE_PATTERN = Pattern.compile("^[0-9-+()]+$");
     private static final Pattern HALF_SIZE_ASCII_PATTERN = Pattern.compile("^[\\x20-\\x7E]+$");
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@luvina\\.net$");
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
     // Danh sách các trường cho phép sắp xếp hợp lệ theo đặc tả TKAPI_ListEmployee
     private static final Set<String> VALID_ORDER_KEYS = Set.of(
@@ -75,7 +74,7 @@ public class EmployeeValidator {
      */
     public void validateGetEmployee(Long employeeId) {
         if (employeeId == null || employeeId <= 0) {
-            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_ID));
+            throw BusinessException.required(Constants.LABEL_ID);
         }
     }
 
@@ -88,16 +87,16 @@ public class EmployeeValidator {
     public void validateDeleteEmployee(Long employeeId) {
         // 1. Kiểm tra tham số employeeId bắt buộc
         if (employeeId == null || employeeId <= 0) {
-            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_ID));
+            throw BusinessException.required(Constants.LABEL_ID);
         }
 
         // 2. Kiểm tra sự tồn tại của nhân viên trong cơ sở dữ liệu
         EmployeeEntity employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new BusinessException(Constants.ER014, List.of(Constants.LABEL_ID)));
+                .orElseThrow(() -> BusinessException.employeeDeleteNotFound(Constants.LABEL_ID));
 
         // 3. Kiểm tra không được xóa người dùng quản trị viên (Admin)
         if (employee.getEmployeeRole() != null && employee.getEmployeeRole() == Constants.ROLE_ADMIN) {
-            throw new BusinessException(Constants.ER020, List.of());
+            throw BusinessException.cannotDeleteAdmin();
         }
     }
 
@@ -118,25 +117,19 @@ public class EmployeeValidator {
 
         // 1. Kiểm tra tham số phân trang: offset (phải lớn hơn hoặc bằng 0)
         if (offset < 0) {
-            throw new BusinessException(
-                    Constants.ERROR_CODE_INVALID_PAGING,
-                    List.of(Constants.OFFSET_PARAM_LABEL));
+            throw BusinessException.invalidPaging(Constants.OFFSET_PARAM_LABEL);
         }
 
         // 2. Kiểm tra tham số phân trang: limit (phải lớn hơn 0)
         if (limit <= 0) {
-            throw new BusinessException(
-                    Constants.ERROR_CODE_INVALID_PAGING,
-                    List.of(Constants.LIMIT_PARAM_LABEL));
+            throw BusinessException.invalidPaging(Constants.LIMIT_PARAM_LABEL);
         }
 
         // 3. Kiểm tra độ dài tên nhân viên (tối đa không vượt quá MAX_EMPLOYEE_NAME_LENGTH)
         if (employeeName != null && employeeName.length() > Constants.MAX_EMPLOYEE_NAME_LENGTH) {
-            throw new BusinessException(
-                    Constants.ERROR_CODE_INVALID_EMPLOYEE_NAME,
-                    List.of(
-                            Constants.LABEL_EMPLOYEE_NAME,
-                            String.valueOf(Constants.MAX_EMPLOYEE_NAME_LENGTH)));
+            throw BusinessException.maxLength(
+                    Constants.LABEL_EMPLOYEE_NAME,
+                    Constants.MAX_EMPLOYEE_NAME_LENGTH);
         }
 
         // 4. Kiểm tra các tham số sắp xếp (orderParams)
@@ -147,17 +140,13 @@ public class EmployeeValidator {
 
                 // 4.1. Kiểm tra tên trường sắp xếp có thuộc whitelist hay không
                 if (!VALID_ORDER_KEYS.contains(key.toLowerCase())) {
-                    throw new BusinessException(
-                            Constants.ERROR_CODE_INVALID_SORT,
-                            List.of(key));
+                    throw BusinessException.invalidSort(key);
                 }
 
                 // 4.2. Kiểm tra chiều sắp xếp (bắt buộc phải là ASC hoặc DESC)
                 if (!Constants.SORT_ASC.equalsIgnoreCase(value)
                         && !Constants.SORT_DESC.equalsIgnoreCase(value)) {
-                    throw new BusinessException(
-                            Constants.ERROR_CODE_INVALID_SORT,
-                            List.of(key));
+                    throw BusinessException.invalidSort(key);
                 }
             }
         }
@@ -186,13 +175,13 @@ public class EmployeeValidator {
      */
     public void validateAddEmployee(EmployeeSaveRequest request) {
         if (request == null) {
-            throw new BusinessException(Constants.ER015, List.of());
+            throw BusinessException.systemError();
         }
 
         // 1. Kiểm tra tên đăng nhập (Login ID) cho Add
         validateLoginId(request.getEmployeeLoginId());
         if (employeeRepository.existsByEmployeeLoginId(request.getEmployeeLoginId())) {
-            throw new BusinessException(Constants.ER003, List.of(Constants.LABEL_ACCOUNT_NAME));
+            throw BusinessException.alreadyExists(Constants.LABEL_ACCOUNT_NAME);
         }
 
         // 2. Kiểm tra mật khẩu (Bắt buộc nhập khi Add)
@@ -212,19 +201,19 @@ public class EmployeeValidator {
     public void validateUpdateEmployee(Long employeeId, EmployeeSaveRequest request) {
         // 1. Kiểm tra mã định danh nhân viên
         if (employeeId == null) {
-            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_ID));
+            throw BusinessException.required(Constants.LABEL_ID);
         }
         if (!employeeRepository.existsById(employeeId)) {
-            throw new BusinessException(Constants.ER013, List.of(Constants.LABEL_ID));
+            throw BusinessException.employeeNotFound(Constants.LABEL_ID);
         }
         if (request == null) {
-            throw new BusinessException(Constants.ER015, List.of());
+            throw BusinessException.systemError();
         }
 
         // 2. Kiểm tra tên đăng nhập (Login ID) cho Update (không trùng với nhân viên khác)
         validateLoginId(request.getEmployeeLoginId());
         if (employeeRepository.existsByEmployeeLoginIdAndEmployeeIdNot(request.getEmployeeLoginId(), employeeId)) {
-            throw new BusinessException(Constants.ER003, List.of(Constants.LABEL_ACCOUNT_NAME));
+            throw BusinessException.alreadyExists(Constants.LABEL_ACCOUNT_NAME);
         }
 
         // 3. Kiểm tra mật khẩu (Không bắt buộc khi Update, nếu nhập mới kiểm tra độ dài)
@@ -261,13 +250,13 @@ public class EmployeeValidator {
      */
     private void validateLoginId(String loginId) {
         if (loginId == null || loginId.trim().isEmpty()) {
-            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_ACCOUNT_NAME));
+            throw BusinessException.required(Constants.LABEL_ACCOUNT_NAME);
         }
         if (loginId.length() > Constants.MAX_LOGIN_ID_LENGTH) {
-            throw new BusinessException(Constants.ER006, List.of(Constants.LABEL_ACCOUNT_NAME, String.valueOf(Constants.MAX_LOGIN_ID_LENGTH)));
+            throw BusinessException.maxLength(Constants.LABEL_ACCOUNT_NAME, Constants.MAX_LOGIN_ID_LENGTH);
         }
         if (!HALF_SIZE_LOGIN_ID_PATTERN.matcher(loginId).matches()) {
-            throw new BusinessException(Constants.ER019, List.of(Constants.LABEL_ACCOUNT_NAME));
+            throw BusinessException.invalidLoginId(Constants.LABEL_ACCOUNT_NAME);
         }
     }
 
@@ -280,7 +269,7 @@ public class EmployeeValidator {
     private void validatePassword(String password, boolean isRequired) {
         if (isRequired) {
             if (password == null || password.trim().isEmpty()) {
-                throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_PASSWORD));
+                throw BusinessException.required(Constants.LABEL_PASSWORD);
             }
             checkPasswordLength(password);
         } else if (password != null && !password.trim().isEmpty()) {
@@ -295,11 +284,11 @@ public class EmployeeValidator {
      */
     private void checkPasswordLength(String password) {
         if (password.length() < Constants.MIN_PASSWORD_LENGTH || password.length() > Constants.MAX_PASSWORD_LENGTH) {
-            throw new BusinessException(Constants.ER007, List.of(
+            throw BusinessException.range(
                     Constants.LABEL_PASSWORD,
-                    String.valueOf(Constants.MIN_PASSWORD_LENGTH),
-                    String.valueOf(Constants.MAX_PASSWORD_LENGTH)
-            ));
+                    Constants.MIN_PASSWORD_LENGTH,
+                    Constants.MAX_PASSWORD_LENGTH
+            );
         }
     }
 
@@ -310,10 +299,10 @@ public class EmployeeValidator {
      */
     private void validateDepartment(Long deptId) {
         if (deptId == null || deptId <= 0) {
-            throw new BusinessException(Constants.ER002, List.of(Constants.LABEL_GROUP));
+            throw BusinessException.requiredSelect(Constants.LABEL_GROUP);
         }
         if (!departmentRepository.existsById(deptId)) {
-            throw new BusinessException(Constants.ER004, List.of(Constants.LABEL_GROUP));
+            throw BusinessException.notFound(Constants.LABEL_GROUP);
         }
     }
 
@@ -324,10 +313,10 @@ public class EmployeeValidator {
      */
     private void validateEmployeeName(String name) {
         if (name == null || name.trim().isEmpty()) {
-            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_EMPLOYEE_NAME));
+            throw BusinessException.required(Constants.LABEL_EMPLOYEE_NAME);
         }
         if (name.length() > Constants.MAX_EMPLOYEE_NAME_LENGTH) {
-            throw new BusinessException(Constants.ER006, List.of(Constants.LABEL_EMPLOYEE_NAME, String.valueOf(Constants.MAX_EMPLOYEE_NAME_LENGTH)));
+            throw BusinessException.maxLength(Constants.LABEL_EMPLOYEE_NAME, Constants.MAX_EMPLOYEE_NAME_LENGTH);
         }
     }
 
@@ -338,13 +327,13 @@ public class EmployeeValidator {
      */
     private void validateEmployeeNameKana(String nameKana) {
         if (nameKana == null || nameKana.trim().isEmpty()) {
-            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_EMPLOYEE_NAME_KANA));
+            throw BusinessException.required(Constants.LABEL_EMPLOYEE_NAME_KANA);
         }
         if (nameKana.length() > Constants.MAX_EMPLOYEE_NAME_KANA_LENGTH) {
-            throw new BusinessException(Constants.ER006, List.of(Constants.LABEL_EMPLOYEE_NAME_KANA, String.valueOf(Constants.MAX_EMPLOYEE_NAME_KANA_LENGTH)));
+            throw BusinessException.maxLength(Constants.LABEL_EMPLOYEE_NAME_KANA, Constants.MAX_EMPLOYEE_NAME_KANA_LENGTH);
         }
         if (!KATAKANA_PATTERN.matcher(nameKana).matches()) {
-            throw new BusinessException(Constants.ER009, List.of(Constants.LABEL_EMPLOYEE_NAME_KANA));
+            throw BusinessException.katakana(Constants.LABEL_EMPLOYEE_NAME_KANA);
         }
     }
 
@@ -355,7 +344,7 @@ public class EmployeeValidator {
      */
     private void validateBirthDate(String birthDateStr) {
         if (birthDateStr == null || birthDateStr.trim().isEmpty()) {
-            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_BIRTH_DATE));
+            throw BusinessException.required(Constants.LABEL_BIRTH_DATE);
         }
         parseAndValidateDate(birthDateStr, Constants.LABEL_BIRTH_DATE);
     }
@@ -367,16 +356,16 @@ public class EmployeeValidator {
      */
     private void validateEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
-            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_EMAIL));
+            throw BusinessException.required(Constants.LABEL_EMAIL);
         }
         if (email.length() > Constants.MAX_EMAIL_LENGTH) {
-            throw new BusinessException(Constants.ER006, List.of(Constants.LABEL_EMAIL, String.valueOf(Constants.MAX_EMAIL_LENGTH)));
+            throw BusinessException.maxLength(Constants.LABEL_EMAIL, Constants.MAX_EMAIL_LENGTH);
         }
         if (!HALF_SIZE_ASCII_PATTERN.matcher(email).matches()) {
-            throw new BusinessException(Constants.ER008, List.of(Constants.LABEL_EMAIL));
+            throw BusinessException.halfSize(Constants.LABEL_EMAIL);
         }
         if (!EMAIL_PATTERN.matcher(email).matches()) {
-            throw new BusinessException(Constants.ER005, List.of(Constants.LABEL_EMAIL, "email"));
+            throw BusinessException.invalidFormat(Constants.LABEL_EMAIL, "email");
         }
     }
 
@@ -387,13 +376,13 @@ public class EmployeeValidator {
      */
     private void validateTelephone(String phone) {
         if (phone == null || phone.trim().isEmpty()) {
-            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_TELEPHONE));
+            throw BusinessException.required(Constants.LABEL_TELEPHONE);
         }
         if (phone.length() > Constants.MAX_TELEPHONE_LENGTH) {
-            throw new BusinessException(Constants.ER006, List.of(Constants.LABEL_TELEPHONE, String.valueOf(Constants.MAX_TELEPHONE_LENGTH)));
+            throw BusinessException.maxLength(Constants.LABEL_TELEPHONE, Constants.MAX_TELEPHONE_LENGTH);
         }
         if (!TELEPHONE_PATTERN.matcher(phone).matches()) {
-            throw new BusinessException(Constants.ER008, List.of(Constants.LABEL_TELEPHONE));
+            throw BusinessException.halfSize(Constants.LABEL_TELEPHONE);
         }
     }
 
@@ -412,32 +401,32 @@ public class EmployeeValidator {
 
         // 1. Kiểm tra tồn tại chứng chỉ trong DB
         if (!certificationRepository.existsById(certId)) {
-            throw new BusinessException(Constants.ER004, List.of(Constants.LABEL_CERTIFICATION));
+            throw BusinessException.notFound(Constants.LABEL_CERTIFICATION);
         }
 
         // 2. Kiểm tra ngày cấp chứng chỉ (startDate)
         if (startDateStr == null || startDateStr.trim().isEmpty()) {
-            throw new BusinessException(Constants.ER002, List.of(Constants.LABEL_CERT_START_DATE));
+            throw BusinessException.requiredSelect(Constants.LABEL_CERT_START_DATE);
         }
         LocalDate startDate = parseAndValidateDate(startDateStr, Constants.LABEL_CERT_START_DATE);
 
         // 3. Kiểm tra ngày hết hạn chứng chỉ (endDate)
         if (endDateStr == null || endDateStr.trim().isEmpty()) {
-            throw new BusinessException(Constants.ER002, List.of(Constants.LABEL_CERT_END_DATE));
+            throw BusinessException.requiredSelect(Constants.LABEL_CERT_END_DATE);
         }
         LocalDate endDate = parseAndValidateDate(endDateStr, Constants.LABEL_CERT_END_DATE);
 
         // 4. Kiểm tra logic ngày hết hạn phải sau ngày cấp (ER012)
         if (!endDate.isAfter(startDate)) {
-            throw new BusinessException(Constants.ER012, List.of(Constants.LABEL_CERT_END_DATE, Constants.LABEL_CERT_START_DATE));
+            throw BusinessException.endDateBeforeStartDate(Constants.LABEL_CERT_END_DATE, Constants.LABEL_CERT_START_DATE);
         }
 
-        // 5. Kiểm tra điểm số chứng chỉ
+        // 5. Kiểm tra điểm số chứng chỉ (bắt buộc nhập và không được âm)
         if (score == null) {
-            throw new BusinessException(Constants.ER001, List.of(Constants.LABEL_SCORE));
+            throw BusinessException.required(Constants.LABEL_SCORE);
         }
         if (score.compareTo(BigDecimal.ZERO) < 0) {
-            throw new BusinessException(Constants.ER018, List.of(Constants.LABEL_SCORE));
+            throw BusinessException.range(Constants.LABEL_SCORE, 0, Integer.MAX_VALUE);
         }
     }
 
@@ -451,9 +440,9 @@ public class EmployeeValidator {
      */
     private LocalDate parseAndValidateDate(String dateStr, String fieldLabel) {
         try {
-            return LocalDate.parse(dateStr, DATE_FORMATTER);
+            return LocalDate.parse(dateStr, Constants.DEFAULT_DATE_FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new BusinessException(Constants.ER011, List.of(fieldLabel));
+            throw BusinessException.invalidDate(fieldLabel);
         }
     }
 }

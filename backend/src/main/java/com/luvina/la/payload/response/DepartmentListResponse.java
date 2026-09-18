@@ -5,9 +5,11 @@
  */
 package com.luvina.la.payload.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.luvina.la.dto.DepartmentDTO;
 import java.util.List;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Payload chứa thông tin phản hồi danh sách phòng ban.
@@ -15,9 +17,12 @@ import lombok.Data;
  * @author nguyenduykhanh2
  */
 @Data
+@NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DepartmentListResponse {
     private int code;
     private List<DepartmentDTO> departments;
+    private ApiErrorMessage message;
 
     /**
      * Khởi tạo DepartmentListResponse.

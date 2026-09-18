@@ -5,6 +5,7 @@
  */
 package com.luvina.la.dto;
 
+import com.luvina.la.config.Constants;
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,8 +45,8 @@ public class EmployeeCertificationDetailDTO {
             BigDecimal score) {
         this.certificationId = certificationId;
         this.certificationName = certificationName;
-        this.startDate = startDate != null ? startDate.format(java.time.format.DateTimeFormatter.ofPattern("yyyy/MM/dd")) : null;
-        this.endDate = endDate != null ? endDate.format(java.time.format.DateTimeFormatter.ofPattern("yyyy/MM/dd")) : null;
+        this.startDate = startDate != null ? startDate.format(Constants.DEFAULT_DATE_FORMATTER) : null;
+        this.endDate = endDate != null ? endDate.format(Constants.DEFAULT_DATE_FORMATTER) : null;
         this.score = score;
     }
 }

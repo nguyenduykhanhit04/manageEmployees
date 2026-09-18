@@ -27,14 +27,6 @@ public interface CertificationMapper {
     CertificationDTO toDto(CertificationEntity entity);
 
     /**
-     * Chuyển đổi từ CertificationDTO sang CertificationEntity.
-     *
-     * @param dto đối tượng CertificationDTO
-     * @return đối tượng CertificationEntity
-     */
-    CertificationEntity toEntity(CertificationDTO dto);
-
-    /**
      * Chuyển đổi danh sách CertificationEntity sang danh sách CertificationDTO.
      *
      * @param entities danh sách entity chứng chỉ

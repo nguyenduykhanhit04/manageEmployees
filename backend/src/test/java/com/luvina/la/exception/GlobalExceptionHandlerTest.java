@@ -32,7 +32,7 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void testHandleBusinessException() {
-        BusinessException ex = new BusinessException(Constants.ER001, List.of("account_name"));
+        BusinessException ex = BusinessException.required("account_name");
         ResponseEntity<ApiResponse> response = exceptionHandler.handleBusinessException(ex);
 
         assertNotNull(response);

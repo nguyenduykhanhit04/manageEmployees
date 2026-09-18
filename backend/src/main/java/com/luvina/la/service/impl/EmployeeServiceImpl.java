@@ -45,8 +45,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeMapper employeeMapper;
     private final PasswordEncoder passwordEncoder;
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-
     /**
      * Khởi tạo EmployeeServiceImpl với các dependencies cần thiết.
      *
@@ -142,8 +140,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         // 5. Nếu có chọn chứng chỉ tiếng Nhật -> Lưu thông tin vào bảng employees_certifications
         if (request.getCertificationId() != null && request.getCertificationId() > 0) {
-            LocalDate startDate = LocalDate.parse(request.getCertificationStartDate(), DATE_FORMATTER);
-            LocalDate endDate = LocalDate.parse(request.getCertificationEndDate(), DATE_FORMATTER);
+            LocalDate startDate = LocalDate.parse(request.getCertificationStartDate(), Constants.DEFAULT_DATE_FORMATTER);
+            LocalDate endDate = LocalDate.parse(request.getCertificationEndDate(), Constants.DEFAULT_DATE_FORMATTER);
 
             EmployeesCertificationEntity certEntity = new EmployeesCertificationEntity(
                     savedEmployee.getEmployeeId(),
@@ -171,8 +169,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional(readOnly = true)
     public EmployeeDetailDTO getEmployeeDetail(Long employeeId) {
         // 1. Tìm nhân viên theo ID và vai trò role = 1 (ném lỗi ER013 nếu không tồn tại)
-        EmployeeEntity employee = employeeRepository.findByEmployeeIdAndEmployeeRole(employeeId, 1)
-                .orElseThrow(() -> new BusinessException(Constants.ER013, List.of(Constants.LABEL_ID)));
+        EmployeeEntity employee = employeeRepository.findByEmployeeIdAndEmployeeRole(employeeId, Constants.ROLE_USER)
+                .orElseThrow(() -> BusinessException.employeeNotFound(Constants.LABEL_ID));
 
         // 2. Chuyển đổi thông tin cơ bản của nhân viên sang DTO qua MapStruct
         EmployeeDetailDTO employeeDetailDTO = employeeMapper.toDetailDTO(employee);
@@ -199,19 +197,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Long updateEmployee(Long employeeId, EmployeeSaveRequest request) {
         // 1. Tìm nhân viên cần cập nhật trong database (ném ER013 nếu không tồn tại)
         EmployeeEntity employeeEntity = employeeRepository.findByEmployeeId(employeeId)
-                .orElseThrow(() -> new BusinessException(Constants.ER013, List.of(Constants.LABEL_ID)));
+                .orElseThrow(() -> BusinessException.employeeNotFound(Constants.LABEL_ID));
 
         // 2. Cập nhật các trường thông tin cơ bản
         employeeEntity.setEmployeeLoginId(request.getEmployeeLoginId());
         if (request.getDepartmentId() != null) {
             DepartmentEntity dept = departmentRepository.findById(request.getDepartmentId())
-                    .orElseThrow(() -> new BusinessException(Constants.ER004, List.of(Constants.LABEL_GROUP)));
+                    .orElseThrow(() -> BusinessException.notFound(Constants.LABEL_GROUP));
             employeeEntity.setDepartment(dept);
         }
         employeeEntity.setEmployeeName(request.getEmployeeName());
         employeeEntity.setEmployeeNameKana(request.getEmployeeNameKana());
         if (request.getEmployeeBirthDate() != null && !request.getEmployeeBirthDate().isBlank()) {
-            employeeEntity.setEmployeeBirthDate(LocalDate.parse(request.getEmployeeBirthDate(), DATE_FORMATTER));
+            employeeEntity.setEmployeeBirthDate(LocalDate.parse(request.getEmployeeBirthDate(), Constants.DEFAULT_DATE_FORMATTER));
         }
         employeeEntity.setEmployeeEmail(request.getEmployeeEmail());
         employeeEntity.setEmployeeTelephone(request.getEmployeeTelephone());
@@ -231,9 +229,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         // 6. Nếu có chọn chứng chỉ tiếng Nhật mới -> Lưu vào bảng employees_certifications
         if (request.getCertificationId() != null && request.getCertificationId() > 0) {
             LocalDate startDate = request.getCertificationStartDate() != null && !request.getCertificationStartDate().isBlank()
-                    ? LocalDate.parse(request.getCertificationStartDate(), DATE_FORMATTER) : null;
+                    ? LocalDate.parse(request.getCertificationStartDate(), Constants.DEFAULT_DATE_FORMATTER) : null;
             LocalDate endDate = request.getCertificationEndDate() != null && !request.getCertificationEndDate().isBlank()
-                    ? LocalDate.parse(request.getCertificationEndDate(), DATE_FORMATTER) : null;
+                    ? LocalDate.parse(request.getCertificationEndDate(), Constants.DEFAULT_DATE_FORMATTER) : null;
 
             EmployeesCertificationEntity certEntity = new EmployeesCertificationEntity(
                     employeeId,
@@ -276,10 +274,11 @@ public class EmployeeServiceImpl implements EmployeeService {
      * @param employeeId mã định danh nhân viên cần kiểm tra
      */
     @Override
+    @Transactional(readOnly = true)
     public void checkEmployeeExist(Long employeeId) {
         boolean exists = employeeRepository.existsById(employeeId);
         if (!exists) {
-            throw new BusinessException(Constants.ER013, List.of(Constants.LABEL_ID));
+            throw BusinessException.employeeNotFound(Constants.LABEL_ID);
         }
     }
 

@@ -27,14 +27,6 @@ public interface DepartmentMapper {
     DepartmentDTO toDto(DepartmentEntity entity);
 
     /**
-     * Chuyển đổi từ DepartmentDTO sang DepartmentEntity.
-     *
-     * @param dto đối tượng DepartmentDTO
-     * @return đối tượng DepartmentEntity
-     */
-    DepartmentEntity toEntity(DepartmentDTO dto);
-
-    /**
      * Chuyển đổi danh sách DepartmentEntity sang danh sách DepartmentDTO.
      *
      * @param entities danh sách entity phòng ban

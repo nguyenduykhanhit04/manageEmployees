@@ -5,6 +5,7 @@
  */
 package com.luvina.la.payload.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.luvina.la.dto.EmployeeDTO;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EmployeeListResponse {
     private int code;
     private long totalRecords;

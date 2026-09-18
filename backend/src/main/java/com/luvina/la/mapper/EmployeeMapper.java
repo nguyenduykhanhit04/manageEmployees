@@ -1,5 +1,11 @@
+/**
+ * Copyright(C) 2026 Luvina Software Company
+ *
+ * EmployeeMapper.java, 25/08/2026 nguyenduykhanh2
+ */
 package com.luvina.la.mapper;
 
+import com.luvina.la.dto.EmployeeDetailDTO;
 import com.luvina.la.entity.EmployeeEntity;
 import com.luvina.la.payload.request.EmployeeSaveRequest;
 import org.mapstruct.Mapper;
@@ -34,6 +40,5 @@ public interface EmployeeMapper {
     @Mapping(target = "departmentName", source = "department.departmentName")
     @Mapping(target = "employeeBirthDate", source = "employeeBirthDate", dateFormat = "yyyy/MM/dd")
     @Mapping(target = "certifications", ignore = true)
-    com.luvina.la.dto.EmployeeDetailDTO toDetailDTO(EmployeeEntity employee);
+    EmployeeDetailDTO toDetailDTO(EmployeeEntity employee);
 }
-

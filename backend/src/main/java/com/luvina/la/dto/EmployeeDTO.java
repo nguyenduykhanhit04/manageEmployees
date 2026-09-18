@@ -7,12 +7,13 @@ package com.luvina.la.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO chứa thông tin nhân viên.
+ * DTO chứa thông tin nhân viên trong danh sách.
+ * Ngày tháng được trả về dưới dạng String định dạng "yyyy/MM/dd"
+ * để thống nhất với EmployeeDetailDTO và các DTO khác trong hệ thống.
  *
  * @author nguyenduykhanh2
  */
@@ -24,12 +25,12 @@ public class EmployeeDTO implements Serializable {
 
     private Long employeeId;
     private String employeeName;
-    private LocalDate employeeBirthDate;
+    private String employeeBirthDate;
     private String departmentName;
     private String employeeEmail;
     private String employeeTelephone;
     private String certificationName;
-    private LocalDate endDate;
+    private String endDate;
     private BigDecimal score;
 
     /**
@@ -37,22 +38,22 @@ public class EmployeeDTO implements Serializable {
      *
      * @param employeeId mã nhân viên
      * @param employeeName tên nhân viên
-     * @param employeeBirthDate ngày sinh của nhân viên
+     * @param employeeBirthDate ngày sinh của nhân viên (định dạng yyyy/MM/dd)
      * @param departmentName tên phòng ban
      * @param employeeEmail địa chỉ email của nhân viên
      * @param employeeTelephone số điện thoại của nhân viên
      * @param certificationName tên chứng chỉ
-     * @param endDate ngày hết hạn chứng chỉ
+     * @param endDate ngày hết hạn chứng chỉ (định dạng yyyy/MM/dd)
      * @param score điểm chứng chỉ
      */
     public EmployeeDTO(Long employeeId,
                        String employeeName,
-                       LocalDate employeeBirthDate,
+                       String employeeBirthDate,
                        String departmentName,
                        String employeeEmail,
                        String employeeTelephone,
                        String certificationName,
-                       LocalDate endDate,
+                       String endDate,
                        BigDecimal score) {
         this.employeeId = employeeId;
         this.employeeName = employeeName;
@@ -65,3 +66,4 @@ public class EmployeeDTO implements Serializable {
         this.score = score;
     }
 }
+

@@ -8,7 +8,6 @@ public class HomeController {
 
     @RequestMapping("/")
     public String index() {
-        return "Welcome to Employee service a";
+        return "Welcome to Employee service";
     }
-
 }
