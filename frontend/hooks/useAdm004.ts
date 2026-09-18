@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   addEmployeeSchema,
@@ -73,7 +73,7 @@ export function useAdm004() {
   // 3. Khởi tạo form với Schema tương ứng theo mode
   const currentSchema = isEditMode ? editEmployeeSchema : addEmployeeSchema;
   const form = useForm<EmployeeFormData>({
-    resolver: zodResolver(currentSchema) as any,
+    resolver: zodResolver(currentSchema) as Resolver<EmployeeFormData>,
     defaultValues: getDefaultFormValues(),
     mode: 'all',
   });
@@ -175,7 +175,7 @@ export function useAdm004() {
           setErrorMessage(ERROR_MESSAGES.ER015);
           return;
         }
-      } catch (err) {
+      } catch {
         setIsSystemError(true);
         setErrorMessage(ERROR_MESSAGES.ER015);
         return;

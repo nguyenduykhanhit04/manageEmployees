@@ -81,45 +81,61 @@ export interface EmployeeSearchParams {
 }
 
 /**
+ * Cấu trúc dữ liệu chứng chỉ gửi kèm khi thêm mới/cập nhật nhân viên.
+ */
+export interface EmployeeCertificationPayload {
+  /** Mã định danh chứng chỉ */
+  certificationId?: number | null;
+  /** Ngày cấp chứng chỉ (YYYY-MM-DD) */
+  certificationStartDate?: string | null;
+  /** Ngày hết hạn chứng chỉ (YYYY-MM-DD) */
+  certificationEndDate?: string | null;
+  /** Điểm số chứng chỉ */
+  employeeCertificationScore?: number | null;
+}
+
+/**
  * Cấu trúc dữ liệu gửi lên API tạo mới nhân viên.
  */
-export interface EmployeeCreateRequest {
-  /** Tên đầy đủ của nhân viên */
-  employeeName: string;
+export interface EmployeeCreateRequest extends EmployeeCertificationPayload {
+  /** Tên đăng nhập tài khoản */
+  employeeLoginId: string;
+  /** Mật khẩu đăng nhập */
+  employeeLoginPassword?: string;
   /** Mã phòng ban trực thuộc */
   departmentId: number;
-  /** Địa chỉ email của nhân viên */
-  employeeEmail: string;
+  /** Tên đầy đủ của nhân viên */
+  employeeName: string;
   /** Tên Katakana của nhân viên */
   employeeNameKana?: string;
   /** Ngày sinh của nhân viên (YYYY-MM-DD) */
   employeeBirthDate?: string;
+  /** Địa chỉ email của nhân viên */
+  employeeEmail: string;
   /** Số điện thoại liên hệ */
   employeeTelephone?: string;
-  /** Tên tài khoản đăng nhập */
-  employeeLoginId: string;
 }
 
 /**
  * Cấu trúc dữ liệu gửi lên API cập nhật nhân viên.
  */
-export interface EmployeeUpdateRequest {
+export interface EmployeeUpdateRequest extends EmployeeCertificationPayload {
   /** Mã định danh nhân viên cần cập nhật */
-  employeeId: number;
-  /** Tên đầy đủ của nhân viên */
-  employeeName: string;
+  employeeId?: number;
   /** Mã phòng ban trực thuộc */
   departmentId: number;
-  /** Địa chỉ email của nhân viên */
-  employeeEmail: string;
+  /** Tên đầy đủ của nhân viên */
+  employeeName: string;
   /** Tên Katakana của nhân viên */
   employeeNameKana?: string;
   /** Ngày sinh của nhân viên (YYYY-MM-DD) */
   employeeBirthDate?: string;
+  /** Địa chỉ email của nhân viên */
+  employeeEmail: string;
   /** Số điện thoại liên hệ */
   employeeTelephone?: string;
-  /** Tên tài khoản đăng nhập */
-  employeeLoginId: string;
+  /** Mật khẩu mới (nếu có cập nhật) */
+  employeeLoginPassword?: string;
 }
 
 /**

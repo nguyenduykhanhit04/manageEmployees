@@ -1,15 +1,22 @@
+import { STORAGE_KEYS } from '@/lib/constants/storage';
+
 export function storeToken(token: string, tokenType: string) {
   if (typeof window === 'undefined') return;
-  localStorage.setItem('access_token', token);
-  localStorage.setItem('token_type', tokenType);
-  sessionStorage.setItem('access_token', token);
-  sessionStorage.setItem('token_type', tokenType);
+  localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
+  localStorage.setItem(STORAGE_KEYS.TOKEN_TYPE, tokenType);
+  sessionStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
+  sessionStorage.setItem(STORAGE_KEYS.TOKEN_TYPE, tokenType);
 }
 
 export function getToken(): { accessToken: string; tokenType: string } | null {
   if (typeof window === 'undefined') return null;
-  const accessToken = localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
-  const tokenType = localStorage.getItem('token_type') || sessionStorage.getItem('token_type') || 'Bearer';
+  const accessToken =
+    localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN) ||
+    sessionStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
+  const tokenType =
+    localStorage.getItem(STORAGE_KEYS.TOKEN_TYPE) ||
+    sessionStorage.getItem(STORAGE_KEYS.TOKEN_TYPE) ||
+    'Bearer';
 
   if (accessToken && tokenType) {
     return { accessToken, tokenType };
@@ -19,10 +26,10 @@ export function getToken(): { accessToken: string; tokenType: string } | null {
 
 export function removeToken() {
   if (typeof window === 'undefined') return;
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('token_type');
-  sessionStorage.removeItem('access_token');
-  sessionStorage.removeItem('token_type');
+  localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+  localStorage.removeItem(STORAGE_KEYS.TOKEN_TYPE);
+  sessionStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+  sessionStorage.removeItem(STORAGE_KEYS.TOKEN_TYPE);
 }
 
 export function isTokenExpired(token: string): boolean {

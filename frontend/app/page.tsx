@@ -1,7 +1,18 @@
+'use client';
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import styles from "./page.module.css";
+import { ROUTES } from "@/lib/constants/routes";
 
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push(ROUTES.EMPLOYEE_LIST);
+  }, [router]);
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>

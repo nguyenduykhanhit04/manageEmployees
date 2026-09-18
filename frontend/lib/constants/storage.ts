@@ -4,6 +4,10 @@ import { ROUTES } from '@/lib/constants/routes';
  * Danh sách các Key sử dụng để lưu trữ trong sessionStorage.
  */
 export const STORAGE_KEYS = {
+  /** Lưu trữ JWT Access Token */
+  ACCESS_TOKEN: 'access_token',
+  /** Lưu trữ loại Token (Bearer) */
+  TOKEN_TYPE: 'token_type',
   /** Lưu trữ URL bộ lọc tìm kiếm & phân trang hiện tại của ADM002 */
   ADM002_FILTER_URL: 'ADM002_FILTER_URL',
   /** Lưu trữ dữ liệu tạm thời của form ADM004 khi chuyển sang ADM005 */

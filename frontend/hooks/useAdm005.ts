@@ -2,16 +2,15 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { AxiosError } from 'axios';
-import { ApiResponse } from '@/types/api';
 import { useDepartments } from '@/hooks/useDepartments';
 import { useCertifications } from '@/hooks/useCertifications';
 import { getEmployee, createEmployee, updateEmployee, deleteEmployee } from '@/lib/api/employee.api';
 import { ROUTES } from '@/lib/constants/routes';
 import { HTTP_STATUS } from '@/lib/constants/http';
-import { formatErrorMessage, ERROR_MESSAGES } from '@/lib/constants/messages';
+import { ERROR_MESSAGES } from '@/lib/constants/messages';
 import { EmployeeFormData } from '@/lib/validation/employee';
 import { getStoredReturnUrl, STORAGE_KEYS } from '@/lib/constants/storage';
+import { extractApiErrorMessage } from '@/lib/utils/apiError';
 import {
   mapEmployeeDetailToFormData,
   buildBaseEmployeePayload,
@@ -168,14 +167,7 @@ export function useAdm005() {
       }
     } catch (error) {
       // 6.4 Xử lý ngoại lệ khi gọi API (trích xuất mã lỗi Parametric Error hoặc chuỗi thông báo)
-      const axiosError = error as AxiosError<ApiResponse>;
-      const errorData = axiosError.response?.data;
-      let msg = ERROR_MESSAGES.ER015;
-      if (errorData?.message && typeof errorData.message === 'object' && errorData.message.code) {
-        msg = formatErrorMessage(errorData.message.code, errorData.message.params || []);
-      } else if (typeof errorData?.message === 'string') {
-        msg = errorData.message;
-      }
+      const msg = extractApiErrorMessage(error);
 
       // 6.4.1 Nếu là Mode Add hoặc Edit: Lưu thông báo lỗi vào sessionStorage và điều hướng về ADM004 (mode=back)
       if (mode === 'add' || mode === 'edit') {

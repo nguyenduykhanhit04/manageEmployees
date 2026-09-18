@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getToken, isTokenExpired } from '@/lib/auth/token';
+import { ROUTES } from '@/lib/constants/routes';
 
 /**
  * Hook kiểm tra trạng thái xác thực của người dùng cho các trang được bảo vệ.
@@ -18,7 +19,7 @@ const useAuth = () => {
     // 2. Kiểm tra token tồn tại và còn hạn hay không
     // 2.1 Nếu không có token hoặc token đã hết hạn -> Chuyển hướng về trang đăng nhập
     if (!token || isTokenExpired(token?.accessToken)) {
-      router.push('/login');
+      router.push(ROUTES.LOGIN);
     }
   }, [router]);
 };
@@ -39,7 +40,7 @@ const useGuest = () => {
     // 2. Kiểm tra token tồn tại và còn hạn hay không
     // 2.1 Nếu đã có token và token còn hạn -> Chuyển hướng vào màn hình ADM002
     if (token && !isTokenExpired(token?.accessToken)) {
-      router.push('/employees/adm002');
+      router.push(ROUTES.EMPLOYEE_LIST);
     }
   }, [router]);
 };

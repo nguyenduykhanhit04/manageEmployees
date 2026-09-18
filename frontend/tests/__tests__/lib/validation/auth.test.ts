@@ -1,4 +1,5 @@
 import { loginSchema } from '@/lib/validation/auth';
+import { formatErrorMessage, FIELD_LABELS } from '@/lib/constants/messages';
 
 describe('Login Validation Schema', () => {
   it('should pass with valid data', () => {
@@ -16,7 +17,9 @@ describe('Login Validation Schema', () => {
     });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toBe('Username is required');
+      expect(result.error.issues[0].message).toBe(
+        formatErrorMessage('ER001', [FIELD_LABELS.employeeLoginId])
+      );
     }
   });
 
@@ -27,7 +30,9 @@ describe('Login Validation Schema', () => {
     });
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toBe('Password is required');
+      expect(result.error.issues[0].message).toBe(
+        formatErrorMessage('ER001', [FIELD_LABELS.employeeLoginPassword])
+      );
     }
   });
 
@@ -37,10 +42,10 @@ describe('Login Validation Schema', () => {
       password: '',
     });
     expect(result.success).toBe(false);
-    // It will report the first error found
     if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Username is required');
+      expect(result.error.issues[0].message).toBe(
+        formatErrorMessage('ER001', [FIELD_LABELS.employeeLoginId])
+      );
     }
   });
 });
-

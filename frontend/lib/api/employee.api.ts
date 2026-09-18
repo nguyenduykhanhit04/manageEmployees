@@ -1,4 +1,9 @@
-import { EmployeeListApiResponse, EmployeeDetailResponse } from "@/types/employee";
+import {
+  EmployeeListApiResponse,
+  EmployeeDetailResponse,
+  EmployeeCreateRequest,
+  EmployeeUpdateRequest,
+} from "@/types/employee";
 import { ApiResponse } from "@/types/api";
 import { apiClient } from "@/lib/api/client";
 
@@ -53,8 +58,8 @@ export const getEmployees = async (params: {
  * @param payload dữ liệu nhân viên cần tạo mới
  * @return kết quả phản hồi từ backend
  */
-export const createEmployee = async (payload: any): Promise<any> => {
-  const response = await apiClient.post('/employee', payload);
+export const createEmployee = async (payload: EmployeeCreateRequest): Promise<ApiResponse> => {
+  const response = await apiClient.post<ApiResponse>('/employee', payload);
   return response.data;
 };
 
@@ -65,8 +70,11 @@ export const createEmployee = async (payload: any): Promise<any> => {
  * @param payload dữ liệu nhân viên cần cập nhật
  * @return kết quả phản hồi từ backend
  */
-export const updateEmployee = async (employeeId: number | string, payload: any): Promise<any> => {
-  const response = await apiClient.put(`/employee/${employeeId}`, payload);
+export const updateEmployee = async (
+  employeeId: number | string,
+  payload: EmployeeUpdateRequest
+): Promise<ApiResponse> => {
+  const response = await apiClient.put<ApiResponse>(`/employee/${employeeId}`, payload);
   return response.data;
 };
 
@@ -87,8 +95,8 @@ export const getEmployee = async (employeeId: number | string): Promise<Employee
  * @param employeeId mã định danh của nhân viên cần xóa
  * @return kết quả phản hồi từ backend
  */
-export const deleteEmployee = async (employeeId: number | string): Promise<any> => {
-  const response = await apiClient.delete(`/employee/${employeeId}`);
+export const deleteEmployee = async (employeeId: number | string): Promise<ApiResponse> => {
+  const response = await apiClient.delete<ApiResponse>(`/employee/${employeeId}`);
   return response.data;
 };
 

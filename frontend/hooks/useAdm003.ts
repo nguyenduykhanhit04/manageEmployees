@@ -2,14 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { AxiosError } from 'axios';
 import { EmployeeDetailResponse } from '@/types/employee';
-import { ApiResponse } from '@/types/api';
 import { getEmployee, deleteEmployee } from '@/lib/api/employee.api';
 import { ROUTES } from '@/lib/constants/routes';
 import { HTTP_STATUS } from '@/lib/constants/http';
-import { formatErrorMessage, ERROR_MESSAGES, CONFIRM_MESSAGES } from '@/lib/constants/messages';
+import { ERROR_MESSAGES, CONFIRM_MESSAGES } from '@/lib/constants/messages';
 import { getStoredReturnUrl } from '@/lib/constants/storage';
+import { extractApiErrorMessage } from '@/lib/utils/apiError';
 
 /**
  * Custom Hook quản lý dữ liệu và các hành động của màn hình Chi tiết nhân viên (ADM003).
@@ -99,15 +98,7 @@ export function useAdm003() {
       }
     } catch (error) {
       setIsSystemError(true);
-      const axiosError = error as AxiosError<ApiResponse>;
-      const errorData = axiosError.response?.data;
-      if (errorData?.message && typeof errorData.message === 'object' && errorData.message.code) {
-        setErrorMessage(formatErrorMessage(errorData.message.code, errorData.message.params || []));
-      } else if (typeof errorData?.message === 'string') {
-        setErrorMessage(errorData.message);
-      } else {
-        setErrorMessage(ERROR_MESSAGES.ER015);
-      }
+      setErrorMessage(extractApiErrorMessage(error));
     } finally {
       setIsLoading(false);
     }

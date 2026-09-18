@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { ROUTES } from '@/lib/constants/routes';
 
 export default function Header() {
   return (
@@ -12,10 +13,10 @@ export default function Header() {
           <h5 className="title-brand mr-auto">Luvina Software</h5>
           <ul className="navbar-nav flex-row d-flex">
             <li className="nav-item">
-              <Link href="/logout">ログアウト</Link>
+              <Link href={ROUTES.LOGOUT}>ログアウト</Link>
             </li>
             <li className="nav-item">
-              <Link href="/employees/adm002">トップ</Link>
+              <Link href={ROUTES.EMPLOYEE_LIST}>トップ</Link>
             </li>
           </ul>
         </div>

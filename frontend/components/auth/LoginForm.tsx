@@ -3,10 +3,17 @@
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { apiClient } from '@/lib/api/client';
+import { login } from '@/lib/api/auth.api';
 import { storeToken } from '@/lib/auth/token';
 import { loginSchema, LoginForm as LoginFormType } from '@/lib/validation/auth';
+import { ROUTES } from '@/lib/constants/routes';
+import { ERROR_MESSAGES } from '@/lib/constants/messages';
 
+/**
+ * Component Form đăng nhập hệ thống.
+ *
+ * @author nguyenduykhanh2
+ */
 export default function LoginForm() {
   const router = useRouter();
   const { register, handleSubmit, formState: { errors }, setError } = useForm<LoginFormType>({
@@ -15,18 +22,18 @@ export default function LoginForm() {
 
   const onSubmit = async (data: LoginFormType) => {
     try {
-      const response = await apiClient.post<{ accessToken?: string; tokenType?: string; errors?: Record<string, string> }>('/login', data);
-      if (response.data && response.data.accessToken) {
-        storeToken(response.data.accessToken, response.data.tokenType || 'Bearer');
-        router.push('/employees/adm002');
+      const response = await login(data);
+      if (response && response.accessToken) {
+        storeToken(response.accessToken, response.tokenType || 'Bearer');
+        router.push(ROUTES.EMPLOYEE_LIST);
       } else {
         setError('root', {
-          message: 'ログインに失敗しました。アカウント名またはパスワードを確認してください。',
+          message: ERROR_MESSAGES.ER016,
         });
       }
     } catch {
       setError('root', {
-        message: 'ログインに失敗しました。アカウント名またはパスワードを確認してください。',
+        message: ERROR_MESSAGES.ER016,
       });
     }
   };
@@ -80,4 +87,3 @@ export default function LoginForm() {
     </form>
   );
 }
-

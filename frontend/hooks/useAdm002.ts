@@ -11,6 +11,7 @@ import { HTTP_STATUS } from '@/lib/constants/http';
 import { API_ERROR_MESSAGES } from '@/lib/constants/messages';
 import { parseSortFromParams, buildQueryString } from '@/lib/utils/employeeSort';
 import { setStoredReturnUrl } from '@/lib/constants/storage';
+import { extractApiErrorMessage } from '@/lib/utils/apiError';
 
 export type { SortField, SortDirection, SortOrders };
 
@@ -39,7 +40,7 @@ export function useAdm002() {
   // 3. Giải mã thứ tự ưu tiên và chiều sắp xếp từ URL
   const { parsedOrders: urlSortOrders, detectedPriority: urlSortPriority } = useMemo(
     () => parseSortFromParams(searchParams),
-    [searchParamsString]
+    [searchParams]
   );
 
   // 4. Khởi tạo các state dữ liệu và form
@@ -117,10 +118,12 @@ export function useAdm002() {
           return;
         }
         throw new Error();
-      } catch {
+      } catch (error) {
         // 3.1 Xử lý khi API phản hồi lỗi hoặc gặp ngoại lệ
         if (isMounted) {
-          setErrorMessage(API_ERROR_MESSAGES.GET_EMPLOYEES_FAILED);
+          setErrorMessage(
+            extractApiErrorMessage(error, API_ERROR_MESSAGES.GET_EMPLOYEES_FAILED)
+          );
         }
       } finally {
         // 3.2 Tắt trạng thái tải khi hoàn tất

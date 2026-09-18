@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { STORAGE_KEYS } from '@/lib/constants/storage';
+import { ROUTES } from '@/lib/constants/routes';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8085';
 
@@ -13,7 +15,7 @@ export function setupInterceptors(client: ReturnType<typeof axios.create>) {
   client.interceptors.request.use(
     (config) => {
       const token = typeof window !== 'undefined'
-        ? (localStorage.getItem('access_token') || sessionStorage.getItem('access_token'))
+        ? (localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN) || sessionStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN))
         : null;
       if (token) {
         if (config.headers) {
@@ -32,11 +34,11 @@ export function setupInterceptors(client: ReturnType<typeof axios.create>) {
     (error) => {
       if (error.response?.status === 401) {
         if (typeof window !== 'undefined') {
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('token_type');
-          sessionStorage.removeItem('access_token');
-          sessionStorage.removeItem('token_type');
-          window.location.href = '/login';
+          localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+          localStorage.removeItem(STORAGE_KEYS.TOKEN_TYPE);
+          sessionStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+          sessionStorage.removeItem(STORAGE_KEYS.TOKEN_TYPE);
+          window.location.href = ROUTES.LOGIN;
         }
       }
       return Promise.reject(error);

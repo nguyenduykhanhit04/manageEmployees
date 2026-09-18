@@ -1,4 +1,4 @@
-import { baseEmployeeSchema } from '@/lib/validation/employee';
+import { baseEmployeeSchema, addEmployeeSchema } from '@/lib/validation/employee';
 import { formatErrorMessage, FIELD_LABELS } from '@/lib/constants/messages';
 
 describe('Employee Validation Schema - Katakana Field', () => {
@@ -128,13 +128,11 @@ describe('Employee Validation Schema - Certification Dates (ER012)', () => {
   };
 
   it('should pass when certificationEndDate is strictly in the future of certificationStartDate', () => {
-    const { addEmployeeSchema } = require('@/lib/validation/employee');
     const result = addEmployeeSchema.safeParse(validAddEmployee);
     expect(result.success).toBe(true);
   });
 
   it('should fail with ER012 when certificationEndDate is equal to certificationStartDate', () => {
-    const { addEmployeeSchema } = require('@/lib/validation/employee');
     const result = addEmployeeSchema.safeParse({
       ...validAddEmployee,
       certificationStartDate: '2023/01/01',
@@ -142,7 +140,7 @@ describe('Employee Validation Schema - Certification Dates (ER012)', () => {
     });
     expect(result.success).toBe(false);
     if (!result.success) {
-      const dateError = result.error.issues.find((issue: any) => issue.path.includes('certificationEndDate'));
+      const dateError = result.error.issues.find((issue) => issue.path.includes('certificationEndDate'));
       expect(dateError).toBeDefined();
       expect(dateError?.message).toBe(
         formatErrorMessage('ER012', [FIELD_LABELS.endDate, FIELD_LABELS.startDate])
@@ -151,7 +149,6 @@ describe('Employee Validation Schema - Certification Dates (ER012)', () => {
   });
 
   it('should fail with ER012 when certificationEndDate is before certificationStartDate', () => {
-    const { addEmployeeSchema } = require('@/lib/validation/employee');
     const result = addEmployeeSchema.safeParse({
       ...validAddEmployee,
       certificationStartDate: '2023/01/05',
@@ -159,7 +156,7 @@ describe('Employee Validation Schema - Certification Dates (ER012)', () => {
     });
     expect(result.success).toBe(false);
     if (!result.success) {
-      const dateError = result.error.issues.find((issue: any) => issue.path.includes('certificationEndDate'));
+      const dateError = result.error.issues.find((issue) => issue.path.includes('certificationEndDate'));
       expect(dateError).toBeDefined();
       expect(dateError?.message).toBe(
         formatErrorMessage('ER012', [FIELD_LABELS.endDate, FIELD_LABELS.startDate])
