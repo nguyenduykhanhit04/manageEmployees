@@ -153,7 +153,6 @@ export function useAdm005() {
       // 6.3.1 Chuẩn bị payload thêm mới nhân viên
       const payload = {
         ...buildBaseEmployeePayload(formData),
-        employeeLoginId: formData.employeeLoginId,
         employeeLoginPassword: formData.employeeLoginPassword,
       };
 

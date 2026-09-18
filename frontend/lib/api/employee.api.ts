@@ -3,6 +3,7 @@ import {
   EmployeeDetailResponse,
   EmployeeCreateRequest,
   EmployeeUpdateRequest,
+  EmployeeSearchParams,
 } from "@/types/employee";
 import { ApiResponse } from "@/types/api";
 import { apiClient } from "@/lib/api/client";
@@ -14,17 +15,7 @@ import { apiClient } from "@/lib/api/client";
  * @param params đối tượng chứa các tham số truy vấn tìm kiếm và sắp xếp
  * @return phản hồi danh sách nhân viên từ Backend
  */
-export const getEmployees = async (params: {
-  employee_name?: string;
-  department_id?: number;
-  ord_employee_name?: string;
-  ord_certification_level?: string;
-  ord_certification_name?: string;
-  ord_end_date?: string;
-  offset?: number;
-  limit?: number;
-  [key: string]: unknown;
-}): Promise<EmployeeListApiResponse> => {
+export const getEmployees = async (params: EmployeeSearchParams): Promise<EmployeeListApiResponse> => {
   const queryParams: Record<string, unknown> = {};
 
   // Điều kiện tìm kiếm

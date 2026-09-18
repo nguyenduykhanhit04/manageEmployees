@@ -17,11 +17,3 @@ export interface LoginResponse {
   /** Loại token (mặc định Bearer) */
   tokenType: string;
 }
-
-/**
- * Cấu trúc payload giải mã từ JWT Token.
- */
-export interface TokenPayload {
-  /** Thời gian hết hạn của token (Unix timestamp) */
-  exp: number;
-}

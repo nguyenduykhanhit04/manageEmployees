@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { STORAGE_KEYS } from '@/lib/constants/storage';
 import { ROUTES } from '@/lib/constants/routes';
+import { HTTP_STATUS } from '@/lib/constants/http';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8085';
 
@@ -32,7 +33,7 @@ export function setupInterceptors(client: ReturnType<typeof axios.create>) {
   client.interceptors.response.use(
     (response) => response,
     (error) => {
-      if (error.response?.status === 401) {
+      if (error.response?.status === HTTP_STATUS.UNAUTHORIZED) {
         if (typeof window !== 'undefined') {
           localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
           localStorage.removeItem(STORAGE_KEYS.TOKEN_TYPE);

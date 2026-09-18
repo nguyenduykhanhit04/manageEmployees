@@ -42,7 +42,7 @@ export function mapEmployeeDetailToFormData(emp: EmployeeDetailResponse): Employ
 
 /**
  * Xây dựng phần payload chứng chỉ tiếng Nhật dùng chung cho cả mode add và edit.
- * Chuyển đổi định dạng ngày yyyy/MM/dd → yyyy-MM-dd, ép kiểu chuỗi → số.
+ * Giữ nguyên định dạng ngày chuẩn yyyy/MM/dd theo đúng yêu cầu của Backend API.
  *
  * @param formData dữ liệu form nhân viên
  * @return object payload chứng chỉ phù hợp với Backend API
@@ -57,11 +57,11 @@ export function buildCertPayload(formData: EmployeeFormData) {
     certificationId: hasCert ? Number(formData.certificationId) : null,
     certificationStartDate:
       formData.certificationStartDate && formData.certificationStartDate.trim() !== ''
-        ? formData.certificationStartDate.replaceAll('/', '-')
+        ? formData.certificationStartDate.replaceAll('-', '/')
         : null,
     certificationEndDate:
       formData.certificationEndDate && formData.certificationEndDate.trim() !== ''
-        ? formData.certificationEndDate.replaceAll('/', '-')
+        ? formData.certificationEndDate.replaceAll('-', '/')
         : null,
     employeeCertificationScore:
       formData.employeeCertificationScore && formData.employeeCertificationScore !== ''
@@ -72,6 +72,7 @@ export function buildCertPayload(formData: EmployeeFormData) {
 
 /**
  * Xây dựng payload thông tin cơ bản nhân viên (dùng chung cho cả thêm mới và cập nhật).
+ * Định dạng ngày yyyy/MM/dd theo đúng yêu cầu của Backend API.
  *
  * @param formData dữ liệu form nhân viên
  * @return object payload cơ bản gồm các thông tin chung và chứng chỉ
@@ -81,9 +82,10 @@ export function buildBaseEmployeePayload(formData: EmployeeFormData) {
     departmentId: Number(formData.departmentId),
     employeeName: formData.employeeName,
     employeeNameKana: formData.employeeNameKana,
-    employeeBirthDate: formData.employeeBirthDate.replaceAll('/', '-'),
+    employeeBirthDate: formData.employeeBirthDate.replaceAll('-', '/'),
     employeeEmail: formData.employeeEmail,
     employeeTelephone: formData.employeeTelephone,
+    employeeLoginId: formData.employeeLoginId,
     ...buildCertPayload(formData),
   };
 }
