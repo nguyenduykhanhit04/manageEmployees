@@ -25,6 +25,7 @@ spring:
 
   flyway:
     enabled: true
+    validate-on-migrate: false
 
   main:
     allow-circular-references: true
