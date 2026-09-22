@@ -14,6 +14,7 @@ Tài liệu này hệ thống hóa toàn bộ các Annotation (`@...`) được 
 6. [Nhóm 6: Lombok (Giảm thiểu Boilerplate Code)](#-nhóm-6-lombok)
 7. [Nhóm 7: MapStruct (Mapping dữ liệu tự động)](#-nhóm-7-mapstruct)
 8. [Nhóm 8: Xử lý Ngoại lệ tập trung (Exception Handling)](#-nhóm-8-xử-lý-ngoại-lệ-tập-trung)
+9. [Nhóm 9: Tự Tạo Custom Annotation trong Java & Spring Boot](#-nhóm-9-tự-tạo-custom-annotation-trong-java--spring-boot)
 
 ---
 
@@ -187,10 +188,108 @@ Lombok sinh mã nguồn tự động lúc biên dịch (Compile-time) giúp code
 
 ---
 
-### 🗣️ Kịch Bản Trả Lời Phỏng Vấn (Tóm Tắt Về Annotation):
+## 🛠️ NHÓM 9: TỰ TẠO CUSTOM ANNOTATION TRONG JAVA & SPRING BOOT
+
+Trong Java và Spring Boot, chúng ta hoàn toàn có thể **tự tạo Annotation riêng** bằng từ khóa **`@interface`** kết hợp với các **Meta-Annotations**.
+
+### 🔹 1. Hai Meta-Annotations bắt buộc:
+- **`@Target`:** Xác định phạm vi được phép gắn Annotation:
+  - `ElementType.TYPE`: Gắn trên Class / Interface.
+  - `ElementType.METHOD`: Gắn trên Phương thức.
+  - `ElementType.FIELD`: Gắn trên Thuộc tính (biến).
+  - `ElementType.PARAMETER`: Gắn trên Tham số của hàm.
+- **`@Retention`:** Xác định vòng đời tồn tại của Annotation:
+  - `RetentionPolicy.SOURCE`: Chỉ tồn tại ở mã nguồn, biến mất sau khi biên dịch (như Lombok).
+  - `RetentionPolicy.CLASS`: Tồn tại trong file `.class` nhưng JVM lúc chạy không đọc.
+  - `RetentionPolicy.RUNTIME`: **Tồn tại lúc ứng dụng đang chạy**, cho phép Spring và Java Reflection đọc và xử lý logic (được dùng nhiều nhất).
+
+---
+
+### 🔹 2. Ví dụ 1: Tự tạo Custom Validator Annotation (`@ValidDateFormat`)
+Dùng để kiểm tra định dạng chuỗi ngày tháng `"yyyy/MM/dd"` trực tiếp trên Request DTO:
+
+**Bước 1: Tạo Annotation Interface**
+```java
+@Target({ ElementType.FIELD })
+@Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = DateFormatValidator.class) // Liên kết với class xử lý logic
+public @interface ValidDateFormat {
+    String message() default "ER005: Ngày tháng không đúng định dạng yyyy/MM/dd";
+    String pattern() default "yyyy/MM/dd";
+    Class<?>[] groups() default {};
+    Class<? extends Payload>[] payload() default {};
+}
+```
+
+**Bước 2: Viết Class Validator thực thi (`ConstraintValidator`)**
+```java
+public class DateFormatValidator implements ConstraintValidator<ValidDateFormat, String> {
+    private String pattern;
+
+    @Override
+    public void initialize(ValidDateFormat annotation) {
+        this.pattern = annotation.pattern();
+    }
+
+    @Override
+    public boolean isValid(String value, ConstraintValidatorContext context) {
+        if (value == null || value.trim().isEmpty()) return true;
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern).withResolverStyle(ResolverStyle.STRICT);
+            LocalDate.parse(value, formatter);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+}
+```
+
+**Bước 3: Sử dụng trên Request DTO**
+```java
+public class EmployeeSaveRequest {
+    @ValidDateFormat(pattern = "yyyy/MM/dd")
+    private String employeeBirthDate;
+}
+```
+
+---
+
+### 🔹 3. Ví dụ 2: Tự tạo Custom Annotation kết hợp Spring AOP (`@LogExecutionTime`)
+Dùng để tự động đo và in log thời gian thực thi của bất kỳ hàm nào:
+
+**Bước 1: Tạo Annotation**
+```java
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface LogExecutionTime {
+}
+```
+
+**Bước 2: Viết Aspect bắt và đo thời gian**
+```java
+@Aspect
+@Component
+public class LoggingAspect {
+
+    @Around("@annotation(LogExecutionTime)")
+    public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+        long start = System.currentTimeMillis();
+        Object proceed = joinPoint.proceed(); // Chạy hàm nghiệp vụ thật
+        long executionTime = System.currentTimeMillis() - start;
+        System.out.println("⚡ Method " + joinPoint.getSignature() + " chạy mất: " + executionTime + "ms");
+        return proceed;
+    }
+}
+```
+
+---
+
+### 🗣️ Kịch Bản Trả Lời Phỏng Vấn (Tổng Hợp Annotation & Custom Annotation):
 
 > *"Dạ, trong dự án Backend Spring Boot, em sử dụng các nhóm Annotation chuẩn mực:*
 > 1. * **Tầng Kiến trúc & IoC:** `@RestController`, `@Service`, `@Repository` để phân tầng rõ ràng và đăng ký Spring Bean.*
 > 2. * **Tầng ORM & DB:** `@Entity`, `@Table`, `@Id`, `@ManyToOne(LAZY)` để ánh xạ quan hệ bảng và `@Transactional` để đảm bảo tính toàn vẹn giao dịch.*
 > 3. * **Tầng Xử lý lỗi:** `@RestControllerAdvice` và `@ExceptionHandler` để bắt lỗi tập trung toàn hệ thống.*
-> 4. * **Tối ưu mã nguồn:** Sử dụng **Lombok** (`@Getter`, `@Setter`, `@RequiredArgsConstructor`) và **MapStruct** (`@Mapper`) để sinh mã nguồn tự động lúc biên dịch, giúp code sạch và đạt hiệu năng cao nhất ạ."*
+> 4. * **Tối ưu mã nguồn:** Sử dụng **Lombok** (`@Getter`, `@Setter`, `@RequiredArgsConstructor`) và **MapStruct** (`@Mapper`) để sinh mã nguồn tự động lúc biên dịch, giúp code sạch và đạt hiệu năng cao nhất.*
+> 5. * **Tự tạo Custom Annotation:** Em có thể dùng từ khóa `@interface` kết hợp `@Target` và `@Retention(RUNTIME)` để tạo các Annotation riêng như Custom Validator (`@ValidDateFormat` kết hợp `ConstraintValidator`) hoặc kết hợp Spring AOP (`@LogExecutionTime`) để đo hiệu năng và ghi log tự động ạ."*
