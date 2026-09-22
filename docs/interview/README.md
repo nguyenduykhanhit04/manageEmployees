@@ -4,7 +4,7 @@ Tập hợp toàn bộ kiến thức, kịch bản "nói mồm", giải thích l
 
 ---
 
-## 📚 Danh Mục Toàn Bộ 8 Tệp Tài Liệu Phỏng Vấn
+## 📚 Danh Mục Toàn Bộ 9 Tệp Tài Liệu Phỏng Vấn
 
 | STT | File Tài Liệu | Nội Dung Chính |
 | :---: | :--- | :--- |
@@ -16,6 +16,7 @@ Tập hợp toàn bộ kiến thức, kịch bản "nói mồm", giải thích l
 | **06** | [06_FEATURE_EXTENSIONS_AND_CHANGE_REQUESTS.md](./06_FEATURE_EXTENSIONS_AND_CHANGE_REQUESTS.md) | • **Xử lý tình huống thay đổi yêu cầu (Change Requests):**<br>  1. Xuất file Excel / CSV (Export Apache POI Streaming)<br>  2. Nhập file Excel (Import & Batch validation)<br>  3. Cơ chế Refresh Token (Silent refresh tự động)<br>  4. Upload Avatar (Lưu cục bộ / Cloud S3)<br>  5. Phân quyền động RBAC (Admin, Manager, User)<br>  6. Gửi Email tự động (Scheduled Cron Job nhắc hạn chứng chỉ)<br>  7. Đa ngôn ngữ (i18n Tiếng Việt / Nhật / Anh)<br>  8. Xóa Mềm (Soft Delete thay vì Hard Delete)<br>  9. Tìm kiếm đa từ khóa & Không phân biệt hoa thường<br>  10. 1 Nhân viên nhiều chứng chỉ (1-to-N Certifications)<br>  11. Đổi quy tắc Sort Ngày hết hạn (`NULL` lên đầu khi DESC)<br>  12. Chính sách Mật khẩu mạnh & Chống trùng mật khẩu cũ<br>  13. Chuyển ADM005 thành Modal Popup xác nhận tại chỗ |
 | **07** | [07_SPRING_BOOT_ANNOTATIONS_CHEATSHEET.md](./07_SPRING_BOOT_ANNOTATIONS_CHEATSHEET.md) | • **Từ điển toàn bộ Annotation `@...` trong Backend:**<br>  - Nhóm 1: Spring Core & Stereotype (`@Component`, `@Service`, `@Repository`, `@Bean`...)<br>  - Nhóm 2: Spring Web & REST (`@RestController`, `@GetMapping`, `@RequestParam`, `@RequestBody`...)<br>  - Nhóm 3: JPA & Hibernate (`@Entity`, `@Table`, `@Id`, `@ManyToOne`, `@JoinColumn`...)<br>  - Nhóm 4: Repository & Transaction (`@PersistenceContext`, `@Query`, `@Transactional`...)<br>  - Nhóm 5: Spring Security (`@EnableWebSecurity`, `@PreAuthorize`...)<br>  - Nhóm 6: Lombok (`@Getter`, `@Setter`, `@RequiredArgsConstructor`, `@Builder`...)<br>  - Nhóm 7: MapStruct (`@Mapper`, `@Mapping`...)<br>  - Nhóm 8: Xử lý ngoại lệ (`@RestControllerAdvice`, `@ExceptionHandler`...)<br>  - Nhóm 9: **Tự tạo Custom Annotation** (`@interface`, `@Target`, `@Retention`, `@Constraint`, Spring AOP) |
 | **08** | [08_SECURITY_WEB_AND_API_DEEP_DIVE.md](./08_SECURITY_WEB_AND_API_DEEP_DIVE.md) | • **Bảo mật Web & Bộ câu hỏi tương tự:**<br>  - Bản chất CORS & Preflight Request (HTTP `OPTIONS`)<br>  - Phân biệt CORS vs CSRF vs XSS vs SQL Injection<br>  - Tại sao tắt CSRF (`http.csrf().disable()`) trong Stateless JWT<br>  - Phân biệt HTTP `401 Unauthorized` vs `403 Forbidden`<br>  - Tính chất Idempotent trong RESTful API (GET, PUT, DELETE vs POST)<br>  - Vấn đề N+1 Query trong JPA & cách phòng chống<br>  - Connection Pool HikariCP & tối ưu Database |
+| **09** | [09_POM_XML_DEPENDENCIES_EXPLAINED.md](./09_POM_XML_DEPENDENCIES_EXPLAINED.md) | • **Bóc tách chi tiết toàn bộ file `pom.xml`:**<br>  - Parent POM và quản lý phiên bản tập trung<br>  - Phân tích 13 Dependencies (Data JPA, Security, Flyway, HikariCP, Auth0 JWT...)<br>  - Cấu hình Profiles môi trường (`dev` vs `prod`)<br>  - Cơ chế hoạt động của `maven-compiler-plugin`, `annotationProcessorPaths` (Lombok + MapStruct) và `spring-boot-maven-plugin` (Fat JAR) |
 
 ---
 
@@ -23,6 +24,7 @@ Tập hợp toàn bộ kiến thức, kịch bản "nói mồm", giải thích l
 > **Lời khuyên ôn luyện:**
 > 1. Đọc lướt qua file **01** và **02** để nắm chắc bức tranh tổng thể và từ khóa công nghệ.
 > 2. Đọc kỹ kịch bản nói mồm trong file **03** và tập nói to bằng miệng 2-3 lần.
-> 3. Đọc file **04**, **07** và **08** để hiểu sâu bản chất kỹ thuật, toàn bộ Annotation và kiến thức bảo mật/hạ tầng.
+> 3. Đọc file **04**, **07**, **08** và **09** để hiểu sâu bản chất kỹ thuật, toàn bộ Annotation, bảo mật và các thư viện trong `pom.xml`.
 > 4. Ôn lại các câu hỏi vấn đáp nhanh trong file **05** và tình huống thay đổi yêu cầu ở file **06** trước giờ phỏng vấn!
+
 
