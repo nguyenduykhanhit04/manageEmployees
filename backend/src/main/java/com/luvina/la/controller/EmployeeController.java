@@ -39,7 +39,7 @@ public class EmployeeController {
     /**
      * Khởi tạo EmployeeController với EmployeeService và EmployeeValidator.
      *
-     * @param employeeService service xử lý các chức năng liên quan đến nhân viên
+     * @param employeeService   service xử lý các chức năng liên quan đến nhân viên
      * @param employeeValidator validator kiểm tra tính hợp lệ của dữ liệu đầu vào
      */
     public EmployeeController(EmployeeService employeeService, EmployeeValidator employeeValidator) {
@@ -50,10 +50,10 @@ public class EmployeeController {
     /**
      * Lấy danh sách nhân viên theo điều kiện tìm kiếm và sắp xếp.
      *
-     * @param employeeName tên nhân viên cần tìm kiếm
-     * @param departmentId mã phòng ban cần tìm kiếm
-     * @param offset vị trí bắt đầu lấy dữ liệu
-     * @param limit số lượng nhân viên tối đa được lấy
+     * @param employeeName  tên nhân viên cần tìm kiếm
+     * @param departmentId  mã phòng ban cần tìm kiếm
+     * @param offset        vị trí bắt đầu lấy dữ liệu
+     * @param limit         số lượng nhân viên tối đa được lấy
      * @param requestParams danh sách các tham số request
      * @return thông tin phản hồi chứa mã response và danh sách nhân viên
      */
@@ -100,7 +100,8 @@ public class EmployeeController {
         // 1. Kiểm tra tính hợp lệ của tham số employeeId qua Validator (bắt lỗi ER001)
         employeeValidator.validateGetEmployee(employeeId);
 
-        // 2. Gọi Service để lấy thông tin chi tiết nhân viên dạng DTO (bắt lỗi ER013 nếu không tìm thấy)
+        // 2. Gọi Service để lấy thông tin chi tiết nhân viên dạng DTO (bắt lỗi ER013
+        // nếu không tìm thấy)
         EmployeeDetailDTO employeeDetailDTO = employeeService.getEmployeeDetail(employeeId);
 
         // 3. Đóng gói DTO vào Response payload và trả về thành công mã 200
@@ -109,7 +110,8 @@ public class EmployeeController {
     }
 
     /**
-     * Kiểm tra sự tồn tại của nhân viên trong hệ thống theo mã định danh employeeId.
+     * Kiểm tra sự tồn tại của nhân viên trong hệ thống theo mã định danh
+     * employeeId.
      *
      * @param employeeId mã định danh của nhân viên cần kiểm tra
      * @return mã phản hồi thành công 200 nếu nhân viên tồn tại
@@ -149,7 +151,7 @@ public class EmployeeController {
      * Cập nhật thông tin nhân viên và chứng chỉ tiếng Nhật theo employeeId.
      *
      * @param employeeId mã định danh của nhân viên cần cập nhật
-     * @param request đối tượng chứa thông tin cập nhật
+     * @param request    đối tượng chứa thông tin cập nhật
      * @return thông tin phản hồi chứa mã response thành công 200 và message MSG002
      */
     @PutMapping("/employee/{employeeId}")
@@ -166,8 +168,7 @@ public class EmployeeController {
         EmployeeUpdateResponse response = new EmployeeUpdateResponse(
                 Constants.CODE_SUCCESS,
                 updatedId,
-                new ApiErrorMessage(Constants.MSG_EDIT_SUCCESS, Collections.emptyList())
-        );
+                new ApiErrorMessage(Constants.MSG_EDIT_SUCCESS, Collections.emptyList()));
 
         return ResponseEntity.ok(response);
     }
@@ -180,7 +181,8 @@ public class EmployeeController {
      */
     @DeleteMapping("/employee/{employeeId}")
     public ResponseEntity<EmployeeDeleteResponse> deleteEmployee(@PathVariable("employeeId") Long employeeId) {
-        // 1. Kiểm tra tính hợp lệ của tham số employeeId qua Validator (bắt lỗi ER001 và ER014)
+        // 1. Kiểm tra tính hợp lệ của tham số employeeId qua Validator (bắt lỗi ER001
+        // và ER014)
         employeeValidator.validateDeleteEmployee(employeeId);
 
         // 2. Thực hiện xóa nhân viên qua Service
@@ -190,10 +192,8 @@ public class EmployeeController {
         EmployeeDeleteResponse response = new EmployeeDeleteResponse(
                 Constants.CODE_SUCCESS,
                 deletedId,
-                new ApiErrorMessage(Constants.MSG_DELETE_SUCCESS, Collections.emptyList())
-        );
+                new ApiErrorMessage(Constants.MSG_DELETE_SUCCESS, Collections.emptyList()));
 
         return ResponseEntity.ok(response);
     }
 }
-
